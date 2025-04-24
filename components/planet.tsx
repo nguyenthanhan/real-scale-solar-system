@@ -1,0 +1,113 @@
+"use client"
+
+import { useRef, useState } from "react"
+import { useFrame } from "@react-three/fiber"
+import { Sphere, Ring, Html } from "@react-three/drei"
+import * as THREE from "three"
+
+export function Planet({ planet, simulationSpeed, onClick }) {
+  const planetRef = useRef()
+  const orbitRef = useRef()
+  const [hovered, setHovered] = useState(false)
+
+  // Calculate the position based on time and simulation speed
+  useFrame(({ clock }) => {
+    const elapsedTime = clock.getElapsedTime()
+
+    // Update orbit rotation based on simulation speed
+    if (orbitRef.current) {
+      // Khi simulationSpeed = 0, hành tinh sẽ dừng lại
+      if (simulationSpeed === 0) {
+        // Giữ nguyên vị trí hiện tại
+      } else {
+        orbitRef.current.rotation.y = (elapsedTime / planet.orbitSpeed) * simulationSpeed
+      }
+    }
+
+    // Update planet rotation
+    if (planetRef.current) {
+      // Khi simulationSpeed = 0, hành tinh vẫn quay quanh trục của nó
+      planetRef.current.rotation.y += (0.01 / planet.rotationSpeed) * (simulationSpeed === 0 ? 0.1 : simulationSpeed)
+    }
+  })
+
+  // Create elliptical orbit path
+  const orbitPath = () => {
+    const curve = new THREE.EllipseCurve(
+      0,
+      0, // Center x, y
+      planet.distance,
+      planet.distance * 0.95, // xRadius, yRadius
+      0,
+      2 * Math.PI, // Start angle, end angle
+      false, // Clockwise
+      0, // Rotation
+    )
+
+    const points = curve.getPoints(100)
+    const geometry = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(p.x, 0, p.y)))
+
+    return (
+      <group>
+        <line geometry={geometry}>
+          <lineBasicMaterial attach="material" color="#666666" opacity={0.5} transparent />
+        </line>
+      </group>
+    )
+  }
+
+  return (
+    <>
+      {/* Orbit path */}
+      {orbitPath()}
+
+      {/* Planet group that rotates around the sun */}
+      <group ref={orbitRef}>
+        <group position={[planet.distance, 0, 0]}>
+          {/* Planet */}
+          <Sphere
+            ref={planetRef}
+            args={[planet.size, 32, 32]}
+            onClick={(e) => {
+              e.stopPropagation()
+              onClick(planet)
+            }}
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+          >
+            <meshStandardMaterial
+              color={planet.color}
+              metalness={0.1}
+              roughness={0.6}
+              emissive={planet.color}
+              emissiveIntensity={0.05}
+            />
+          </Sphere>
+
+          {/* Rings for Saturn and Uranus */}
+          {planet.hasRings && (
+            <>
+              <Ring args={[planet.size * 1.4, planet.size * 2.2, 64]} rotation={[Math.PI / 2, planet.ringTilt || 0, 0]}>
+                <meshStandardMaterial
+                  color={planet.ringColor || "#CDCDCD"}
+                  side={THREE.DoubleSide}
+                  transparent
+                  opacity={0.8}
+                  metalness={0.3}
+                  roughness={0.7}
+                />
+              </Ring>
+            </>
+          )}
+
+          {/* Hover label */}
+          {hovered && (
+            <Html distanceFactor={10}>
+              <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap">{planet.name}</div>
+            </Html>
+          )}
+        </group>
+      </group>
+    </>
+  )
+}
