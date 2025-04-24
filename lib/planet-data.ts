@@ -3,7 +3,7 @@ export const planetData = [
     name: "Mercury",
     size: 0.4,
     distance: 4,
-    color: "#A9A9A9",
+    color: "#9c9c9c", // Gray with slight brown tint
     orbitSpeed: 10,
     rotationSpeed: 58.6,
     hasRings: false,
@@ -18,7 +18,7 @@ export const planetData = [
     name: "Venus",
     size: 0.6,
     distance: 6,
-    color: "#E6E6FA",
+    color: "#e6c8a0", // Pale yellow-orange
     orbitSpeed: 15,
     rotationSpeed: 243,
     hasRings: false,
@@ -33,7 +33,7 @@ export const planetData = [
     name: "Earth",
     size: 0.6,
     distance: 8,
-    color: "#6B93D6",
+    color: "#2f6a69", // Blue-green
     orbitSpeed: 20,
     rotationSpeed: 1,
     hasRings: false,
@@ -48,7 +48,7 @@ export const planetData = [
     name: "Mars",
     size: 0.5,
     distance: 10,
-    color: "#E27B58",
+    color: "#c1440e", // Rust red
     orbitSpeed: 30,
     rotationSpeed: 1.03,
     hasRings: false,
@@ -63,7 +63,7 @@ export const planetData = [
     name: "Jupiter",
     size: 1.2,
     distance: 14,
-    color: "#E0CFBB",
+    color: "#d8ca9d", // Light brown with orange bands
     orbitSpeed: 60,
     rotationSpeed: 0.41,
     hasRings: false,
@@ -78,11 +78,11 @@ export const planetData = [
     name: "Saturn",
     size: 1.0,
     distance: 18,
-    color: "#F4F4E2",
+    color: "#e3be7e", // Pale gold
     orbitSpeed: 90,
     rotationSpeed: 0.45,
     hasRings: true,
-    ringColor: "#E1C9A8",
+    ringColor: "#e8d9b5", // Light beige
     ringTilt: 0.4, // Slight tilt to the rings
     realDiameter: 120_536,
     realDistance: 1_433.5,
@@ -95,11 +95,11 @@ export const planetData = [
     name: "Uranus",
     size: 0.8,
     distance: 22,
-    color: "#D1E7E7",
+    color: "#c1e7e3", // Pale cyan
     orbitSpeed: 120,
     rotationSpeed: 0.72,
     hasRings: true,
-    ringColor: "#A5A5A5",
+    ringColor: "#a5a5a5", // Gray
     ringTilt: 0.1, // Slight tilt to the rings
     realDiameter: 51_118,
     realDistance: 2_872.5,
@@ -112,7 +112,7 @@ export const planetData = [
     name: "Neptune",
     size: 0.8,
     distance: 26,
-    color: "#5B5DDF",
+    color: "#3457d5", // Deep blue
     orbitSpeed: 150,
     rotationSpeed: 0.67,
     hasRings: false,

@@ -24,11 +24,13 @@ export default function SolarSystem() {
   }
 
   const handleSpeedChange = (speed) => {
-    setSimulationSpeed(speed)
+    // Ensure speed is a valid number
+    const validSpeed = isNaN(speed) ? 0 : speed
+    setSimulationSpeed(validSpeed)
   }
 
   return (
-    <div className="w-full h-screen relative bg-black">
+    <div className="w-full h-screen relative bg-black overflow-hidden">
       <Canvas camera={{ position: [0, 25, 25], fov: 60 }}>
         <color attach="background" args={["#000"]} />
         <ambientLight intensity={0.3} />

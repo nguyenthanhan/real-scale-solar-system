@@ -7,7 +7,7 @@ export function PlanetInfo({ planet, onClose }) {
   if (!planet) return null
 
   return (
-    <div className="absolute top-4 right-4 bg-black/80 text-white p-4 rounded-lg w-80 backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10">
+    <div className="absolute top-4 right-4 bg-black/80 text-white p-4 rounded-lg w-80 backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-10">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-xl font-bold">{planet.name}</h2>
         <button
