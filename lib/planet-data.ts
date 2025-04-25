@@ -1,3 +1,20 @@
+export const sunData = {
+  name: "Sun",
+  color: "#FDB813",
+  description:
+    "The star at the center of our Solar System, a nearly perfect sphere of hot plasma.",
+  realDiameter: 1_392_700,
+  realDistance: 0,
+  orbitalPeriod: "225-250 million years around the Milky Way",
+  dayLength: "25-35 Earth days (varies by latitude)",
+  funFact: "The Sun contains 99.86% of the mass in the Solar System.",
+  temperature: "5,500°C (surface), 15 million°C (core)",
+  gravity: "274 m/s² (28× Earth)",
+  atmosphere: "Hot plasma of hydrogen and helium",
+  moons: "8 planets, dwarf planets, and billions of smaller objects",
+  yearDiscovered: "Known to all human civilizations",
+};
+
 export const planetData = [
   {
     name: "Mercury",
@@ -12,7 +29,8 @@ export const planetData = [
     orbitalPeriod: "88 Earth days",
     dayLength: "59 Earth days",
     description: "The smallest and innermost planet in the Solar System.",
-    funFact: "Despite being close to the Sun, Mercury has ice in its polar craters.",
+    funFact:
+      "Despite being close to the Sun, Mercury has ice in its polar craters.",
     temperature: "-173°C to 427°C",
     gravity: "3.7 m/s² (38% of Earth)",
     atmosphere: "Virtually none, extremely thin exosphere",
@@ -31,7 +49,8 @@ export const planetData = [
     realDistance: 108.2,
     orbitalPeriod: "225 Earth days",
     dayLength: "243 Earth days (retrograde rotation)",
-    description: "The second planet from the Sun and Earth's closest planetary neighbor.",
+    description:
+      "The second planet from the Sun and Earth's closest planetary neighbor.",
     funFact: "Venus rotates in the opposite direction to most planets.",
     temperature: "462°C (hottest planet)",
     gravity: "8.87 m/s² (91% of Earth)",
@@ -51,7 +70,8 @@ export const planetData = [
     realDistance: 149.6,
     orbitalPeriod: "365.25 days",
     dayLength: "24 hours",
-    description: "Our home planet and the only known place with life in the universe.",
+    description:
+      "Our home planet and the only known place with life in the universe.",
     funFact: "Earth is the only planet not named after a god or goddess.",
     temperature: "-88°C to 58°C",
     gravity: "9.8 m/s²",
@@ -72,7 +92,8 @@ export const planetData = [
     orbitalPeriod: "687 Earth days",
     dayLength: "24.6 hours",
     description: "The fourth planet from the Sun, often called the Red Planet.",
-    funFact: "Mars has the largest dust storms in the solar system, lasting for months.",
+    funFact:
+      "Mars has the largest dust storms in the solar system, lasting for months.",
     temperature: "-153°C to 20°C",
     gravity: "3.72 m/s² (38% of Earth)",
     atmosphere: "Thin, mostly CO₂",
@@ -91,8 +112,10 @@ export const planetData = [
     realDistance: 778.6,
     orbitalPeriod: "11.9 Earth years",
     dayLength: "9.9 hours",
-    description: "The largest planet in our Solar System, a gas giant with a Great Red Spot.",
-    funFact: "Jupiter's Great Red Spot is a storm that has been raging for at least 400 years.",
+    description:
+      "The largest planet in our Solar System, a gas giant with a Great Red Spot.",
+    funFact:
+      "Jupiter's Great Red Spot is a storm that has been raging for at least 400 years.",
     temperature: "-145°C (cloud top)",
     gravity: "24.79 m/s² (2.5× Earth)",
     atmosphere: "Hydrogen, helium, methane, ammonia",
@@ -113,8 +136,10 @@ export const planetData = [
     realDistance: 1_433.5,
     orbitalPeriod: "29.5 Earth years",
     dayLength: "10.7 hours",
-    description: "The sixth planet from the Sun, famous for its spectacular ring system.",
-    funFact: "Saturn's rings are made mostly of ice chunks, with some rocky debris and dust.",
+    description:
+      "The sixth planet from the Sun, famous for its spectacular ring system.",
+    funFact:
+      "Saturn's rings are made mostly of ice chunks, with some rocky debris and dust.",
     temperature: "-178°C (cloud top)",
     gravity: "10.44 m/s² (1.07× Earth)",
     atmosphere: "Hydrogen, helium, methane",
@@ -135,8 +160,10 @@ export const planetData = [
     realDistance: 2_872.5,
     orbitalPeriod: "84 Earth years",
     dayLength: "17.2 hours (retrograde rotation)",
-    description: "The seventh planet from the Sun, an ice giant that rotates on its side.",
-    funFact: "Uranus rotates on its side, with its axis pointing nearly toward the Sun.",
+    description:
+      "The seventh planet from the Sun, an ice giant that rotates on its side.",
+    funFact:
+      "Uranus rotates on its side, with its axis pointing nearly toward the Sun.",
     temperature: "-224°C",
     gravity: "8.69 m/s² (89% of Earth)",
     atmosphere: "Hydrogen, helium, methane (gives blue color)",
@@ -155,12 +182,14 @@ export const planetData = [
     realDistance: 4_495.1,
     orbitalPeriod: "165 Earth years",
     dayLength: "16.1 hours",
-    description: "The eighth and most distant planet from the Sun, a stormy ice giant.",
-    funFact: "Neptune has the strongest winds in the Solar System, reaching 2,100 km/h.",
+    description:
+      "The eighth and most distant planet from the Sun, a stormy ice giant.",
+    funFact:
+      "Neptune has the strongest winds in the Solar System, reaching 2,100 km/h.",
     temperature: "-218°C",
     gravity: "11.15 m/s² (1.14× Earth)",
     atmosphere: "Hydrogen, helium, methane (gives blue color)",
     moons: "14 known moons",
     yearDiscovered: "1846 by Urbain Le Verrier, Johann Galle",
   },
-]
+];

@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useRef, useState, useMemo, useEffect } from "react"
-import { useFrame } from "@react-three/fiber"
-import { Sphere, Ring, Html } from "@react-three/drei"
-import * as THREE from "three"
+import { useRef, useState, useMemo, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Sphere, Ring, Html } from "@react-three/drei";
+import * as THREE from "three";
 
 export function Planet({ planet, simulationSpeed, onClick }) {
-  const planetRef = useRef()
-  const orbitRef = useRef()
-  const [hovered, setHovered] = useState(false)
+  const planetRef = useRef();
+  const orbitRef = useRef();
+  const [hovered, setHovered] = useState(false);
 
   // Refs to store current position and angle
-  const currentAngleRef = useRef(0)
-  const lastTimeRef = useRef(0)
-  const lastSpeedRef = useRef(simulationSpeed)
+  const currentAngleRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const lastSpeedRef = useRef(simulationSpeed);
 
-  // Hệ số cơ bản để điều chỉnh tốc độ tổng thể của mô phỏng
-  // Với thang đo mới, baseSpeed được điều chỉnh để 1 = tốc độ thực
-  const baseSpeed = 0.002 // Điều chỉnh để phù hợp với thang đo mới
+  // Basic coefficient to adjust the overall simulation speed
+  // Increased to ensure visible movement even at lower simulation speeds
+  const baseSpeed = 0.00005; // Increased from 0.0000005 to ensure planets move visibly
 
   // Create elliptical orbit path once
   const orbitCurve = useMemo(() => {
@@ -29,21 +29,21 @@ export function Planet({ planet, simulationSpeed, onClick }) {
       0,
       2 * Math.PI, // Start angle, end angle
       false, // Clockwise
-      0, // Rotation
-    )
-  }, [planet.distance])
+      0 // Rotation
+    );
+  }, [planet.distance]);
 
   // Update position when speed changes
   useEffect(() => {
     // Store the new speed
-    lastSpeedRef.current = simulationSpeed
-  }, [simulationSpeed])
+    lastSpeedRef.current = simulationSpeed;
+  }, [simulationSpeed]);
 
   // Calculate the position based on time and simulation speed
   useFrame(({ clock }) => {
-    const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - lastTimeRef.current
-    lastTimeRef.current = elapsedTime
+    const elapsedTime = clock.getElapsedTime();
+    const deltaTime = elapsedTime - lastTimeRef.current;
+    lastTimeRef.current = elapsedTime;
 
     // Calculate the position on the orbit
     if (orbitRef.current) {
@@ -51,47 +51,59 @@ export function Planet({ planet, simulationSpeed, onClick }) {
       if (simulationSpeed === 0) {
         // Keep current position
       } else {
-        // Calculate angle increment based on delta time, not total elapsed time
-        // This ensures smooth transitions when speed changes
-        const angleIncrement = (deltaTime * simulationSpeed * baseSpeed) / planet.orbitSpeed
+        // Check if orbitSpeed is properly applied - this should use the planet's specific orbit speed
+        const angleIncrement =
+          (deltaTime * simulationSpeed * baseSpeed) / planet.orbitSpeed;
 
         // Update current angle
-        currentAngleRef.current = (currentAngleRef.current + angleIncrement) % (2 * Math.PI)
+        currentAngleRef.current =
+          (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
 
         // Get position on the elliptical curve
-        const position = orbitCurve.getPoint(currentAngleRef.current / (2 * Math.PI))
+        const position = orbitCurve.getPoint(
+          currentAngleRef.current / (2 * Math.PI)
+        );
 
         // Update planet position directly
-        orbitRef.current.position.x = position.x
-        orbitRef.current.position.z = position.y // y from curve maps to z in 3D
+        orbitRef.current.position.x = position.x;
+        orbitRef.current.position.z = position.y; // y from curve maps to z in 3D
       }
     }
 
     // Update planet rotation around its axis
     if (planetRef.current) {
-      // When simulationSpeed = 0, planet still rotates very slowly
-      const rotationSpeed = simulationSpeed === 0 ? 0.0001 : simulationSpeed * baseSpeed * 0.5
-      planetRef.current.rotation.y += (0.01 / planet.rotationSpeed) * rotationSpeed
+      // Check if rotationSpeed is properly used - this should use the planet's specific rotation speed
+      const rotationSpeed =
+        simulationSpeed === 0 ? 0.0001 : simulationSpeed * baseSpeed * 0.5;
+      planetRef.current.rotation.y +=
+        (0.01 / planet.rotationSpeed) * rotationSpeed;
     }
-  })
+  });
 
   // Create orbit path visualization
   const orbitPath = useMemo(() => {
-    const points = orbitCurve.getPoints(100)
-    const geometry = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(p.x, 0, p.y)))
+    const points = orbitCurve.getPoints(100);
+    const geometry = new THREE.BufferGeometry().setFromPoints(
+      points.map((p) => new THREE.Vector3(p.x, 0, p.y))
+    );
 
     return (
       <line geometry={geometry}>
-        <lineBasicMaterial attach="material" color="#666666" opacity={0.5} transparent />
+        <lineBasicMaterial
+          attach="material"
+          color="#666666"
+          opacity={0.5}
+          transparent
+        />
       </line>
-    )
-  }, [orbitCurve])
+    );
+  }, [orbitCurve]);
 
   // Handle planet click with proper event propagation
   const handlePlanetClick = (e) => {
-    e.stopPropagation()
-    onClick(planet)
-  }
+    e.stopPropagation();
+    onClick(planet);
+  };
 
   return (
     <>
@@ -120,7 +132,10 @@ export function Planet({ planet, simulationSpeed, onClick }) {
         {/* Rings for Saturn and Uranus */}
         {planet.hasRings && (
           <>
-            <Ring args={[planet.size * 1.4, planet.size * 2.2, 64]} rotation={[Math.PI / 2, planet.ringTilt || 0, 0]}>
+            <Ring
+              args={[planet.size * 1.4, planet.size * 2.2, 64]}
+              rotation={[Math.PI / 2, planet.ringTilt || 0, 0]}
+            >
               <meshStandardMaterial
                 color={planet.ringColor || "#CDCDCD"}
                 side={THREE.DoubleSide}
@@ -136,10 +151,12 @@ export function Planet({ planet, simulationSpeed, onClick }) {
         {/* Hover label */}
         {hovered && (
           <Html distanceFactor={10}>
-            <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap">{planet.name}</div>
+            <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap">
+              {planet.name}
+            </div>
           </Html>
         )}
       </group>
     </>
-  )
+  );
 }

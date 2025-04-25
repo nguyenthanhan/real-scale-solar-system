@@ -1,135 +1,136 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Canvas, useThree, useFrame } from "@react-three/fiber"
-import { OrbitControls, Stars } from "@react-three/drei"
-import { Sun } from "@/components/sun"
-import { Planet } from "@/components/planet"
-import { PlanetInfo } from "@/components/planet-info"
-import { SpeedControl } from "@/components/speed-control"
-import { planetData } from "@/lib/planet-data"
+import { useState, useRef, useEffect } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { OrbitControls, Stars } from "@react-three/drei";
+import { Sun } from "@/components/sun";
+import { Planet } from "@/components/planet";
+import { PlanetInfo } from "@/components/planet-info";
+import { SpeedControl } from "@/components/speed-control";
+import { planetData, sunData } from "@/lib/planet-data";
+import * as THREE from "three";
 
-// Sửa lại hàm KeyboardControls để thay đổi góc nhìn với WS
+// Function to control camera view with WASD keys
 function KeyboardControls({ simulationSpeed, onSpeedChange }) {
-  const { camera, gl } = useThree()
-  const keysPressed = useRef({})
-  const orbitControlsRef = useRef()
+  const { camera, gl } = useThree();
+  const keysPressed = useRef({});
+  const orbitControlsRef = useRef();
 
   // Set up key press tracking
   useEffect(() => {
     const handleKeyDown = (event) => {
       // Skip if user is typing in an input field
-      if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
-        return
+      if (
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "TEXTAREA"
+      ) {
+        return;
       }
 
-      keysPressed.current[event.key.toLowerCase()] = true
+      keysPressed.current[event.key.toLowerCase()] = true;
 
       // Handle speed controls immediately
       if (event.key.toLowerCase() === "q") {
-        onSpeedChange(Math.max(1, Math.round(simulationSpeed - 5)))
+        // Decrease speed by 100, minimum 1
+        onSpeedChange(Math.max(1, simulationSpeed - 100));
       } else if (event.key.toLowerCase() === "e") {
-        onSpeedChange(Math.min(100, Math.round(simulationSpeed + 5)))
+        // Increase speed by 100, maximum 100000
+        onSpeedChange(Math.min(100000, simulationSpeed + 100));
       }
-    }
+    };
 
     const handleKeyUp = (event) => {
-      keysPressed.current[event.key.toLowerCase()] = false
-    }
+      keysPressed.current[event.key.toLowerCase()] = false;
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    window.addEventListener("keyup", handleKeyUp)
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("keyup", handleKeyUp)
-    }
-  }, [simulationSpeed, onSpeedChange])
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [simulationSpeed, onSpeedChange]);
 
   // Handle camera movement in the animation frame
   useFrame(({ camera }) => {
-    // Camera rotation speed
-    const rotationSpeed = 0.03
+    // Base camera movement speed
+    const baseSpeed = 0.1;
 
-    // W/S keys change the camera angle (pitch)
+    // Calculate camera movement based on current camera orientation
+    const moveForward = new THREE.Vector3();
+    const moveRight = new THREE.Vector3();
+
+    // Get the camera's forward and right vectors
+    camera.getWorldDirection(moveForward);
+    moveRight.crossVectors(camera.up, moveForward).normalize();
+
+    // Zero out the Y component to prevent vertical movement when going forward/backward
+    moveForward.y = 0;
+    moveForward.normalize();
+
+    // W/S keys move camera forward/backward
     if (keysPressed.current["w"]) {
-      // Rotate camera up (decrease phi angle)
-      camera.position.y += rotationSpeed * 5
-      camera.lookAt(0, 0, 0)
+      camera.position.addScaledVector(moveForward, baseSpeed);
     }
     if (keysPressed.current["s"]) {
-      // Rotate camera down (increase phi angle)
-      camera.position.y -= rotationSpeed * 5
-      camera.lookAt(0, 0, 0)
+      camera.position.addScaledVector(moveForward, -baseSpeed);
     }
 
-    // A/D keys move the camera horizontally
+    // A/D keys move camera left/right
     if (keysPressed.current["a"]) {
-      camera.position.x -= rotationSpeed * 5
-      camera.lookAt(0, 0, 0)
+      camera.position.addScaledVector(moveRight, -baseSpeed);
     }
     if (keysPressed.current["d"]) {
-      camera.position.x += rotationSpeed * 5
-      camera.lookAt(0, 0, 0)
+      camera.position.addScaledVector(moveRight, baseSpeed);
     }
-  })
+  });
 
-  return null
+  return null;
 }
 
-// Sửa lại phần SolarSystem để cập nhật thang đo tốc độ mô phỏng
+// Solar System component with updated simulation speed scale
 export default function SolarSystem() {
-  const [selectedPlanet, setSelectedPlanet] = useState(null)
-  const [showSunInfo, setShowSunInfo] = useState(false)
-  const [simulationSpeed, setSimulationSpeed] = useState(25) // Mặc định là 25 (25x tốc độ thực)
-  const orbitControlsRef = useRef()
-  const [keyboardControlsEnabled, setKeyboardControlsEnabled] = useState(true)
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
+  const [showSunInfo, setShowSunInfo] = useState(false);
+  const [simulationSpeed, setSimulationSpeed] = useState(1); // Default is 1 (real-time speed)
+  const orbitControlsRef = useRef();
+  const [keyboardControlsEnabled, setKeyboardControlsEnabled] = useState(true);
 
   const handlePlanetClick = (planet) => {
-    setSelectedPlanet(planet)
-    setShowSunInfo(false)
-  }
+    setSelectedPlanet(planet);
+    setShowSunInfo(false);
+  };
 
   const handleSunClick = () => {
-    setSelectedPlanet(null)
-    setShowSunInfo(true)
-  }
+    setSelectedPlanet(null);
+    setShowSunInfo(true);
+  };
 
   const handleCloseInfo = () => {
-    setSelectedPlanet(null)
-    setShowSunInfo(false)
-  }
+    setSelectedPlanet(null);
+    setShowSunInfo(false);
+  };
 
   const handleSpeedChange = (speed) => {
-    // Ensure speed is a valid number and within range 1-100
-    let validSpeed = isNaN(speed) ? 1 : speed
-    validSpeed = Math.max(1, Math.min(100, validSpeed)) // Clamp between 1 and 100
-    // Round to integer for simplicity
-    validSpeed = Math.round(validSpeed)
-    setSimulationSpeed(validSpeed)
-  }
+    let validSpeed = isNaN(speed) ? 1 : Number(speed);
+    validSpeed = Math.max(1, Math.min(100000, validSpeed));
+
+    if (validSpeed >= 100) {
+      validSpeed = Math.round(validSpeed / 100) * 100;
+    }
+    // For very small values, don't round
+    else {
+      validSpeed = Math.round(validSpeed);
+    }
+
+    setSimulationSpeed(validSpeed);
+  };
 
   // Toggle keyboard controls
   const toggleKeyboardControls = () => {
-    setKeyboardControlsEnabled(!keyboardControlsEnabled)
-  }
-
-  // Sun information data
-  const sunInfo = {
-    name: "Sun",
-    color: "#FDB813",
-    description: "The star at the center of our Solar System, a nearly perfect sphere of hot plasma.",
-    realDiameter: 1_392_700,
-    realDistance: 0,
-    orbitalPeriod: "225-250 million years around the Milky Way",
-    dayLength: "25-35 Earth days (varies by latitude)",
-    funFact: "The Sun contains 99.86% of the mass in the Solar System.",
-    temperature: "5,500°C (surface), 15 million°C (core)",
-    gravity: "274 m/s² (28× Earth)",
-    atmosphere: "Hot plasma of hydrogen and helium",
-    moons: "8 planets, dwarf planets, and billions of smaller objects",
-    yearDiscovered: "Known to all human civilizations",
-  }
+    setKeyboardControlsEnabled(!keyboardControlsEnabled);
+  };
 
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden">
@@ -142,11 +143,19 @@ export default function SolarSystem() {
           <Planet
             key={planet.name}
             planet={planet}
-            simulationSpeed={simulationSpeed / 25} // Chuyển đổi từ thang đo 1-100 sang thang đo cũ
+            simulationSpeed={simulationSpeed} // Pass the direct value without division
             onClick={() => handlePlanetClick(planet)}
           />
         ))}
-        <Stars radius={300} depth={50} count={5000} factor={4} saturation={1} fade speed={1.5} />
+        <Stars
+          radius={300}
+          depth={50}
+          count={5000}
+          factor={4}
+          saturation={1}
+          fade
+          speed={1.5}
+        />
         <OrbitControls
           ref={orbitControlsRef}
           enablePan={true}
@@ -156,7 +165,10 @@ export default function SolarSystem() {
           maxDistance={100}
         />
         {keyboardControlsEnabled && (
-          <KeyboardControls simulationSpeed={simulationSpeed} onSpeedChange={handleSpeedChange} />
+          <KeyboardControls
+            simulationSpeed={simulationSpeed}
+            onSpeedChange={handleSpeedChange}
+          />
         )}
       </Canvas>
 
@@ -164,8 +176,14 @@ export default function SolarSystem() {
       {selectedPlanet && (
         <>
           {/* Overlay to close modal when clicking outside */}
-          <div className="fixed inset-0 bg-transparent z-40" onClick={handleCloseInfo} />
-          <div className="fixed top-4 right-4 z-50" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 bg-transparent z-40"
+            onClick={handleCloseInfo}
+          />
+          <div
+            className="fixed top-4 right-4 z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
             <PlanetInfo planet={selectedPlanet} onClose={handleCloseInfo} />
           </div>
         </>
@@ -175,9 +193,15 @@ export default function SolarSystem() {
       {showSunInfo && (
         <>
           {/* Overlay to close modal when clicking outside */}
-          <div className="fixed inset-0 bg-transparent z-40" onClick={handleCloseInfo} />
-          <div className="fixed top-4 right-4 z-50" onClick={(e) => e.stopPropagation()}>
-            <PlanetInfo planet={sunInfo} onClose={handleCloseInfo} />
+          <div
+            className="fixed inset-0 bg-transparent z-40"
+            onClick={handleCloseInfo}
+          />
+          <div
+            className="fixed top-4 right-4 z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PlanetInfo planet={sunData} onClose={handleCloseInfo} />
           </div>
         </>
       )}
@@ -187,9 +211,9 @@ export default function SolarSystem() {
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">
           <p>• Click objects for info</p>
-          <p>• W/S - Rotate view up/down</p>
+          <p>• W/S - Move forward/back</p>
           <p>• A/D - Move left/right</p>
-          <p>• Q/E - Speed control</p>
+          <p>• Q/E - Speed ±100</p>
           <button
             onClick={toggleKeyboardControls}
             className="mt-1 px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
@@ -199,5 +223,5 @@ export default function SolarSystem() {
         </div>
       </div>
     </div>
-  )
+  );
 }
