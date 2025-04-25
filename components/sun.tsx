@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Sphere } from "@react-three/drei"
 
-export function Sun() {
+export function Sun({ onClick }) {
   const sunRef = useRef()
   const glowRef = useRef()
 
@@ -20,8 +20,13 @@ export function Sun() {
     }
   })
 
+  const handleSunClick = (e) => {
+    e.stopPropagation()
+    if (onClick) onClick()
+  }
+
   return (
-    <group>
+    <group onClick={handleSunClick}>
       {/* Outer glow */}
       <Sphere ref={glowRef} args={[3.2, 30, 30]} position={[0, 0, 0]}>
         <meshBasicMaterial color="#ffff80" transparent opacity={0.1} />

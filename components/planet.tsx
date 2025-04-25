@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useMemo } from "react"
+import { useRef, useState, useMemo, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Sphere, Ring, Html } from "@react-three/drei"
 import * as THREE from "three"
@@ -10,8 +10,14 @@ export function Planet({ planet, simulationSpeed, onClick }) {
   const orbitRef = useRef()
   const [hovered, setHovered] = useState(false)
 
+  // Refs to store current position and angle
+  const currentAngleRef = useRef(0)
+  const lastTimeRef = useRef(0)
+  const lastSpeedRef = useRef(simulationSpeed)
+
   // Hệ số cơ bản để điều chỉnh tốc độ tổng thể của mô phỏng
-  const baseSpeed = 5
+  // Với thang đo mới, baseSpeed được điều chỉnh để 1 = tốc độ thực
+  const baseSpeed = 0.002 // Điều chỉnh để phù hợp với thang đo mới
 
   // Create elliptical orbit path once
   const orbitCurve = useMemo(() => {
@@ -27,9 +33,17 @@ export function Planet({ planet, simulationSpeed, onClick }) {
     )
   }, [planet.distance])
 
+  // Update position when speed changes
+  useEffect(() => {
+    // Store the new speed
+    lastSpeedRef.current = simulationSpeed
+  }, [simulationSpeed])
+
   // Calculate the position based on time and simulation speed
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime()
+    const deltaTime = elapsedTime - lastTimeRef.current
+    lastTimeRef.current = elapsedTime
 
     // Calculate the position on the orbit
     if (orbitRef.current) {
@@ -37,14 +51,17 @@ export function Planet({ planet, simulationSpeed, onClick }) {
       if (simulationSpeed === 0) {
         // Keep current position
       } else {
-        // Calculate angle based on time, planet's orbit speed, and simulation speed
-        // Smaller orbitSpeed values (like Mercury's 0.24) will result in faster movement
-        const angle = (elapsedTime * simulationSpeed * baseSpeed) / planet.orbitSpeed
+        // Calculate angle increment based on delta time, not total elapsed time
+        // This ensures smooth transitions when speed changes
+        const angleIncrement = (deltaTime * simulationSpeed * baseSpeed) / planet.orbitSpeed
+
+        // Update current angle
+        currentAngleRef.current = (currentAngleRef.current + angleIncrement) % (2 * Math.PI)
 
         // Get position on the elliptical curve
-        const position = orbitCurve.getPoint((angle / (2 * Math.PI)) % 1)
+        const position = orbitCurve.getPoint(currentAngleRef.current / (2 * Math.PI))
 
-        // Update planet position directly instead of rotating the group
+        // Update planet position directly
         orbitRef.current.position.x = position.x
         orbitRef.current.position.z = position.y // y from curve maps to z in 3D
       }
@@ -52,8 +69,8 @@ export function Planet({ planet, simulationSpeed, onClick }) {
 
     // Update planet rotation around its axis
     if (planetRef.current) {
-      // When simulationSpeed = 0, planet still rotates slowly
-      const rotationSpeed = simulationSpeed === 0 ? 0.1 : simulationSpeed
+      // When simulationSpeed = 0, planet still rotates very slowly
+      const rotationSpeed = simulationSpeed === 0 ? 0.0001 : simulationSpeed * baseSpeed * 0.5
       planetRef.current.rotation.y += (0.01 / planet.rotationSpeed) * rotationSpeed
     }
   })
@@ -70,6 +87,12 @@ export function Planet({ planet, simulationSpeed, onClick }) {
     )
   }, [orbitCurve])
 
+  // Handle planet click with proper event propagation
+  const handlePlanetClick = (e) => {
+    e.stopPropagation()
+    onClick(planet)
+  }
+
   return (
     <>
       {/* Orbit path */}
@@ -81,10 +104,7 @@ export function Planet({ planet, simulationSpeed, onClick }) {
         <Sphere
           ref={planetRef}
           args={[planet.size, 32, 32]}
-          onClick={(e) => {
-            e.stopPropagation()
-            onClick(planet)
-          }}
+          onClick={handlePlanetClick}
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
         >
