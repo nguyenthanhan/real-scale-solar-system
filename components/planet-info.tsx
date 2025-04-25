@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { X } from "lucide-react"
-import { motion } from "framer-motion"
+import { X } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function PlanetInfo({ planet, onClose }) {
-  if (!planet) return null
+  if (!planet) return null;
 
   return (
     <motion.div
@@ -27,18 +27,25 @@ export function PlanetInfo({ planet, onClose }) {
 
       <div className="space-y-3">
         <div className="flex items-start">
-          <div className="w-4 h-4 rounded-full mt-1 mr-2 flex-shrink-0" style={{ backgroundColor: planet.color }} />
+          <div
+            className="w-4 h-4 rounded-full mt-1 mr-2 flex-shrink-0"
+            style={{ backgroundColor: planet.color }}
+          />
           <p className="text-sm opacity-80">{planet.description}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-3">
           <div>
             <p className="text-xs opacity-70">Diameter</p>
-            <p className="text-sm">{planet.realDiameter?.toLocaleString() || "N/A"} km</p>
+            <p className="text-sm">
+              {planet.realDiameter?.toLocaleString() || "N/A"} km
+            </p>
           </div>
           <div>
             <p className="text-xs opacity-70">Distance from Sun</p>
-            <p className="text-sm">{planet.realDistance?.toLocaleString() || "N/A"} million km</p>
+            <p className="text-sm">
+              {planet.realDistance?.toLocaleString() || "N/A"} million km
+            </p>
           </div>
           <div>
             <p className="text-xs opacity-70">Orbital Period</p>
@@ -70,11 +77,16 @@ export function PlanetInfo({ planet, onClose }) {
           </div>
         </div>
 
-        <motion.div className="mt-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <motion.div
+          className="mt-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <p className="text-xs opacity-70">Fun Fact</p>
           <p className="text-sm">{planet.funFact || "N/A"}</p>
         </motion.div>
       </div>
     </motion.div>
-  )
+  );
 }
