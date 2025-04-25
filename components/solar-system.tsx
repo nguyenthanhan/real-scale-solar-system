@@ -24,8 +24,9 @@ export default function SolarSystem() {
   }
 
   const handleSpeedChange = (speed) => {
-    // Ensure speed is a valid number
-    const validSpeed = isNaN(speed) ? 0 : speed
+    // Ensure speed is a valid number and within range
+    let validSpeed = isNaN(speed) ? 0 : speed
+    validSpeed = Math.max(0, Math.min(2, validSpeed)) // Clamp between 0 and 2
     setSimulationSpeed(validSpeed)
   }
 

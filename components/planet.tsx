@@ -10,6 +10,9 @@ export function Planet({ planet, simulationSpeed, onClick }) {
   const orbitRef = useRef()
   const [hovered, setHovered] = useState(false)
 
+  // Hệ số cơ bản để điều chỉnh tốc độ tổng thể của mô phỏng
+  const baseSpeed = 5
+
   // Create elliptical orbit path once
   const orbitCurve = useMemo(() => {
     return new THREE.EllipseCurve(
@@ -34,8 +37,9 @@ export function Planet({ planet, simulationSpeed, onClick }) {
       if (simulationSpeed === 0) {
         // Keep current position
       } else {
-        // Calculate angle based on time and speed
-        const angle = (elapsedTime / planet.orbitSpeed) * simulationSpeed
+        // Calculate angle based on time, planet's orbit speed, and simulation speed
+        // Smaller orbitSpeed values (like Mercury's 0.24) will result in faster movement
+        const angle = (elapsedTime * simulationSpeed * baseSpeed) / planet.orbitSpeed
 
         // Get position on the elliptical curve
         const position = orbitCurve.getPoint((angle / (2 * Math.PI)) % 1)

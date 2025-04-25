@@ -4,7 +4,7 @@ export const planetData = [
     size: 0.4,
     distance: 4,
     color: "#9c9c9c", // Gray with slight brown tint
-    orbitSpeed: 10,
+    orbitSpeed: 0.24, // Tỉ lệ với Trái Đất
     rotationSpeed: 58.6,
     hasRings: false,
     realDiameter: 4_879,
@@ -19,7 +19,7 @@ export const planetData = [
     size: 0.6,
     distance: 6,
     color: "#e6c8a0", // Pale yellow-orange
-    orbitSpeed: 15,
+    orbitSpeed: 0.62, // Tỉ lệ với Trái Đất
     rotationSpeed: 243,
     hasRings: false,
     realDiameter: 12_104,
@@ -34,7 +34,7 @@ export const planetData = [
     size: 0.6,
     distance: 8,
     color: "#2f6a69", // Blue-green
-    orbitSpeed: 20,
+    orbitSpeed: 1.0, // Tỉ lệ chuẩn
     rotationSpeed: 1,
     hasRings: false,
     realDiameter: 12_756,
@@ -49,7 +49,7 @@ export const planetData = [
     size: 0.5,
     distance: 10,
     color: "#c1440e", // Rust red
-    orbitSpeed: 30,
+    orbitSpeed: 1.88, // Tỉ lệ với Trái Đất
     rotationSpeed: 1.03,
     hasRings: false,
     realDiameter: 6_792,
@@ -64,7 +64,7 @@ export const planetData = [
     size: 1.2,
     distance: 14,
     color: "#d8ca9d", // Light brown with orange bands
-    orbitSpeed: 60,
+    orbitSpeed: 11.86, // Tỉ lệ với Trái Đất
     rotationSpeed: 0.41,
     hasRings: false,
     realDiameter: 142_984,
@@ -79,7 +79,7 @@ export const planetData = [
     size: 1.0,
     distance: 18,
     color: "#e3be7e", // Pale gold
-    orbitSpeed: 90,
+    orbitSpeed: 29.46, // Tỉ lệ với Trái Đất
     rotationSpeed: 0.45,
     hasRings: true,
     ringColor: "#e8d9b5", // Light beige
@@ -96,7 +96,7 @@ export const planetData = [
     size: 0.8,
     distance: 22,
     color: "#c1e7e3", // Pale cyan
-    orbitSpeed: 120,
+    orbitSpeed: 84.01, // Tỉ lệ với Trái Đất
     rotationSpeed: 0.72,
     hasRings: true,
     ringColor: "#a5a5a5", // Gray
@@ -113,7 +113,7 @@ export const planetData = [
     size: 0.8,
     distance: 26,
     color: "#3457d5", // Deep blue
-    orbitSpeed: 150,
+    orbitSpeed: 164.8, // Tỉ lệ với Trái Đất
     rotationSpeed: 0.67,
     hasRings: false,
     realDiameter: 49_528,

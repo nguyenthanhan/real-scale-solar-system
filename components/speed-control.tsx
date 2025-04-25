@@ -38,7 +38,7 @@ export function SpeedControl({ speed, onSpeedChange }) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setPresetSpeed(0)}
                   className={`p-1 rounded ${speed === 0 ? "bg-gray-700" : "hover:bg-gray-700"}`}
@@ -72,39 +72,13 @@ export function SpeedControl({ speed, onSpeedChange }) {
                   <FastForward size={16} />
                 </button>
               </div>
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={() => setPresetSpeed(5)}
-                  className={`p-1 rounded text-xs ${speed === 5 ? "bg-gray-700" : "hover:bg-gray-700"}`}
-                  aria-label="Very fast speed"
-                  title="5x Speed"
-                >
-                  5x
-                </button>
-                <button
-                  onClick={() => setPresetSpeed(10)}
-                  className={`p-1 rounded text-xs ${speed === 10 ? "bg-gray-700" : "hover:bg-gray-700"}`}
-                  aria-label="Super fast speed"
-                  title="10x Speed"
-                >
-                  10x
-                </button>
-                <button
-                  onClick={() => setPresetSpeed(20)}
-                  className={`p-1 rounded text-xs ${speed === 20 ? "bg-gray-700" : "hover:bg-gray-700"}`}
-                  aria-label="Ultra fast speed"
-                  title="20x Speed"
-                >
-                  20x
-                </button>
-              </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <input
                 type="range"
                 min="0"
-                max="20"
+                max="2"
                 step="0.1"
                 value={speed}
                 onChange={handleSpeedChange}
