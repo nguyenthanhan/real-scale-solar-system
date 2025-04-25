@@ -2,8 +2,15 @@
 
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
+import { PlanetData } from "@/types/planet-types";
 
-export function PlanetInfo({ planet, onClose }) {
+export function PlanetInfo({
+  planet,
+  onClose,
+}: {
+  planet: PlanetData;
+  onClose: () => void;
+}) {
   if (!planet) return null;
 
   return (

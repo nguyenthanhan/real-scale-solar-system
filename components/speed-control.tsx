@@ -1,14 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import { Settings } from "lucide-react";
 
-export function SpeedControl({ speed, onSpeedChange }) {
+interface SpeedControlProps {
+  simulationSpeed: number;
+  distanceScale: number;
+  onSpeedChange: (speed: number) => void;
+  onDistanceScaleChange: (scale: number) => void;
+}
+
+export function SpeedControl({
+  simulationSpeed,
+  onSpeedChange,
+  distanceScale,
+  onDistanceScaleChange,
+}: SpeedControlProps) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
 
-  const handleSpeedChange = (e) => {
+  const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
     onSpeedChange(Number.parseInt(e.target.value));
+  };
+
+  // Handle planet spacing change
+  const handleDistanceScaleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onDistanceScaleChange(parseFloat(e.target.value));
   };
 
   // Toggle the entire panel visibility
@@ -27,7 +44,7 @@ export function SpeedControl({ speed, onSpeedChange }) {
         >
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium">
-              Simulation Speed (×{speed.toLocaleString()})
+              Simulation Speed (×{simulationSpeed.toLocaleString()})
             </h3>
             <button
               onClick={togglePanel}
@@ -37,7 +54,7 @@ export function SpeedControl({ speed, onSpeedChange }) {
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             {/* Slider with wider width */}
             <div className="flex items-center space-x-3">
               <input
@@ -45,17 +62,43 @@ export function SpeedControl({ speed, onSpeedChange }) {
                 min="1"
                 max="100000"
                 step="100"
-                value={speed}
+                value={simulationSpeed}
                 onChange={handleSpeedChange}
                 className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
               />
               <div className="text-sm min-w-[90px] text-right">
-                ×{speed.toLocaleString()}
+                ×{simulationSpeed.toLocaleString()}
               </div>
             </div>
             <div className="flex justify-between text-xs text-gray-400">
               <span>Real-time (×1)</span>
               <span>Fast (×100,000)</span>
+            </div>
+
+            {/* Planet spacing slider */}
+            <div className="mt-4 space-y-2">
+              <h3 className="text-sm font-medium">
+                Planet Spacing (×{distanceScale.toLocaleString()})
+              </h3>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="range"
+                  min="0.001"
+                  max="0.05"
+                  step="0.001"
+                  value={distanceScale}
+                  onChange={handleDistanceScaleChange}
+                  className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-sm min-w-[90px] text-right">
+                  ×{distanceScale.toLocaleString()}
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>Close (×0.001)</span>
+                <span>1 = actual real distance scale</span>
+                <span>Far (×0.05)</span>
+              </div>
             </div>
           </div>
         </motion.div>

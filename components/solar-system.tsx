@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { Sun } from "@/components/sun";
@@ -8,21 +8,29 @@ import { Planet } from "@/components/planet";
 import { PlanetInfo } from "@/components/planet-info";
 import { SpeedControl } from "@/components/speed-control";
 import { planetData, sunData } from "@/lib/planet-data";
+import { PlanetData } from "@/types/planet-types";
 import * as THREE from "three";
 
 // Function to control camera view with WASD keys
-function KeyboardControls({ simulationSpeed, onSpeedChange }) {
+interface KeyboardControlsProps {
+  simulationSpeed: number;
+  onSpeedChange: (speed: number) => void;
+}
+
+function KeyboardControls({
+  simulationSpeed,
+  onSpeedChange,
+}: KeyboardControlsProps) {
   const { camera, gl } = useThree();
   const keysPressed = useRef<Record<string, boolean>>({});
-  const orbitControlsRef = useRef();
 
   // Set up key press tracking
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       // Skip if user is typing in an input field
       if (
-        event.target.tagName === "INPUT" ||
-        event.target.tagName === "TEXTAREA"
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
       ) {
         return;
       }
@@ -39,7 +47,7 @@ function KeyboardControls({ simulationSpeed, onSpeedChange }) {
       }
     };
 
-    const handleKeyUp = (event) => {
+    const handleKeyUp = (event: KeyboardEvent) => {
       keysPressed.current[event.key.toLowerCase()] = false;
     };
 
@@ -122,21 +130,20 @@ function KeyboardControls({ simulationSpeed, onSpeedChange }) {
 
 // Solar System component with updated simulation speed scale
 export default function SolarSystem() {
-  const [selectedPlanet, setSelectedPlanet] = useState(null);
+  const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1); // Default is 1 (real-time speed)
-  const orbitControlsRef = useRef();
+  const [distanceScale, setDistanceScale] = useState(0.05); // Default spacing scale for planets
   const [keyboardControlsEnabled, setKeyboardControlsEnabled] = useState(true);
 
-  const handlePlanetClick = (planet) => {
+  const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
     setShowSunInfo(false);
-  };
+  }, []);
 
-  const handleSunClick = () => {
-    setSelectedPlanet(null);
-    setShowSunInfo(true);
-  };
+  const handleSunClick = useCallback(() => {
+    setSelectedPlanet(sunData);
+  }, []);
 
   const handleCloseInfo = () => {
     setSelectedPlanet(null);
@@ -176,7 +183,8 @@ export default function SolarSystem() {
           <Planet
             key={planet.name}
             planet={planet}
-            simulationSpeed={simulationSpeed} // Pass the direct value without division
+            simulationSpeed={simulationSpeed}
+            distanceScale={distanceScale}
             onClick={() => handlePlanetClick(planet)}
           />
         ))}
@@ -190,12 +198,10 @@ export default function SolarSystem() {
           speed={1.5}
         />
         <OrbitControls
-          ref={orbitControlsRef}
-          enablePan={true}
           enableZoom={true}
           enableRotate={true}
           minDistance={5}
-          maxDistance={100}
+          maxDistance={500}
         />
         {keyboardControlsEnabled && (
           <KeyboardControls
@@ -239,7 +245,12 @@ export default function SolarSystem() {
         </>
       )}
 
-      <SpeedControl speed={simulationSpeed} onSpeedChange={handleSpeedChange} />
+      <SpeedControl
+        simulationSpeed={simulationSpeed}
+        onSpeedChange={handleSpeedChange}
+        distanceScale={distanceScale}
+        onDistanceScaleChange={setDistanceScale}
+      />
 
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">

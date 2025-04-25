@@ -1,10 +1,17 @@
-export const sunData = {
+import { PlanetData } from "@/types/planet-types";
+
+export const sunData: PlanetData = {
   name: "Sun",
   color: "#FDB813",
-  description:
-    "The star at the center of our Solar System, a nearly perfect sphere of hot plasma.",
+  size: 2.0, // Relative size compared to planets
+  distance: 0,
   realDiameter: 1_392_700,
   realDistance: 0,
+  orbitSpeed: 0, // Sun doesn't orbit
+  rotationSpeed: 25, // Average rotation period in Earth days
+  hasRings: false,
+  description:
+    "The star at the center of our Solar System, a nearly perfect sphere of hot plasma.",
   orbitalPeriod: "225-250 million years around the Milky Way",
   dayLength: "25-35 Earth days (varies by latitude)",
   funFact: "The Sun contains 99.86% of the mass in the Solar System.",
@@ -15,13 +22,13 @@ export const sunData = {
   yearDiscovered: "Known to all human civilizations",
 };
 
-export const planetData = [
+export const planetData: PlanetData[] = [
   {
     name: "Mercury",
     size: 0.4,
     distance: 4,
     color: "#9c9c9c", // Gray with slight brown tint
-    orbitSpeed: 0.24, // Tỉ lệ với Trái Đất
+    orbitSpeed: 0.24, // Relative to Earth
     rotationSpeed: 58.6,
     hasRings: false,
     realDiameter: 4_879,
@@ -42,7 +49,7 @@ export const planetData = [
     size: 0.6,
     distance: 6,
     color: "#e6c8a0", // Pale yellow-orange
-    orbitSpeed: 0.62, // Tỉ lệ với Trái Đất
+    orbitSpeed: 0.62, // Relative to Earth
     rotationSpeed: 243,
     hasRings: false,
     realDiameter: 12_104,
@@ -63,7 +70,7 @@ export const planetData = [
     size: 0.6,
     distance: 8,
     color: "#2f6a69", // Blue-green
-    orbitSpeed: 1.0, // Tỉ lệ chuẩn
+    orbitSpeed: 1.0, // Baseline (Earth=1)
     rotationSpeed: 1,
     hasRings: false,
     realDiameter: 12_756,
@@ -84,7 +91,7 @@ export const planetData = [
     size: 0.5,
     distance: 10,
     color: "#c1440e", // Rust red
-    orbitSpeed: 1.88, // Tỉ lệ với Trái Đất
+    orbitSpeed: 1.88, // Relative to Earth
     rotationSpeed: 1.03,
     hasRings: false,
     realDiameter: 6_792,
@@ -105,7 +112,7 @@ export const planetData = [
     size: 1.2,
     distance: 14,
     color: "#d8ca9d", // Light brown with orange bands
-    orbitSpeed: 11.86, // Tỉ lệ với Trái Đất
+    orbitSpeed: 11.86, // Relative to Earth
     rotationSpeed: 0.41,
     hasRings: false,
     realDiameter: 142_984,
@@ -127,7 +134,7 @@ export const planetData = [
     size: 1.0,
     distance: 18,
     color: "#e3be7e", // Pale gold
-    orbitSpeed: 29.46, // Tỉ lệ với Trái Đất
+    orbitSpeed: 29.46, // Relative to Earth
     rotationSpeed: 0.45,
     hasRings: true,
     ringColor: "#e8d9b5", // Light beige
@@ -151,7 +158,7 @@ export const planetData = [
     size: 0.8,
     distance: 22,
     color: "#c1e7e3", // Pale cyan
-    orbitSpeed: 84.01, // Tỉ lệ với Trái Đất
+    orbitSpeed: 84.01, // Relative to Earth
     rotationSpeed: 0.72,
     hasRings: true,
     ringColor: "#a5a5a5", // Gray
@@ -175,7 +182,7 @@ export const planetData = [
     size: 0.8,
     distance: 26,
     color: "#3457d5", // Deep blue
-    orbitSpeed: 164.8, // Tỉ lệ với Trái Đất
+    orbitSpeed: 164.8, // Relative to Earth
     rotationSpeed: 0.67,
     hasRings: false,
     realDiameter: 49_528,
