@@ -132,8 +132,8 @@ function KeyboardControls({
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
-  const [simulationSpeed, setSimulationSpeed] = useState(1); // Default is 1 (real-time speed)
-  const [distanceScale, setDistanceScale] = useState(0.05); // Default spacing scale for planets
+  const [simulationSpeed, setSimulationSpeed] = useState(5000);
+  const [distanceScale, setDistanceScale] = useState(0.05);
   const [keyboardControlsEnabled, setKeyboardControlsEnabled] = useState(true);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
@@ -198,10 +198,11 @@ export default function SolarSystem() {
           speed={1.5}
         />
         <OrbitControls
-          enableZoom={true}
-          enableRotate={true}
+          enableZoom
+          enableRotate
           minDistance={5}
           maxDistance={500}
+          zoomSpeed={5}
         />
         {keyboardControlsEnabled && (
           <KeyboardControls
