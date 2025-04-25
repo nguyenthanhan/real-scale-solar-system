@@ -13,7 +13,7 @@ import * as THREE from "three";
 // Function to control camera view with WASD keys
 function KeyboardControls({ simulationSpeed, onSpeedChange }) {
   const { camera, gl } = useThree();
-  const keysPressed = useRef({});
+  const keysPressed = useRef<Record<string, boolean>>({});
   const orbitControlsRef = useRef();
 
   // Set up key press tracking
@@ -31,11 +31,11 @@ function KeyboardControls({ simulationSpeed, onSpeedChange }) {
 
       // Handle speed controls immediately
       if (event.key.toLowerCase() === "q") {
-        // Decrease speed by 100, minimum 1
-        onSpeedChange(Math.max(1, simulationSpeed - 100));
+        // Decrease speed by 5000, minimum 1
+        onSpeedChange(Math.max(1, simulationSpeed - 5000));
       } else if (event.key.toLowerCase() === "e") {
-        // Increase speed by 100, maximum 100000
-        onSpeedChange(Math.min(100000, simulationSpeed + 100));
+        // Increase speed by 5000, maximum 100000
+        onSpeedChange(Math.min(100000, simulationSpeed + 5000));
       }
     };
 
@@ -54,8 +54,8 @@ function KeyboardControls({ simulationSpeed, onSpeedChange }) {
 
   // Handle camera movement in the animation frame
   useFrame(({ camera }) => {
-    // Base camera movement speed
-    const baseSpeed = 0.1;
+    // Base camera movement speed - increased for faster movement
+    const baseSpeed = 0.5;
 
     // Calculate camera movement based on current camera orientation
     const moveForward = new THREE.Vector3();
@@ -69,21 +69,52 @@ function KeyboardControls({ simulationSpeed, onSpeedChange }) {
     moveForward.y = 0;
     moveForward.normalize();
 
-    // W/S keys move camera forward/backward
+    // Calculate current distance from origin (sun)
+    const distanceFromOrigin = camera.position.length();
+
+    // Create a vector pointing from camera to origin (sun)
+    const toOrigin = new THREE.Vector3(0, 0, 0)
+      .sub(camera.position)
+      .normalize();
+
+    // Create a rotation axis (perpendicular to both the up vector and toOrigin)
+    const rotationAxisVertical = new THREE.Vector3()
+      .crossVectors(toOrigin, camera.up)
+      .normalize();
+    const rotationAxisHorizontal = camera.up.clone().normalize();
+
+    // Apply rotations instead of translations
     if (keysPressed.current["w"]) {
-      camera.position.addScaledVector(moveForward, baseSpeed);
+      // Rotate around horizontal axis (move up)
+      camera.position.applyAxisAngle(
+        rotationAxisVertical,
+        baseSpeed / distanceFromOrigin
+      );
     }
     if (keysPressed.current["s"]) {
-      camera.position.addScaledVector(moveForward, -baseSpeed);
+      // Rotate around horizontal axis (move down)
+      camera.position.applyAxisAngle(
+        rotationAxisVertical,
+        -baseSpeed / distanceFromOrigin
+      );
     }
-
-    // A/D keys move camera left/right
     if (keysPressed.current["a"]) {
-      camera.position.addScaledVector(moveRight, -baseSpeed);
+      // Rotate around vertical axis (move left)
+      camera.position.applyAxisAngle(
+        rotationAxisHorizontal,
+        baseSpeed / distanceFromOrigin
+      );
     }
     if (keysPressed.current["d"]) {
-      camera.position.addScaledVector(moveRight, baseSpeed);
+      // Rotate around vertical axis (move right)
+      camera.position.applyAxisAngle(
+        rotationAxisHorizontal,
+        -baseSpeed / distanceFromOrigin
+      );
     }
+
+    // Make sure camera is looking at the origin (sun)
+    camera.lookAt(0, 0, 0);
   });
 
   return null;
@@ -112,16 +143,18 @@ export default function SolarSystem() {
     setShowSunInfo(false);
   };
 
-  const handleSpeedChange = (speed) => {
+  const handleSpeedChange = (speed: number) => {
     let validSpeed = isNaN(speed) ? 1 : Number(speed);
     validSpeed = Math.max(1, Math.min(100000, validSpeed));
 
-    if (validSpeed >= 100) {
-      validSpeed = Math.round(validSpeed / 100) * 100;
-    }
-    // For very small values, don't round
-    else {
-      validSpeed = Math.round(validSpeed);
+    if (validSpeed > 1 && validSpeed < 100000) {
+      if (validSpeed >= 100) {
+        validSpeed = Math.round(validSpeed / 100) * 100;
+      }
+      // For very small values, don't round
+      else {
+        validSpeed = Math.round(validSpeed);
+      }
     }
 
     setSimulationSpeed(validSpeed);
@@ -211,9 +244,9 @@ export default function SolarSystem() {
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">
           <p>• Click objects for info</p>
-          <p>• W/S - Move forward/back</p>
-          <p>• A/D - Move left/right</p>
-          <p>• Q/E - Speed ±100</p>
+          <p>• W/S - Orbit forward/back</p>
+          <p>• A/D - Orbit left/right</p>
+          <p>• Q/E - Speed ±5000</p>
           <button
             onClick={toggleKeyboardControls}
             className="mt-1 px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
