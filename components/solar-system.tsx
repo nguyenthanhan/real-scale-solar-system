@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { Sun } from "@/components/planet/sun";
 import { Planet } from "@/components/planet";
-import { SpeedControl } from "@/components/control/speed-control";
+import { ControlModal } from "@/components/modal/control";
 import { CameraControls } from "@/lib/camera-controls";
 import { planetData, sunData } from "@/constants/planet-data";
 import { PlanetData } from "@/types/planet-types";
@@ -90,11 +90,9 @@ export default function SolarSystem() {
         onClose={handleCloseInfo}
       />
 
-      <SpeedControl
+      <ControlModal
         simulationSpeed={simulationSpeed}
         onSpeedChange={handleSpeedChange}
-        distanceScale={distanceScale}
-        onDistanceScaleChange={setDistanceScale}
       />
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">
