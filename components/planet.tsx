@@ -284,6 +284,7 @@ export function Planet({
 
   // compute scaled distance from realDistance
   const scaledDistance = planet.realDistance * distanceScale;
+  const scaledSize = planet.size * distanceScale;
 
   // Create elliptical orbit path once
   const orbitCurve = useMemo(() => {
@@ -385,7 +386,7 @@ export function Planet({
         {/* Planet */}
         <Sphere
           ref={planetRef}
-          args={[planet.size, 32, 32]}
+          args={[scaledSize, 32, 32]}
           onClick={handlePlanetClick}
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
@@ -393,11 +394,10 @@ export function Planet({
           <primitive object={planetMaterial} attach="material" />
         </Sphere>
 
-        {/* Rings for Saturn and Uranus */}
         {planet.hasRings && (
           <>
             <Ring
-              args={[planet.size * 1.4, planet.size * 2.2, 64]}
+              args={[scaledSize * 1.4, scaledSize * 2.2, 64]}
               rotation={[Math.PI / 2, planet.ringTilt || 0, 0]}
             >
               <meshStandardMaterial
@@ -412,13 +412,26 @@ export function Planet({
           </>
         )}
 
-        {/* Hover label */}
-        {hovered && (
-          <Html distanceFactor={10}>
+        {["Mars", "Jupiter", "Saturn", "Uranus", "Neptune"].includes(
+          planet.name
+        ) ? (
+          <Html
+            position={[0, scaledSize + 0.5, 0]}
+            style={{ pointerEvents: "none" }}
+            center
+          >
             <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap">
               {planet.name}
             </div>
           </Html>
+        ) : (
+          hovered && (
+            <Html style={{ pointerEvents: "none" }}>
+              <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap">
+                {planet.name}
+              </div>
+            </Html>
+          )
         )}
       </group>
     </>

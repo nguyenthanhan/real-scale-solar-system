@@ -184,7 +184,9 @@ export const planetData: PlanetData[] = [
     color: "#3457d5", // Deep blue
     orbitSpeed: 164.8, // Relative to Earth
     rotationSpeed: 0.67,
-    hasRings: false,
+    hasRings: true,
+    ringColor: "#a5a5a5", // Light grey
+    ringTilt: 0.03, // Slight tilt to the rings
     realDiameter: 49_528,
     realDistance: 4_495.1,
     orbitalPeriod: "165 Earth years",
@@ -192,7 +194,7 @@ export const planetData: PlanetData[] = [
     description:
       "The eighth and most distant planet from the Sun, a stormy ice giant.",
     funFact:
-      "Neptune has the strongest winds in the Solar System, reaching 2,100 km/h.",
+      "Neptune has five faint rings and the strongest winds in the Solar System, reaching 2,100 km/h.",
     temperature: "-218°C",
     gravity: "11.15 m/s² (1.14× Earth)",
     atmosphere: "Hydrogen, helium, methane (gives blue color)",

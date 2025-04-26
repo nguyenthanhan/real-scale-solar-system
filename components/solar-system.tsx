@@ -14,13 +14,9 @@ import * as THREE from "three";
 // Function to control camera view with WASD keys
 interface KeyboardControlsProps {
   simulationSpeed: number;
-  onSpeedChange: (speed: number) => void;
 }
 
-function KeyboardControls({
-  simulationSpeed,
-  onSpeedChange,
-}: KeyboardControlsProps) {
+function KeyboardControls({ simulationSpeed }: KeyboardControlsProps) {
   const { camera, gl } = useThree();
   const keysPressed = useRef<Record<string, boolean>>({});
 
@@ -36,15 +32,6 @@ function KeyboardControls({
       }
 
       keysPressed.current[event.key.toLowerCase()] = true;
-
-      // Handle speed controls immediately
-      if (event.key.toLowerCase() === "q") {
-        // Decrease speed by 5000, minimum 1
-        onSpeedChange(Math.max(1, simulationSpeed - 5000));
-      } else if (event.key.toLowerCase() === "e") {
-        // Increase speed by 5000, maximum 100000
-        onSpeedChange(Math.min(100000, simulationSpeed + 5000));
-      }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
@@ -58,7 +45,7 @@ function KeyboardControls({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [simulationSpeed, onSpeedChange]);
+  }, [simulationSpeed]);
 
   // Handle camera movement in the animation frame
   useFrame(({ camera }) => {
@@ -132,9 +119,8 @@ function KeyboardControls({
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
-  const [simulationSpeed, setSimulationSpeed] = useState(5000);
+  const [simulationSpeed, setSimulationSpeed] = useState(2000);
   const [distanceScale, setDistanceScale] = useState(0.05);
-  const [keyboardControlsEnabled, setKeyboardControlsEnabled] = useState(true);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
@@ -165,11 +151,6 @@ export default function SolarSystem() {
     }
 
     setSimulationSpeed(validSpeed);
-  };
-
-  // Toggle keyboard controls
-  const toggleKeyboardControls = () => {
-    setKeyboardControlsEnabled(!keyboardControlsEnabled);
   };
 
   return (
@@ -204,12 +185,7 @@ export default function SolarSystem() {
           maxDistance={500}
           zoomSpeed={5}
         />
-        {keyboardControlsEnabled && (
-          <KeyboardControls
-            simulationSpeed={simulationSpeed}
-            onSpeedChange={handleSpeedChange}
-          />
-        )}
+        <KeyboardControls simulationSpeed={simulationSpeed} />
       </Canvas>
 
       {/* Planet Info Modal with Overlay */}
@@ -258,13 +234,6 @@ export default function SolarSystem() {
           <p>• Click objects for info</p>
           <p>• W/S - Orbit forward/back</p>
           <p>• A/D - Orbit left/right</p>
-          <p>• Q/E - Speed ±5000</p>
-          <button
-            onClick={toggleKeyboardControls}
-            className="mt-1 px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
-          >
-            {keyboardControlsEnabled ? "Disable" : "Enable"} Keys
-          </button>
         </div>
       </div>
     </div>

@@ -41,6 +41,7 @@ export function SpeedControl({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
+          onDoubleClick={togglePanel}
         >
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium">

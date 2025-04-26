@@ -32,21 +32,6 @@ export function Sun({ onClick }: SunProps) {
 
   return (
     <group onClick={handleSunClick}>
-      {/* Outer glow */}
-      <Sphere ref={glowRef} args={[3.2, 30, 30]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#ffff80" transparent opacity={0.1} />
-      </Sphere>
-
-      {/* Middle glow */}
-      <Sphere args={[2.7, 30, 30]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#ffff80" transparent opacity={0.2} />
-      </Sphere>
-
-      {/* Inner glow */}
-      <Sphere args={[2.3, 30, 30]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#FFF5E0" transparent opacity={0.3} />
-      </Sphere>
-
       {/* Sun core */}
       <Sphere ref={sunRef} args={[2, 30, 30]} position={[0, 0, 0]}>
         <meshStandardMaterial
