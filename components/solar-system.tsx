@@ -78,9 +78,9 @@ export default function SolarSystem() {
         <OrbitControls
           enableZoom
           enableRotate
-          minDistance={1}
+          minDistance={2}
           maxDistance={500}
-          zoomSpeed={5}
+          zoomSpeed={2}
         />
         <CameraControls simulationSpeed={simulationSpeed} />
       </Canvas>
