@@ -60,7 +60,7 @@ export default function SolarSystem() {
             key={planet.name}
             planet={planet}
             simulationSpeed={simulationSpeed}
-            onClick={() => handlePlanetClick(planet)}
+            onClick={handlePlanetClick}
           />
         ))}
         <Stars
@@ -75,7 +75,7 @@ export default function SolarSystem() {
         <OrbitControls
           enableZoom
           enableRotate
-          minDistance={5}
+          minDistance={1}
           maxDistance={500}
           zoomSpeed={5}
         />

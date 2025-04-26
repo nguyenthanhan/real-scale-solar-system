@@ -19,12 +19,7 @@ interface PlanetProps {
   onClick: (planet: PlanetData) => void;
 }
 
-export function Planet({
-  planet,
-  simulationSpeed,
-
-  onClick,
-}: PlanetProps) {
+export function Planet({ planet, simulationSpeed, onClick }: PlanetProps) {
   const planetRef = useRef<THREE.Mesh | null>(null);
   const orbitRef = useRef<THREE.Group | null>(null);
 
@@ -64,7 +59,6 @@ export function Planet({
         >
           <primitive object={planetMaterial} attach="material" />
         </Sphere>
-
         {/* Planet rings if applicable */}
         {planet.hasRings && (
           <PlanetRings
@@ -74,8 +68,7 @@ export function Planet({
           />
         )}
 
-        {/* Planet label */}
-        <PlanetLabel planet={planet} onClick={() => onClick(planet)} />
+        <PlanetLabel planet={planet} onClick={onClick} />
       </group>
     </>
   );

@@ -30,7 +30,5 @@ export function useGetLabelDistance({ planet }: { planet: PlanetData }) {
     setLabelDistance(newLabelDistance);
   });
 
-  console.log("labelDistance", JSON.stringify(labelDistance, null, 2));
-
   return { labelDistance, labelRef };
 }

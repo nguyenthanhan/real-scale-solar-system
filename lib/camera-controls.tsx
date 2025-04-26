@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { useThree, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 interface CameraControlsProps {
@@ -7,7 +7,6 @@ interface CameraControlsProps {
 }
 
 export function CameraControls({ simulationSpeed }: CameraControlsProps) {
-  const { camera } = useThree();
   const keysPressed = useRef<Record<string, boolean>>({});
 
   useEffect(() => {

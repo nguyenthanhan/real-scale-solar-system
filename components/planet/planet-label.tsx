@@ -9,9 +9,15 @@ export function PlanetLabel({
   onClick,
 }: {
   planet: PlanetData;
-  onClick?: () => void;
+  onClick: (planet: PlanetData) => void;
 }) {
   const { labelDistance, labelRef } = useGetLabelDistance({ planet });
+
+  // Handler to explicitly handle the click event
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClick(planet);
+  };
 
   return [
     "Mercury",
@@ -27,14 +33,11 @@ export function PlanetLabel({
       position={[0, labelDistance, 0]}
       style={{ pointerEvents: "auto" }}
       center
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick && onClick();
-      }}
+      onClick={handleClick}
     >
       <div
         ref={labelRef}
-        className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap cursor-pointer"
+        className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap cursor-pointer hover:bg-black/90"
       >
         {planet.name}
       </div>
