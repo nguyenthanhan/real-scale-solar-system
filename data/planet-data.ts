@@ -1,8 +1,5 @@
 import { PlanetData } from "@/data/planet-types";
 
-// Adjust scale factor to better visualize the solar system
-export const DISTANCE_SCALE = 0.00005;
-
 export const sunData: PlanetData = {
   name: "Sun",
   description: "The star at the center of our Solar System",
