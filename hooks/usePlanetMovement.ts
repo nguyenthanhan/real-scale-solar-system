@@ -26,13 +26,13 @@ export function usePlanetMovement({
   // Basic coefficient to adjust the overall simulation speed
   const baseSpeed = 0.00005;
 
-  // Create elliptical orbit path
+  // Create elliptical orbit path - slightly elliptical to be more realistic
   const orbitCurve = useMemo(() => {
     return new THREE.EllipseCurve(
       0,
       0, // Center x, y
       scaledDistance,
-      scaledDistance * 0.95, // xRadius, yRadius
+      scaledDistance * 0.98, // xRadius, yRadius (slightly elliptical)
       0,
       2 * Math.PI, // Start angle, end angle
       false, // Clockwise

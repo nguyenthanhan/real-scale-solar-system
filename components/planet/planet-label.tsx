@@ -12,6 +12,10 @@ export function PlanetLabel({
   scaledSize: number;
   onClick?: () => void;
 }) {
+  // Calculate appropriate distance for label based on planet size
+  // For very small planets, ensure the label is still visible
+  const labelDistance = Math.max(scaledSize * 1.5, 0.1);
+
   return [
     "Mercury",
     "Venus",
@@ -23,8 +27,8 @@ export function PlanetLabel({
     "Neptune",
   ].includes(planet.name) ? (
     <Html
-      position={[0, scaledSize + 0.2, 0]} // Lowered position
-      style={{ pointerEvents: "auto" }} // Enable pointer events
+      position={[0, labelDistance, 0]}
+      style={{ pointerEvents: "auto" }}
       center
       onClick={(e) => {
         e.stopPropagation();
