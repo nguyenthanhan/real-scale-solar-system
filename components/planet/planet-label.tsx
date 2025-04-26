@@ -2,19 +2,16 @@
 
 import { Html } from "@react-three/drei";
 import { PlanetData } from "@/types/planet-types";
+import { useGetLabelDistance } from "@/hooks/useGetLabelDistance";
 
 export function PlanetLabel({
   planet,
-  scaledSize,
   onClick,
 }: {
   planet: PlanetData;
-  scaledSize: number;
   onClick?: () => void;
 }) {
-  // Calculate appropriate distance for label based on planet size
-  // For very small planets, ensure the label is still visible
-  const labelDistance = Math.max(scaledSize * 1.5, 0.1);
+  const { labelDistance, labelRef } = useGetLabelDistance({ planet });
 
   return [
     "Mercury",
@@ -35,7 +32,10 @@ export function PlanetLabel({
         onClick && onClick();
       }}
     >
-      <div className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap cursor-pointer">
+      <div
+        ref={labelRef}
+        className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap cursor-pointer"
+      >
         {planet.name}
       </div>
     </Html>

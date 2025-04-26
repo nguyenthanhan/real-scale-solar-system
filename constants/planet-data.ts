@@ -1,5 +1,7 @@
 import { PlanetData } from "@/types/planet-types";
 
+export const DISTANCE_SCALE = 0.05;
+
 export const sunData: PlanetData = {
   name: "Sun",
   color: "#FDB813",

@@ -10,19 +10,19 @@ import { usePlanetMovement } from "@/hooks/usePlanetMovement";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { OrbitPath } from "@/components/planet/orbit-path";
+import { DISTANCE_SCALE } from "@/constants/planet-data";
 
 // Define the planet props
 interface PlanetProps {
   planet: PlanetData;
   simulationSpeed: number;
-  distanceScale: number;
   onClick: (planet: PlanetData) => void;
 }
 
 export function Planet({
   planet,
   simulationSpeed,
-  distanceScale,
+
   onClick,
 }: PlanetProps) {
   const planetRef = useRef<THREE.Mesh | null>(null);
@@ -31,8 +31,8 @@ export function Planet({
   const planetMaterial = usePlanetMaterial(planet);
 
   // Compute scaled values
-  const scaledDistance = planet.realDistance * distanceScale;
-  const scaledSize = planet.size * distanceScale;
+  const scaledDistance = planet.realDistance * DISTANCE_SCALE;
+  const scaledSize = planet.size * DISTANCE_SCALE;
 
   // Initialize and update planet movement
   const { orbitCurve } = usePlanetMovement({
@@ -75,11 +75,7 @@ export function Planet({
         )}
 
         {/* Planet label */}
-        <PlanetLabel
-          planet={planet}
-          scaledSize={scaledSize}
-          onClick={() => onClick(planet)}
-        />
+        <PlanetLabel planet={planet} onClick={() => onClick(planet)} />
       </group>
     </>
   );

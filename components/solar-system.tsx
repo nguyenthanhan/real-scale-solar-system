@@ -16,7 +16,6 @@ export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(500);
-  const [distanceScale, setDistanceScale] = useState(0.05);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
@@ -61,7 +60,6 @@ export default function SolarSystem() {
             key={planet.name}
             planet={planet}
             simulationSpeed={simulationSpeed}
-            distanceScale={distanceScale}
             onClick={() => handlePlanetClick(planet)}
           />
         ))}
