@@ -27,7 +27,6 @@ export function Planet({
 }: PlanetProps) {
   const planetRef = useRef<THREE.Mesh | null>(null);
   const orbitRef = useRef<THREE.Group | null>(null);
-  const [hovered, setHovered] = useState(false);
 
   const planetMaterial = usePlanetMaterial(planet);
 
@@ -62,8 +61,6 @@ export function Planet({
           ref={planetRef}
           args={[scaledSize, 32, 32]}
           onClick={handlePlanetClick}
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
         >
           <primitive object={planetMaterial} attach="material" />
         </Sphere>
@@ -81,7 +78,7 @@ export function Planet({
         <PlanetLabel
           planet={planet}
           scaledSize={scaledSize}
-          hovered={hovered}
+          onClick={() => onClick(planet)}
         />
       </group>
     </>

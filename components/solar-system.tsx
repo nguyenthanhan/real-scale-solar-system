@@ -15,7 +15,7 @@ import { ModalOverlay } from "@/components/modal/modal-overlay";
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
-  const [simulationSpeed, setSimulationSpeed] = useState(2000);
+  const [simulationSpeed, setSimulationSpeed] = useState(500);
   const [distanceScale, setDistanceScale] = useState(0.05);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
