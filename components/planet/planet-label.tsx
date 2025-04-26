@@ -1,9 +1,8 @@
 "use client";
 
 import { Html } from "@react-three/drei";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 import { useGetLabelDistance } from "@/hooks/useGetLabelDistance";
-import { ThreeEvent } from "@react-three/fiber";
 
 export function PlanetLabel({
   planet,

@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 
 export function PlanetInfo({
   planet,
@@ -45,13 +45,13 @@ export function PlanetInfo({
           <div>
             <p className="text-xs opacity-70">Diameter</p>
             <p className="text-sm">
-              {planet.realDiameter?.toLocaleString() || "N/A"} km
+              {planet.diameterInKm?.toLocaleString() || "N/A"} km
             </p>
           </div>
           <div>
             <p className="text-xs opacity-70">Distance from Sun</p>
             <p className="text-sm">
-              {planet.realDistance?.toLocaleString() || "N/A"} million km
+              {planet.diameterInKm?.toLocaleString() || "N/A"} million km
             </p>
           </div>
           <div>

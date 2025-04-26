@@ -1,6 +1,6 @@
 "use client";
 
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 import { PlanetInfo } from "@/components/modal/planet-info";
 
 export function ModalOverlay({
