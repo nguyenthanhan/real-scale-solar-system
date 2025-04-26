@@ -11,6 +11,9 @@ import { planetData, sunData } from "@/constants/planet-data";
 import { PlanetData } from "@/types/planet-types";
 import { ModalOverlay } from "@/components/modal/modal-overlay";
 
+const MAX_SPEED = 100000;
+const MIN_SPEED = 1;
+
 // Solar System component with updated simulation speed scale
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
@@ -32,10 +35,10 @@ export default function SolarSystem() {
   };
 
   const handleSpeedChange = (speed: number) => {
-    let validSpeed = isNaN(speed) ? 1 : Number(speed);
-    validSpeed = Math.max(1, Math.min(100000, validSpeed));
+    let validSpeed = isNaN(speed) ? MIN_SPEED : Number(speed);
+    validSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, validSpeed));
 
-    if (validSpeed > 1 && validSpeed < 100000) {
+    if (validSpeed > MIN_SPEED && validSpeed < MAX_SPEED) {
       if (validSpeed >= 100) {
         validSpeed = Math.round(validSpeed / 100) * 100;
       }
@@ -50,7 +53,7 @@ export default function SolarSystem() {
 
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden">
-      <Canvas camera={{ position: [0, 25, 25], fov: 60 }}>
+      <Canvas camera={{ position: [0, 25, 25], fov: 70 }}>
         <color attach="background" args={["#000"]} />
         <ambientLight intensity={0.3} />
         <directionalLight position={[0, 10, 5]} intensity={0.5} />
@@ -64,7 +67,7 @@ export default function SolarSystem() {
           />
         ))}
         <Stars
-          radius={300}
+          radius={200}
           depth={50}
           count={5000}
           factor={4}

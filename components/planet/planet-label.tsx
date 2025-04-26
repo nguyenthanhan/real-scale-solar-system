@@ -3,6 +3,7 @@
 import { Html } from "@react-three/drei";
 import { PlanetData } from "@/types/planet-types";
 import { useGetLabelDistance } from "@/hooks/useGetLabelDistance";
+import { ThreeEvent } from "@react-three/fiber";
 
 export function PlanetLabel({
   planet,
@@ -13,7 +14,6 @@ export function PlanetLabel({
 }) {
   const { labelDistance, labelRef } = useGetLabelDistance({ planet });
 
-  // Handler to explicitly handle the click event
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClick(planet);
@@ -31,12 +31,14 @@ export function PlanetLabel({
   ].includes(planet.name) ? (
     <Html
       position={[0, labelDistance, 0]}
-      style={{ pointerEvents: "auto" }}
       center
-      onClick={handleClick}
+      style={{
+        pointerEvents: "auto",
+      }}
     >
       <div
         ref={labelRef}
+        onClick={handleClick}
         className="bg-black/70 text-white px-2 py-1 rounded text-sm whitespace-nowrap cursor-pointer hover:bg-black/90"
       >
         {planet.name}
