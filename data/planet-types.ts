@@ -2,9 +2,6 @@ export interface PlanetData {
   /** The name of the planet (e.g., "Earth"). */
   name: string;
 
-  /** The size of the planet relative to Earth for visualization purposes. */
-  sizeRelativeEarth: number;
-
   /** The diameter of the planet relative to Earth's diameter (Earth = 1). */
   diameterRelativeEarth: number;
 

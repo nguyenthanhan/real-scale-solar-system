@@ -1,15 +1,14 @@
 "use client";
 
 import { Html } from "@react-three/drei";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 import { useThree, useFrame } from "@react-three/fiber";
 import { useState, useRef } from "react";
 import { Vector3 } from "three";
-import { DISTANCE_SCALE } from "@/constants/planet-data";
 
 export function useGetLabelDistance({ planet }: { planet: PlanetData }) {
   const { camera } = useThree();
-  const scaledSize = planet.size * DISTANCE_SCALE;
+  const scaledSize = planet.diameterRelativeEarth;
   const [labelDistance, setLabelDistance] = useState(scaledSize);
   const labelRef = useRef<HTMLDivElement>(null);
   const planetPosition = useRef(new Vector3(0, 0, 0));

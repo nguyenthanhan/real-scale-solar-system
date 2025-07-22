@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Solar System",
+  title: "Real Scale Solar System",
   description:
-    "An interactive 3D model of our solar system with realistic planetary orbits and information",
+    "A true-to-scale 3D model of our solar system with accurate planetary sizes, distances, and scientific data",
   generator: "Next.js",
 };
 

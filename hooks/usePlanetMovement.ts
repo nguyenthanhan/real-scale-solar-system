@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 
 interface PlanetMovementProps {
   planet: PlanetData;
@@ -23,22 +23,22 @@ export function usePlanetMovement({
   const lastTimeRef = useRef(0);
   const lastSpeedRef = useRef(simulationSpeed);
 
-  // Basic coefficient to adjust the overall simulation speed
-  const baseSpeed = 0.00005;
+  // Adjust base speed to match real orbital periods
+  const baseSpeed = 0.00001;
 
-  // Create elliptical orbit path - slightly elliptical to be more realistic
+  // Create elliptical orbit path with more accurate eccentricity
   const orbitCurve = useMemo(() => {
     return new THREE.EllipseCurve(
       0,
-      0, // Center x, y
-      scaledDistance,
-      scaledDistance * 0.98, // xRadius, yRadius (slightly elliptical)
       0,
-      2 * Math.PI, // Start angle, end angle
-      false, // Clockwise
-      0 // Rotation
+      scaledDistance,
+      scaledDistance * (1 - planet.eccentricity),
+      0,
+      2 * Math.PI,
+      false,
+      0
     );
-  }, [scaledDistance]);
+  }, [scaledDistance, planet.eccentricity]);
 
   // Update position when speed changes
   useEffect(() => {
@@ -56,10 +56,10 @@ export function usePlanetMovement({
       if (simulationSpeed === 0) {
         // Keep current position
       } else {
-        // Calculate angle increment based on planet's orbit speed
+        // Smooth transition for angle increment when speed changes
+        const averageSpeed = (lastSpeedRef.current + simulationSpeed) / 2; // Average speed
         const angleIncrement =
-          (deltaTime * simulationSpeed * baseSpeed) / planet.orbitSpeed;
-
+          (deltaTime * averageSpeed * baseSpeed) / planet.orbitSpeedByEarth;
         // Update current angle
         currentAngleRef.current =
           (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
@@ -78,9 +78,18 @@ export function usePlanetMovement({
     // Update planet rotation around its axis
     if (planetRef?.current) {
       const rotationSpeed =
-        simulationSpeed === 0 ? 0.0001 : simulationSpeed * baseSpeed * 0.5;
-      planetRef.current.rotation.y +=
-        (0.01 / planet.rotationSpeed) * rotationSpeed;
+        simulationSpeed === 0
+          ? 0
+          : simulationSpeed * baseSpeed * planet.rotationSpeedByDays;
+
+      // Apply axial tilt
+      if (!planetRef.current.rotation.z) {
+        planetRef.current.rotation.z = THREE.MathUtils.degToRad(
+          planet.axialTilt
+        );
+      }
+
+      planetRef.current.rotation.y += rotationSpeed;
     }
   });
 

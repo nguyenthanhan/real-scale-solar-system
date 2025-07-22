@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as THREE from "three";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 import { createSunTexture } from "@/lib/planet-textures/sun-texture";
 import { createGasGiantTexture } from "@/lib/planet-textures/gas-giant-texture";
 import { createEarthTexture } from "@/lib/planet-textures/earth-texture";

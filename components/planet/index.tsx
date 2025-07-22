@@ -4,13 +4,13 @@ import { useRef } from "react";
 import { ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
-import { PlanetData } from "@/types/planet-types";
+import { PlanetData } from "@/data/planet-types";
 import { PlanetLabel } from "@/components/planet/planet-label";
 import { usePlanetMovement } from "@/hooks/usePlanetMovement";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { OrbitPath } from "@/components/planet/orbit-path";
-import { DISTANCE_SCALE } from "@/constants/planet-data";
+import { sunData } from "@/data/planet-data";
 
 // Define the planet props
 interface PlanetProps {
@@ -25,9 +25,21 @@ export function Planet({ planet, simulationSpeed, onClick }: PlanetProps) {
 
   const planetMaterial = usePlanetMaterial(planet);
 
-  // Compute scaled values
-  const scaledDistance = planet.realDistance * DISTANCE_SCALE;
-  const scaledSize = planet.size * DISTANCE_SCALE;
+  // TRUE TO SCALE - No artificial scaling for visibility
+  // Using real astronomical proportions
+
+  // Size: 1 AU = 149,597,870 km (Earth-Sun distance)
+  // For visualization: 1 AU = 1000 units (compressed but proportional)
+  const AU_TO_UNITS = 1000; // 1 AU = 1000 units
+
+  // Distance: Real orbital distance from Sun center
+  const scaledDistance = planet.distanceInAU * AU_TO_UNITS;
+
+  // Size: Real diameter proportions
+  // Earth diameter = 12,742 km, Sun diameter = 1,392,700 km
+  // For visualization: Earth = 1 unit, Sun = 109.2 units
+  const EARTH_DIAMETER_UNITS = 1; // Earth = 1 unit
+  const scaledSize = planet.diameterRelativeEarth * EARTH_DIAMETER_UNITS;
 
   // Initialize and update planet movement
   const { orbitCurve } = usePlanetMovement({
@@ -46,25 +58,20 @@ export function Planet({ planet, simulationSpeed, onClick }: PlanetProps) {
 
   return (
     <>
-      {/* Orbit path visualization */}
       <OrbitPath orbitCurve={orbitCurve} />
-
-      {/* Planet group */}
-      <group ref={orbitRef} position={[scaledDistance, 0, 0]}>
-        {/* Planet sphere */}
+      <group ref={orbitRef}>
         <Sphere
           ref={planetRef}
-          args={[scaledSize, 32, 32]}
+          args={[scaledSize, 128, 128]} // Increased segments for better detail when zoomed
           onClick={handlePlanetClick}
         >
           <primitive object={planetMaterial} attach="material" />
         </Sphere>
-        {/* Planet rings if applicable */}
         {planet.hasRings && (
           <PlanetRings
             scaledSize={scaledSize}
             ringColor={planet.ringColor}
-            ringTilt={planet.ringTilt}
+            ringTilt={planet.ringTilt || 0}
           />
         )}
 

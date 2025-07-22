@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useFrame, ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import type { Mesh } from "three";
+import { sunData } from "@/data/planet-data";
 
 interface SunProps {
   onClick?: () => void;
@@ -32,11 +33,15 @@ export function Sun({ onClick }: SunProps) {
 
   return (
     <group onClick={handleSunClick}>
-      {/* Sun core */}
-      <Sphere ref={sunRef} args={[2, 30, 30]} position={[0, 0, 0]}>
+      {/* Sun core - TRUE TO SCALE */}
+      <Sphere
+        ref={sunRef}
+        args={[109.2, 64, 64]} // Real scale: Sun = 109.2x Earth diameter
+        position={[0, 0, 0]}
+      >
         <meshStandardMaterial
-          color="#FDB813"
-          emissive="#FDB813"
+          color={sunData.color}
+          emissive={sunData.color}
           emissiveIntensity={2}
           toneMapped={false}
         />
@@ -45,15 +50,15 @@ export function Sun({ onClick }: SunProps) {
       {/* Light sources */}
       <pointLight
         position={[0, 0, 0]}
-        intensity={2.5}
-        distance={100}
-        decay={2}
+        intensity={3.0}
+        distance={5000}
+        decay={1}
       />
       <pointLight
         position={[0, 0, 0]}
-        intensity={1}
-        distance={50}
-        decay={1.5}
+        intensity={1.5}
+        distance={3000}
+        decay={1}
       />
     </group>
   );
