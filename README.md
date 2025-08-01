@@ -3,7 +3,8 @@
 An immersive, true-to-scale 3D visualization of our solar system with accurate planetary sizes, distances, orbits, and scientific data. Experience the real proportions of our cosmic neighborhood directly in your browser through this educational and scientifically accurate simulation.
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/heimers-projects/v0-real-scale-solar-system)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/CaPSeCtgDv6)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=for-the-badge)](https://github.com/nguyenthanhan/real-scale-solar-system)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ## Features
 
@@ -24,11 +25,12 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 This project leverages modern web technologies to deliver a performant and visually stunning experience:
 
 - **Next.js 15.2.4**: React framework with App Router providing the foundation
-- **React Three Fiber**: React renderer for Three.js, enabling declarative 3D scene creation
-- **Three.js**: JavaScript 3D library powering the visualization
-- **TypeScript**: Type-safe code ensuring reliability and better developer experience
-- **Tailwind CSS**: Utility-first CSS framework for responsive styling
-- **Framer Motion**: Smooth animations and transitions for UI elements
+- **React 19**: Latest React version with improved performance and features
+- **React Three Fiber 9.1.2**: React renderer for Three.js, enabling declarative 3D scene creation
+- **Three.js 0.176.0**: JavaScript 3D library powering the visualization
+- **TypeScript 5**: Type-safe code ensuring reliability and better developer experience
+- **Tailwind CSS 3.4.17**: Utility-first CSS framework for responsive styling
+- **Framer Motion 12.9.2**: Smooth animations and transitions for UI elements
 - **Custom React Hooks**: Modular state management and lifecycle control
 - **Canvas API**: Procedural texture generation for realistic planet surfaces
 
@@ -101,7 +103,7 @@ Each celestial body features:
 ### Prerequisites
 
 - Node.js 18.0.0 or higher
-- pnpm (recommended) or npm
+- pnpm 10.12.4 (recommended) or npm
 
 ### Getting Started
 
@@ -116,12 +118,16 @@ Each celestial body features:
 
    ```bash
    pnpm install
+   # or
+   npm install
    ```
 
 3. Start the development server
 
    ```bash
    pnpm dev
+   # or
+   npm run dev
    ```
 
 4. Open your browser and navigate to `http://localhost:3000`
@@ -129,9 +135,33 @@ Each celestial body features:
 ### Building for Production
 
 ```bash
+# Build the application
 pnpm build
+# or
+npm run build
+
+# Start the production server
 pnpm start
+# or
+npm start
 ```
+
+### Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm release` - Run release script
+
+## Performance and Browser Compatibility
+
+This application is optimized for modern browsers and requires WebGL support. For the best experience:
+
+- Use Chrome, Firefox, Safari, or Edge (latest versions)
+- Ensure WebGL is enabled in your browser
+- Recommended: Dedicated graphics card for smoother performance
+- Minimum: 4GB RAM and modern CPU
 
 ## Credits and Attribution
 
@@ -145,6 +175,14 @@ pnpm start
 
 This project is open to contributions. Feel free to submit issues and pull requests to help improve the simulation or add new features.
 
+### Contributing Guidelines
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ### Future Improvements
 
 - Add dwarf planets (Pluto, Ceres, etc.)
@@ -154,3 +192,21 @@ This project is open to contributions. Feel free to submit issues and pull reque
 - Enhanced texture generation with more realistic surface details
 - Additional camera presets for different viewing angles
 - Educational mode with interactive learning elements
+- VR/AR support for immersive experiences
+- Multi-language support for global accessibility
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+If you encounter any issues or have questions:
+
+- Check the [Issues](https://github.com/nguyenthanhan/real-scale-solar-system/issues) page
+- Create a new issue with detailed information
+- Contact the maintainers for support
+
+---
+
+**Note**: This is an educational tool designed to provide accurate astronomical information. While we strive for scientific accuracy, this simulation is for educational purposes and should not be used for professional astronomical calculations.

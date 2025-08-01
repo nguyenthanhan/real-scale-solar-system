@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "release": "./scripts/release.sh"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.7",
