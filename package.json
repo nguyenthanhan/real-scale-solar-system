@@ -9,7 +9,8 @@
     "lint": "next lint",
     "release": "./scripts/release.sh patch",
     "release:minor": "./scripts/release.sh minor",
-    "release:major": "./scripts/release.sh major"
+    "release:major": "./scripts/release.sh major",
+    "changelog": "node scripts/extract-changelog.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.7",

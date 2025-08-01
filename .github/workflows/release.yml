@@ -1,0 +1,61 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*" # Trigger on version tags
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper changelog generation
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog content
+        id: changelog
+        run: |
+          # Extract the changelog content for this version
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          echo "Extracting changelog for version: $VERSION"
+
+          # Use the changelog extraction script
+          CHANGELOG_CONTENT=$(node scripts/extract-changelog.js "$VERSION")
+
+          # Escape newlines for GitHub Actions
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//'%'/'%25'}"
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\n'/'%0A'}"
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\r'/'%0D'}"
+
+          echo "changelog_content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## What's New in ${{ steps.version.outputs.VERSION }}
+
+            ${{ steps.changelog.outputs.changelog_content }}
+
+            ---
+
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ github.run_number }}...${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false

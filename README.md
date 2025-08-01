@@ -171,6 +171,32 @@ The release process will:
 - Create a git commit and tag
 - Push changes to the repository
 - Trigger deployment (if configured)
+- **Automatically create a GitHub release** with content from CHANGELOG.md
+
+### Automated GitHub Releases
+
+When you create a release using the release commands, the system will:
+
+1. **Create a git tag** with the new version
+2. **Trigger GitHub Actions** to automatically create a GitHub release
+3. **Extract changelog content** from CHANGELOG.md for that specific version
+4. **Create a formatted release** with:
+   - Release title and description
+   - Changelog content from CHANGELOG.md
+   - Links to compare changes
+   - Automatic deployment to Vercel
+
+### Manual Changelog Extraction
+
+You can manually extract changelog content for any version:
+
+```bash
+# Extract changelog for a specific version
+pnpm changelog 1.0.0
+
+# Or use the script directly
+node scripts/extract-changelog.js 1.0.0
+```
 
 ### Available Scripts
 
@@ -182,6 +208,7 @@ The release process will:
 - `pnpm release:patch` - Release patch version (1.0.0 → 1.0.1)
 - `pnpm release:minor` - Release minor version (1.0.0 → 1.1.0)
 - `pnpm release:major` - Release major version (1.0.0 → 2.0.0)
+- `pnpm changelog <version>` - Extract changelog content for a specific version
 
 ## Performance and Browser Compatibility
 
