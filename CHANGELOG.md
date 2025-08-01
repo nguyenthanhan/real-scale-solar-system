@@ -5,6 +5,25 @@ All notable changes to the Real Scale Solar System project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2025-08-02
+
+### Added
+
+- **Enhanced Changelog Extraction**: Improved script to include version headers with dates
+- **Better Release Formatting**: Cleaner output with proper markdown formatting
+- **Improved GitHub Actions**: Better handling of multiline content in releases
+
+### Changed
+
+- **Changelog Script**: Updated to include version headers (e.g., "## [1.0.2] - 2025-08-02")
+- **Release Workflow**: Simplified content extraction and improved reliability
+- **Content Cleaning**: Normalized spacing and removed excessive blank lines
+
+### Fixed
+
+- **URL Encoding Issues**: Resolved problems with escaped newlines in changelog output
+- **Formatting Consistency**: Ensured consistent markdown formatting across all outputs
+
 ## [1.0.2] - 2025-08-02
 
 ### Added
@@ -39,6 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced texture generation with more realistic surface details
 - Additional camera presets for different viewing angles
 - Educational mode with interactive learning elements
+
+### Technical Improvements
+
+- Performance optimizations for large-scale solar system rendering
+- Enhanced mobile responsiveness and touch controls
+- Improved accessibility features
+- Better error handling and user feedback
 
 ---
 
