@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "release": "./scripts/release.sh patch",
+    "release": "./scripts/release.sh",
+    "release:patch": "./scripts/release.sh patch",
     "release:minor": "./scripts/release.sh minor",
     "release:major": "./scripts/release.sh major",
     "changelog": "node scripts/extract-changelog.js"

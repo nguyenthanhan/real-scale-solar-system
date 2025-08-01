@@ -70,23 +70,72 @@ increment_version() {
     echo "$major.$minor.$patch"
 }
 
-# Check if increment type is provided
-if [ -z "$1" ]; then
-    print_error "Release type is required!"
-    echo "Usage: pnpm release <major|minor|patch>"
-    echo "Examples:"
-    echo "  pnpm release patch  # 1.0.0 -> 1.0.1"
-    echo "  pnpm release minor  # 1.0.0 -> 1.1.0"
-    echo "  pnpm release major  # 1.0.0 -> 2.0.0"
-    exit 1
-fi
-
 RELEASE_TYPE=$1
+
+# Check if no parameter provided (push-only mode)
+if [ -z "$RELEASE_TYPE" ]; then
+    print_info "No release type provided. Running in push-only mode..."
+    print_info "This will commit and push current changes without version bumping."
+    
+    # Check if working directory is clean
+    if [ -n "$(git status --porcelain)" ]; then
+        print_info "Found changes to commit:"
+        git status --short
+    else
+        print_warning "No changes to commit. Working directory is clean."
+        exit 0
+    fi
+    
+    # Check if we're on main branch
+    CURRENT_BRANCH=$(git branch --show-current)
+    if [ "$CURRENT_BRANCH" != "main" ]; then
+        print_warning "You are on branch '$CURRENT_BRANCH'. It's recommended to push from 'main' branch."
+        read -p "Continue anyway? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Push cancelled."
+            exit 1
+        fi
+    fi
+    
+    # Pull latest changes
+    print_info "Pulling latest changes from origin..."
+    git pull origin $CURRENT_BRANCH
+    
+    # Stage all changes
+    print_info "Staging all changes..."
+    git add .
+    
+    # Get current version
+    CURRENT_VERSION=$(get_current_version)
+    
+    # Create commit
+    print_info "Creating commit..."
+    COMMIT_MESSAGE="chore: update version to $CURRENT_VERSION
+
+- Update package.json version
+- Update CHANGELOG.md with new version entry
+- Update README.md version badge"
+
+    git commit -m "$COMMIT_MESSAGE"
+    
+    # Push changes
+    print_info "Pushing changes to origin..."
+    git push origin $CURRENT_BRANCH
+    
+    print_success "Push completed successfully! 🎉"
+    print_info "Push summary:"
+    echo "  - All changes committed and pushed"
+    echo "  - Current version: $CURRENT_VERSION"
+    echo "  - Branch: $CURRENT_BRANCH"
+    exit 0
+fi
 
 # Validate release type
 if [[ ! "$RELEASE_TYPE" =~ ^(major|minor|patch)$ ]]; then
     print_error "Invalid release type: $RELEASE_TYPE"
     echo "Valid options: major, minor, patch"
+    echo "Or run without parameters for push-only mode"
     exit 1
 fi
 
@@ -133,11 +182,21 @@ if [ -f "CHANGELOG.md" ]; then
     fi
 fi
 
+# Update README.md version badge if it exists
+if [ -f "README.md" ]; then
+    print_info "Updating README.md version badge to $NEW_VERSION..."
+    # Update the version badge in README.md
+    sed -i "s/badge\/version-[0-9]\+\.[0-9]\+\.[0-9]\+/badge\/version-$NEW_VERSION/" README.md
+fi
+
 # Stage files for commit
 print_info "Staging files for commit..."
 git add package.json
 if [ -f "CHANGELOG.md" ]; then
     git add CHANGELOG.md
+fi
+if [ -f "README.md" ]; then
+    git add README.md
 fi
 
 # Create commit
@@ -149,6 +208,11 @@ COMMIT_MESSAGE="build: release v$NEW_VERSION
 if [ -f "CHANGELOG.md" ]; then
     COMMIT_MESSAGE="$COMMIT_MESSAGE
 - Update CHANGELOG.md with release date"
+fi
+
+if [ -f "README.md" ]; then
+    COMMIT_MESSAGE="$COMMIT_MESSAGE
+- Update README.md version badge"
 fi
 
 git commit -m "$COMMIT_MESSAGE"
@@ -169,6 +233,9 @@ print_info "Release summary:"
 echo "  - Version bumped from $CURRENT_VERSION to $NEW_VERSION ($RELEASE_TYPE)"
 if [ -f "CHANGELOG.md" ]; then
     echo "  - CHANGELOG.md updated with release date"
+fi
+if [ -f "README.md" ]; then
+    echo "  - README.md version badge updated"
 fi
 echo "  - Commit created and pushed"
 echo "  - Tag v$NEW_VERSION created and pushed"
