@@ -98,15 +98,6 @@ print_info "Current version: $CURRENT_VERSION"
 NEW_VERSION=$(increment_version "$CURRENT_VERSION" "$RELEASE_TYPE")
 print_info "New version will be: $NEW_VERSION"
 
-# Confirm release
-print_warning "About to release version $NEW_VERSION (from $CURRENT_VERSION)"
-read -p "Continue? (y/N): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    print_info "Release cancelled."
-    exit 1
-fi
-
 # Check if working directory is clean
 if [ -n "$(git status --porcelain)" ]; then
     print_warning "Working directory is not clean. Please commit or stash your changes first."
@@ -158,7 +149,7 @@ fi
 
 # Create commit
 print_info "Creating release commit..."
-COMMIT_MESSAGE="chore: release v$NEW_VERSION
+COMMIT_MESSAGE="build: release v$NEW_VERSION
 
 - Bump version from $CURRENT_VERSION to $NEW_VERSION ($RELEASE_TYPE release)"
 
