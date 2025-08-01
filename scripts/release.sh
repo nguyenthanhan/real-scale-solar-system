@@ -1,8 +1,11 @@
 #!/bin/bash
 
 # Release script for Real Scale Solar System
-# Usage: npm run release [version]
-# Example: npm run release 1.0.0
+# Usage: pnpm release [major|minor|patch]
+# Examples: 
+#   pnpm release patch  # 1.0.0 -> 1.0.1
+#   pnpm release minor  # 1.0.0 -> 1.1.0
+#   pnpm release major  # 1.0.0 -> 2.0.0
 
 set -e  # Exit on any error
 
@@ -30,23 +33,79 @@ print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
-# Check if version is provided
+# Function to get current version from package.json
+get_current_version() {
+    node -p "require('./package.json').version"
+}
+
+# Function to increment version
+increment_version() {
+    local current_version=$1
+    local increment_type=$2
+    
+    IFS='.' read -ra VERSION_PARTS <<< "$current_version"
+    local major=${VERSION_PARTS[0]}
+    local minor=${VERSION_PARTS[1]}
+    local patch=${VERSION_PARTS[2]}
+    
+    case $increment_type in
+        "major")
+            major=$((major + 1))
+            minor=0
+            patch=0
+            ;;
+        "minor")
+            minor=$((minor + 1))
+            patch=0
+            ;;
+        "patch")
+            patch=$((patch + 1))
+            ;;
+        *)
+            print_error "Invalid increment type: $increment_type"
+            exit 1
+            ;;
+    esac
+    
+    echo "$major.$minor.$patch"
+}
+
+# Check if increment type is provided
 if [ -z "$1" ]; then
-    print_error "Version number is required!"
-    echo "Usage: npm run release <version>"
-    echo "Example: npm run release 1.0.0"
+    print_error "Release type is required!"
+    echo "Usage: pnpm release <major|minor|patch>"
+    echo "Examples:"
+    echo "  pnpm release patch  # 1.0.0 -> 1.0.1"
+    echo "  pnpm release minor  # 1.0.0 -> 1.1.0"
+    echo "  pnpm release major  # 1.0.0 -> 2.0.0"
     exit 1
 fi
 
-VERSION=$1
+RELEASE_TYPE=$1
 
-# Validate version format (basic semver check)
-if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    print_error "Invalid version format. Please use semantic versioning (e.g., 1.0.0)"
+# Validate release type
+if [[ ! "$RELEASE_TYPE" =~ ^(major|minor|patch)$ ]]; then
+    print_error "Invalid release type: $RELEASE_TYPE"
+    echo "Valid options: major, minor, patch"
     exit 1
 fi
 
-print_info "Starting release process for version $VERSION"
+# Get current version
+CURRENT_VERSION=$(get_current_version)
+print_info "Current version: $CURRENT_VERSION"
+
+# Calculate new version
+NEW_VERSION=$(increment_version "$CURRENT_VERSION" "$RELEASE_TYPE")
+print_info "New version will be: $NEW_VERSION"
+
+# Confirm release
+print_warning "About to release version $NEW_VERSION (from $CURRENT_VERSION)"
+read -p "Continue? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    print_info "Release cancelled."
+    exit 1
+fi
 
 # Check if working directory is clean
 if [ -n "$(git status --porcelain)" ]; then
@@ -71,17 +130,23 @@ fi
 print_info "Pulling latest changes from origin..."
 git pull origin $CURRENT_BRANCH
 
-# Update package.json version
-print_info "Updating package.json version to $VERSION..."
-npm version $VERSION --no-git-tag-version
+# Update package.json version using npm version (works with pnpm too)
+print_info "Updating package.json version to $NEW_VERSION..."
+npm version $NEW_VERSION --no-git-tag-version
 
 # Update CHANGELOG.md with current date if it exists
 if [ -f "CHANGELOG.md" ]; then
     print_info "Updating CHANGELOG.md with release date..."
     TODAY=$(date +"%Y-%m-%d")
     # Replace [Unreleased] or existing date with current date for the version
-    sed -i "s/## \[$VERSION\] - [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}/## [$VERSION] - $TODAY/" CHANGELOG.md
-    sed -i "s/## \[$VERSION\] - Unreleased/## [$VERSION] - $TODAY/" CHANGELOG.md
+    sed -i "s/## \[$NEW_VERSION\] - [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}/## [$NEW_VERSION] - $TODAY/" CHANGELOG.md
+    sed -i "s/## \[$NEW_VERSION\] - Unreleased/## [$NEW_VERSION] - $TODAY/" CHANGELOG.md
+    
+    # Add new [Unreleased] section if it doesn't exist
+    if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
+        # Add [Unreleased] section after the first ## heading
+        sed -i "1,/^## /{ /^## /a\\\n## [Unreleased]\n\n### Planned Features\n- Additional improvements and features\n" CHANGELOG.md
+    fi
 fi
 
 # Stage files for commit
@@ -93,9 +158,9 @@ fi
 
 # Create commit
 print_info "Creating release commit..."
-COMMIT_MESSAGE="chore: release v$VERSION
+COMMIT_MESSAGE="chore: release v$NEW_VERSION
 
-- Update version to $VERSION"
+- Bump version from $CURRENT_VERSION to $NEW_VERSION ($RELEASE_TYPE release)"
 
 if [ -f "CHANGELOG.md" ]; then
     COMMIT_MESSAGE="$COMMIT_MESSAGE
@@ -105,19 +170,25 @@ fi
 git commit -m "$COMMIT_MESSAGE"
 
 # Create annotated tag
-print_info "Creating git tag v$VERSION..."
-git tag -a "v$VERSION" -m "Release v$VERSION"
+print_info "Creating git tag v$NEW_VERSION..."
+git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION
+
+$RELEASE_TYPE release from $CURRENT_VERSION"
 
 # Push changes and tags
 print_info "Pushing changes to origin..."
 git push origin $CURRENT_BRANCH
-git push origin "v$VERSION"
+git push origin "v$NEW_VERSION"
 
-print_success "Release v$VERSION completed successfully! 🎉"
+print_success "Release v$NEW_VERSION completed successfully! 🎉"
 print_info "Release summary:"
-echo "  - Version updated in package.json"
+echo "  - Version bumped from $CURRENT_VERSION to $NEW_VERSION ($RELEASE_TYPE)"
 if [ -f "CHANGELOG.md" ]; then
     echo "  - CHANGELOG.md updated with release date"
 fi
 echo "  - Commit created and pushed"
-echo "  - Tag v$VERSION created and pushed"
+echo "  - Tag v$NEW_VERSION created and pushed"
+echo ""
+print_info "Next steps:"
+echo "  - Review the release on GitHub"
+echo "  - Update any deployment configurations if needed"

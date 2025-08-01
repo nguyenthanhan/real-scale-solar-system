@@ -146,13 +146,42 @@ pnpm start
 npm start
 ```
 
+### Release Process
+
+The project uses semantic versioning for releases. To create a new release:
+
+```bash
+# Release a patch version (bug fixes, small improvements)
+pnpm release:patch
+
+# Release a minor version (new features, backward compatible)
+pnpm release:minor
+
+# Release a major version (breaking changes)
+pnpm release:major
+
+# Or use the general release command
+pnpm release patch|minor|major
+```
+
+The release process will:
+
+- Automatically increment the version number
+- Update the CHANGELOG.md with the release date
+- Create a git commit and tag
+- Push changes to the repository
+- Trigger deployment (if configured)
+
 ### Available Scripts
 
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm release` - Run release script
+- `pnpm release <type>` - Run release script (requires type: major, minor, or patch)
+- `pnpm release:patch` - Release patch version (1.0.0 → 1.0.1)
+- `pnpm release:minor` - Release minor version (1.0.0 → 1.1.0)
+- `pnpm release:major` - Release major version (1.0.0 → 2.0.0)
 
 ## Performance and Browser Compatibility
 
