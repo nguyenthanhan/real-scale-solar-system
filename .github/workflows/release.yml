@@ -30,17 +30,18 @@ jobs:
           VERSION="${{ steps.version.outputs.VERSION }}"
           echo "Extracting changelog for version: $VERSION"
 
-          # Use the changelog extraction script
-          CHANGELOG_CONTENT=$(node scripts/extract-changelog.js "$VERSION")
+          # Use the changelog extraction script and save to file
+          node scripts/extract-changelog.js "$VERSION" > changelog_content.txt
 
-          # Escape newlines for GitHub Actions
-          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//'%'/'%25'}"
-          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\n'/'%0A'}"
-          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\r'/'%0D'}"
+          # Read the content and escape properly for GitHub Actions
+          CHANGELOG_CONTENT=$(cat changelog_content.txt)
 
-          echo "changelog_content<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Use GitHub Actions multiline output
+          {
+            echo "changelog_content<<EOF"
+            echo "$CHANGELOG_CONTENT"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -50,8 +51,6 @@ jobs:
           tag_name: ${{ steps.version.outputs.VERSION }}
           release_name: Release ${{ steps.version.outputs.VERSION }}
           body: |
-            ## What's New in ${{ steps.version.outputs.VERSION }}
-
             ${{ steps.changelog.outputs.changelog_content }}
 
             ---

@@ -23,13 +23,13 @@ function extractChangelog(version) {
     // Remove the 'v' prefix if present
     const cleanVersion = version.replace(/^v/, "");
 
-    // Find the section for this version
+    // Find the section for this version including the header
     // This regex looks for ## [version] - date followed by content until next ## or ---
     const versionPattern = new RegExp(
-      `## \\[${cleanVersion.replace(
+      `(## \\[${cleanVersion.replace(
         /\./g,
         "\\."
-      )}\\] - [^\\n]+\\n([\\s\\S]*?)(?=\\n## |\\n---|$)`,
+      )}\\] - [^\\n]+\\n[\\s\\S]*?)(?=\\n## |\\n---|$)`,
       "i"
     );
 
@@ -37,8 +37,15 @@ function extractChangelog(version) {
 
     if (match) {
       const content = match[1].trim();
-      console.log(content);
-      return content;
+
+      // Clean up the content - remove extra blank lines and normalize spacing
+      const cleanedContent = content
+        .replace(/\n\s*\n\s*\n/g, "\n\n") // Replace multiple blank lines with double newlines
+        .replace(/\n{3,}/g, "\n\n") // Ensure no more than 2 consecutive newlines
+        .trim();
+
+      console.log(cleanedContent);
+      return cleanedContent;
     } else {
       console.error(`No changelog content found for version ${cleanVersion}`);
       console.log("Available versions:");

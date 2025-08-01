@@ -98,13 +98,6 @@ print_info "Current version: $CURRENT_VERSION"
 NEW_VERSION=$(increment_version "$CURRENT_VERSION" "$RELEASE_TYPE")
 print_info "New version will be: $NEW_VERSION"
 
-# Check if working directory is clean
-if [ -n "$(git status --porcelain)" ]; then
-    print_warning "Working directory is not clean. Please commit or stash your changes first."
-    git status --short
-    exit 1
-fi
-
 # Check if we're on main branch
 CURRENT_BRANCH=$(git branch --show-current)
 if [ "$CURRENT_BRANCH" != "main" ]; then
