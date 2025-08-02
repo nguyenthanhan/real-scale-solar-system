@@ -5,6 +5,20 @@ All notable changes to the Real Scale Solar System project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2025-08-02
+
+### Added
+
+- **GitHub Button**: Added small GitHub button in top right corner of the entire screen
+- **Custom GitHub Icon**: Implemented official GitHub SVG logo for authentic branding
+
+### Changed
+
+- **UI Enhancement**: Added floating GitHub button with static styling (no animations)
+- **Repository Link**: Updated GitHub button to link to correct repository URL
+
+---
+
 ## [1.0.4] - 2025-08-02
 
 ### Added
