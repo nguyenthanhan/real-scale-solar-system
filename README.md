@@ -3,7 +3,7 @@
 An immersive, true-to-scale 3D visualization of our solar system with accurate planetary sizes, distances, orbits, and scientific data. Experience the real proportions of our cosmic neighborhood directly in your browser through this educational and scientifically accurate simulation.
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/heimers-projects/v0-real-scale-solar-system)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=for-the-badge)](https://github.com/nguyenthanhan/real-scale-solar-system)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue?style=for-the-badge)](https://github.com/nguyenthanhan/real-scale-solar-system)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ## Features
@@ -151,6 +151,9 @@ npm start
 The project uses semantic versioning for releases. To create a new release:
 
 ```bash
+# Push current changes without version bumping (for manual version updates)
+pnpm release
+
 # Release a patch version (bug fixes, small improvements)
 pnpm release:patch
 
@@ -159,9 +162,6 @@ pnpm release:minor
 
 # Release a major version (breaking changes)
 pnpm release:major
-
-# Or use the general release command
-pnpm release patch|minor|major
 ```
 
 The release process will:
@@ -204,7 +204,7 @@ node scripts/extract-changelog.js 1.0.0
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm release <type>` - Run release script (requires type: major, minor, or patch)
+- `pnpm release` - Push current changes without version bumping (for manual version updates)
 - `pnpm release:patch` - Release patch version (1.0.0 → 1.0.1)
 - `pnpm release:minor` - Release minor version (1.0.0 → 1.1.0)
 - `pnpm release:major` - Release major version (1.0.0 → 2.0.0)
