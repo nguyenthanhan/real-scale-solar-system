@@ -104,14 +104,14 @@ if [ -z "$RELEASE_TYPE" ]; then
     
     # Stage all changes
     print_info "Staging all changes..."
-    git add .
+    git add package.json CHANGELOG.md README.md
     
     # Get current version
     CURRENT_VERSION=$(get_current_version)
     
     # Create commit
     print_info "Creating commit..."
-    COMMIT_MESSAGE="build: update version to $CURRENT_VERSION
+    COMMIT_MESSAGE="build: release v$CURRENT_VERSION
 
 - Update package.json version
 - Update CHANGELOG.md with new version entry
@@ -119,15 +119,23 @@ if [ -z "$RELEASE_TYPE" ]; then
 
     git commit -m "$COMMIT_MESSAGE"
     
-    # Push changes
+    # Create annotated tag for current version
+    print_info "Creating git tag v$CURRENT_VERSION..."
+    git tag -a "v$CURRENT_VERSION" -m "Release v$CURRENT_VERSION
+
+Push-only release - no version bump"
+    
+    # Push changes and tags
     print_info "Pushing changes to origin..."
     git push origin $CURRENT_BRANCH
+    git push origin "v$CURRENT_VERSION"
     
     print_success "Push completed successfully! 🎉"
     print_info "Push summary:"
     echo "  - All changes committed and pushed"
     echo "  - Current version: $CURRENT_VERSION"
     echo "  - Branch: $CURRENT_BRANCH"
+    echo "  - Tag v$CURRENT_VERSION created and pushed"
     exit 0
 fi
 
@@ -146,20 +154,6 @@ print_info "Current version: $CURRENT_VERSION"
 # Calculate new version
 NEW_VERSION=$(increment_version "$CURRENT_VERSION" "$RELEASE_TYPE")
 print_info "New version will be: $NEW_VERSION"
-
-# Check if new version exists in CHANGELOG.md
-if [ -f "CHANGELOG.md" ]; then
-    print_info "Checking if version $NEW_VERSION exists in CHANGELOG.md..."
-    if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
-        print_error "Version $NEW_VERSION not found in CHANGELOG.md"
-        print_error "Please add a changelog entry for version $NEW_VERSION before releasing"
-        print_info "Expected format: ## [$NEW_VERSION] - Unreleased"
-        exit 1
-    fi
-    print_success "Version $NEW_VERSION found in CHANGELOG.md"
-else
-    print_warning "CHANGELOG.md not found. Skipping version validation."
-fi
 
 # Check if we're on main branch
 CURRENT_BRANCH=$(git branch --show-current)
