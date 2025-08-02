@@ -9,6 +9,7 @@ import { ControlModal } from "@/components/modal/control";
 import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";
 import { ModalOverlay } from "@/components/modal/modal-overlay";
+import { GitHubButton } from "@/components/github-button";
 
 const MAX_SPEED = 100000;
 const MIN_SPEED = 1;
@@ -103,6 +104,8 @@ export default function SolarSystem() {
           <p>• W/S - Orbit forward/back</p>
         </div>
       </div>
+
+      <GitHubButton />
     </div>
   );
 }
