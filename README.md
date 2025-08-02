@@ -3,7 +3,7 @@
 An immersive, true-to-scale 3D visualization of our solar system with accurate planetary sizes, distances, orbits, and scientific data. Experience the real proportions of our cosmic neighborhood directly in your browser through this educational and scientifically accurate simulation.
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/heimers-projects/v0-real-scale-solar-system)
-[![Version](https://img.shields.io/badge/version-1.0.3-blue?style=for-the-badge)](https://github.com/nguyenthanhan/real-scale-solar-system)
+[![Version](https://img.shields.io/badge/version-1.0.4-blue?style=for-the-badge)](https://github.com/nguyenthanhan/real-scale-solar-system)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ## Features
