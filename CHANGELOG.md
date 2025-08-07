@@ -5,6 +5,40 @@ All notable changes to the Real Scale Solar System project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-08-08
+
+### Added
+
+- Time conversion display in control modal for better user understanding of simulation speed
+- Comprehensive development guidelines covering workflow, scientific accuracy, styling, TypeScript standards, and Three.js best practices
+- Conditional label rendering support via showLabels prop in Planet component
+
+### Changed
+
+- Increased MAX_SPEED to 10,000,000 for significantly faster simulation capabilities
+- Improved speed input range and step values for finer simulation control
+- Enhanced debug logging in usePlanetMovement hook to only activate in development mode for better performance
+- Updated Tailwind CSS configuration and modal component structure
+
+### Fixed
+
+- Added lastLoggedDayRef to track logged days for debug logging in usePlanetMovement hook
+- Increased z-index of modal overlay to ensure proper stacking context
+- Resolved various issues in usePlanetMovement.ts hook
+
+### Documentation
+
+- Updated README.md with enhanced simulation features and UI improvements
+- Cleaned up unused properties in various documentation files
+
+### Dependencies
+
+- Updated dependencies in pnpm-lock.yaml
+- Bumped brace-expansion from 1.1.11 to 1.1.12
+- Added sharp and unrs-resolver to ignored built dependencies
+
+---
+
 ## [1.0.6] - 2025-08-03
 
 ### Changed
