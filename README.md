@@ -22,8 +22,10 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 ### 🎮 Interactive Controls
 
 - **Advanced Camera Controls**: Navigate the solar system with intuitive mouse controls
-- **Adjustable Simulation Speed**: Control the pace from 1x (real-time) to 100,000x with smooth slider control
+- **Extreme Simulation Speed**: Control the pace from 1x (real-time) to 10,000,000x with smooth slider control
+- **Real-Time Conversion Display**: See exactly how much real time corresponds to simulation time
 - **Click to Explore**: Click on any planet or the Sun for detailed scientific information
+- **Smart Modal Management**: Planet labels automatically hide when viewing detailed information
 - **Responsive Design**: Fully responsive layout that works across all devices
 
 ### 🔬 Scientific Accuracy
@@ -32,6 +34,7 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - **Axial Tilt**: Realistic planetary axial tilts affecting rotation visualization
 - **Elliptical Orbits**: True orbital paths with proper eccentricity calculations
 - **Real Scale Proportions**: Sun dominates the scene as in reality, planets appear as small objects
+- **Accurate Orbital Periods**: Each planet moves at its real orbital speed relative to Earth
 
 ## 🛠️ Technical Implementation
 
@@ -72,8 +75,10 @@ This project leverages cutting-edge web technologies to deliver a performant and
 
 - **Click on any planet or the sun**: View detailed scientific information in a modal
 - **Click outside of information cards**: Close the current information panel
-- **Speed Control Slider**: Manually adjust simulation speed from 1x to 100,000x with real-time updates
+- **Speed Control Slider**: Manually adjust simulation speed from 1x to 10,000,000x with real-time updates
+- **Time Conversion Display**: See how much real time corresponds to simulation time (e.g., "1s = 8.3m • Earth orbit: 0.7 days")
 - **Hide/Show Controls**: Double-click the control panel to toggle visibility
+- **Smart UI**: Planet labels automatically hide when viewing detailed information
 
 ### 📱 Mobile Support
 
@@ -114,7 +119,7 @@ Each celestial body features:
 - **True-to-scale sizes and distances** (real astronomical proportions)
 - **Procedurally generated textures** showing surface variations
 - **Comprehensive scientific data** including diameter, gravity, atmosphere composition
-- **Dynamic labels** that adjust based on camera distance
+- **Dynamic labels** that adjust based on camera distance and modal state
 
 ## 🏗️ Technical Architecture
 
