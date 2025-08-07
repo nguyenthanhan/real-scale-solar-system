@@ -52,8 +52,5 @@ This is a Next.js 15.2.4 + React 19 + TypeScript project that creates an immersi
 - **Styling**: Tailwind CSS 3.4.17, Framer Motion 12.9.2
 - **Package Manager**: pnpm 10.12.4
 - **Deployment**: Vercel with automatic releases
-  description:
-  globs:
-  alwaysApply: false
 
 ---

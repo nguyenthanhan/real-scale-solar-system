@@ -39,9 +39,4 @@
 
 - **ESLint**: Follow the configuration in [.eslintrc.json](mdc:.eslintrc.json)
 - **Type checking**: Run `pnpm run lint` to check for type errors
-- **IDE integration**: Use TypeScript-aware editors for better development experience
-  description:
-  globs:
-  alwaysApply: false
-
----
+- **IDE integration**: Use TypeScript-aware editors for better development

@@ -41,8 +41,3 @@
 - **Frame rate**: Monitor FPS using React Three Fiber's built-in stats
 - **Memory usage**: Watch for memory leaks with texture and geometry disposal
 - **Object count**: Limit the number of draw calls for optimal performance
-  description:
-  globs:
-  alwaysApply: false
-
----
