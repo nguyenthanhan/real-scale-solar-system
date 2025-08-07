@@ -41,8 +41,5 @@
 - **Focus indicators**: Provide visible focus indicators for keyboard navigation
 - **Screen readers**: Use proper ARIA labels and semantic HTML
 - **Motion preferences**: Respect `prefers-reduced-motion` media query
-  description:
-  globs:
-  alwaysApply: false
 
 ---

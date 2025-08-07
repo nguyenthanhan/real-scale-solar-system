@@ -16,11 +16,11 @@ export function ControlModal({
   const [isPanelVisible, setIsPanelVisible] = useState(true);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    const parsedValue = Number.parseInt(rawValue);
-    console.log(`Raw value: ${rawValue}, Parsed: ${parsedValue}`);
-    onSpeedChange(parsedValue);
-  };
+const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const rawValue = e.target.value;
+  const parsedValue = Number.parseInt(rawValue);
+  onSpeedChange(parsedValue);
+};
 
   // Calculate time conversion
   const getTimeConversion = (speed: number): string => {
@@ -28,8 +28,8 @@ export function ControlModal({
     if (speed < 60) return `1s = ${speed}s`;
     if (speed < 3600) return `1s = ${(speed / 60).toFixed(1)}m`;
     if (speed < 86400) return `1s = ${(speed / 3600).toFixed(1)}h`;
-    if (speed < 31536000) return `1s = ${(speed / 86400).toFixed(1)}d`;
-    return `1s = ${(speed / 31536000).toFixed(1)}y`;
+    if (speed < 31_536_000) return `1s = ${(speed / 86400).toFixed(1)}d`;
+    return `1s = ${(speed / 31_536_000).toFixed(1)}y`;
   };
 
   // Toggle the entire panel visibility

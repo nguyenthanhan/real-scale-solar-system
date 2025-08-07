@@ -76,16 +76,18 @@ export function usePlanetMovement({
         currentAngleRef.current =
           (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
 
-        // Debug: Log orbital period for Earth
-        if (planet.name === "Earth" && simulationSpeed === 1) {
-          const currentOrbitalTime = totalTimeRef.current / (24 * 60 * 60); // Convert to days
-          if (
-            Math.floor(currentOrbitalTime) % 50 === 0 &&
-            currentOrbitalTime > 0
-          ) {
-            console.log(
-              `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`
-            );
+        // Debug logging only in development
+        if (process.env.NODE_ENV === "development") {
+          if (planet.name === "Earth" && simulationSpeed === 1) {
+            const currentOrbitalTime = totalTimeRef.current / (24 * 60 * 60); // Convert to days
+            if (
+              Math.floor(currentOrbitalTime) % 50 === 0 &&
+              currentOrbitalTime > 0
+            ) {
+              console.log(
+                `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`
+              );
+            }
           }
         }
 

@@ -61,8 +61,5 @@ interface PlanetData {
 - **Expert review**: Consider having astronomical data reviewed by experts
 - **Documentation**: Document sources for all scientific information
 - **Updates**: Regularly update data to reflect new astronomical discoveries
-  description:
-  globs:
-  alwaysApply: false
 
 ---

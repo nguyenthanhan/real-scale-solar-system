@@ -54,8 +54,3 @@ Based on [package.json](mdc:package.json), the following scripts are available:
 - **GitHub Actions**: Automated release and deployment workflow
 - **Environment variables**: Configure in Vercel dashboard
 - **Domain**: Deployed at Vercel with custom domain support
-  description:
-  globs:
-  alwaysApply: false
-
----
