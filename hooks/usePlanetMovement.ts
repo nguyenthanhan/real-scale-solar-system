@@ -77,13 +77,18 @@ export function usePlanetMovement({
           (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
 
         // Debug logging only in development
+        const lastLoggedDayRef = useRef(-1);
+
         if (process.env.NODE_ENV === "development") {
           if (planet.name === "Earth" && simulationSpeed === 1) {
             const currentOrbitalTime = totalTimeRef.current / (24 * 60 * 60); // Convert to days
+            const currentDay = Math.floor(currentOrbitalTime);
             if (
-              Math.floor(currentOrbitalTime) % 50 === 0 &&
-              currentOrbitalTime > 0
+              currentDay % 50 === 0 &&
+              currentDay !== lastLoggedDayRef.current &&
+              currentDay > 0
             ) {
+              lastLoggedDayRef.current = currentDay;
               console.log(
                 `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`
               );
