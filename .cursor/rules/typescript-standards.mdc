@@ -1,0 +1,47 @@
+# TypeScript Coding Standards
+
+## 🎯 Type Safety Guidelines
+
+- **Strict typing**: Always define explicit types for function parameters and return values
+- **Interface over type**: Prefer interfaces for object shapes, use types for unions and intersections
+- **Generic constraints**: Use generic constraints to ensure type safety
+- **Discriminated unions**: Use discriminated unions for complex state management
+
+## 📝 Code Organization
+
+- **File naming**: Use kebab-case for file names (e.g., `planet-data.ts`, `use-planet-movement.ts`)
+- **Export patterns**: Use named exports for utilities, default exports for components
+- **Import organization**: Group imports by type (React, Three.js, utilities, types)
+- **Barrel exports**: Consider using index files for clean imports
+
+## 🔧 Best Practices
+
+- **Optional chaining**: Use `?.` for safe property access
+- **Nullish coalescing**: Use `??` for default values
+- **Type guards**: Implement type guards for runtime type checking
+- **Utility types**: Leverage TypeScript utility types (`Partial`, `Pick`, `Omit`, etc.)
+
+## 🎮 React + TypeScript Patterns
+
+- **Component props**: Define explicit prop interfaces for all components
+- **Event handlers**: Use proper event types (`MouseEvent`, `TouchEvent`, etc.)
+- **Refs**: Use `useRef` with proper generic types
+- **State management**: Use discriminated unions for complex state
+
+## 📊 Data Modeling
+
+- **Planet data**: Follow the structure defined in [data/planet-types.ts](mdc:data/planet-types.ts)
+- **API responses**: Define interfaces for all external data structures
+- **Form data**: Use controlled components with proper state typing
+- **Configuration**: Type all configuration objects and environment variables
+
+## 🛠️ Development Tools
+
+- **ESLint**: Follow the configuration in [.eslintrc.json](mdc:.eslintrc.json)
+- **Type checking**: Run `pnpm run lint` to check for type errors
+- **IDE integration**: Use TypeScript-aware editors for better development experience
+  description:
+  globs:
+  alwaysApply: false
+
+---

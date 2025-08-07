@@ -1,0 +1,59 @@
+# Real Scale Solar System Project Overview
+
+This is a Next.js 15.2.4 + React 19 + TypeScript project that creates an immersive, true-to-scale 3D visualization of our solar system using React Three Fiber and Three.js.
+
+## 🎯 Project Purpose
+
+- **Educational**: Scientifically accurate solar system visualization
+- **Interactive**: 3D exploration with real astronomical proportions
+- **Performance**: Optimized for smooth 60fps experience across devices
+
+## 🏗️ Core Architecture
+
+### Main Entry Points
+
+- [app/page.tsx](mdc:app/page.tsx) - Main application entry point
+- [app/layout.tsx](mdc:app/layout.tsx) - Root layout with metadata and providers
+- [components/solar-system.tsx](mdc:components/solar-system.tsx) - Core 3D scene component
+
+### Key Data & Types
+
+- [data/planet-data.ts](mdc:data/planet-data.ts) - Scientific data for all celestial bodies
+- [data/planet-types.ts](mdc:data/planet-types.ts) - TypeScript interfaces and types
+- [lib/utils.ts](mdc:lib/utils.ts) - Utility functions
+
+### Custom Hooks
+
+- [hooks/usePlanetMovement.ts](mdc:hooks/usePlanetMovement.ts) - Planet orbit and rotation logic
+- [hooks/usePlanetMaterial.ts](mdc:hooks/usePlanetMaterial.ts) - Procedural texture generation
+- [hooks/useGetLabelDistance.ts](mdc:hooks/useGetLabelDistance.ts) - Label positioning logic
+- [hooks/useIsMobile.ts](mdc:hooks/useIsMobile.ts) - Responsive device detection
+
+### Styling & Configuration
+
+- [tailwind.config.ts](mdc:tailwind.config.ts) - Tailwind CSS configuration
+- [app/globals.css](mdc:app/globals.css) - Global styles and animations
+- [next.config.mjs](mdc:next.config.mjs) - Next.js configuration
+
+## 🎮 Key Features
+
+- True-to-scale planetary sizes and distances
+- Procedural planet textures with realistic variations
+- Interactive camera controls (orbit, zoom, pan)
+- Adjustable simulation speed (1x to 100,000x)
+- Click-to-explore planet information modals
+- Responsive design for all devices
+- 10,000+ star field background
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15.2.4, React 19, TypeScript 5
+- **3D Graphics**: React Three Fiber 9.1.2, Three.js 0.176.0
+- **Styling**: Tailwind CSS 3.4.17, Framer Motion 12.9.2
+- **Package Manager**: pnpm 10.12.4
+- **Deployment**: Vercel with automatic releases
+  description:
+  globs:
+  alwaysApply: false
+
+---

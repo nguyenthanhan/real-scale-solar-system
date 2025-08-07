@@ -1,0 +1,61 @@
+# Development Workflow
+
+## 🚀 Available Scripts
+
+Based on [package.json](mdc:package.json), the following scripts are available:
+
+### Development
+
+- `pnpm dev` - Start development server with hot reload
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint for code quality
+
+### Release Management
+
+- `pnpm release` - Interactive release with version selection
+- `pnpm release:patch` - Release patch version (1.0.6 → 1.0.7)
+- `pnpm release:minor` - Release minor version (1.0.6 → 1.1.0)
+- `pnpm release:major` - Release major version (1.0.6 → 2.0.0)
+- `pnpm changelog` - Generate changelog from commits
+
+## 🔄 Development Process
+
+1. **Feature development**: Create feature branches from `main`
+2. **Testing**: Test on multiple devices and browsers
+3. **Performance**: Monitor FPS and memory usage
+4. **Code review**: Ensure TypeScript types and Three.js best practices
+5. **Release**: Use automated release scripts for versioning
+
+## 🎯 Key Development Areas
+
+- **3D Scene**: Modify [components/solar-system.tsx](mdc:components/solar-system.tsx)
+- **Planet Data**: Update scientific data in [data/planet-data.ts](mdc:data/planet-data.ts)
+- **Custom Hooks**: Add new hooks in [hooks/](mdc:hooks/) directory
+- **UI Components**: Create new components in [components/](mdc:components/)
+
+## 🛠️ Environment Setup
+
+- **Node.js**: Use Node.js 18+ for compatibility
+- **Package Manager**: Use pnpm 10.12.4 as specified in [package.json](mdc:package.json)
+- **IDE**: Use TypeScript-aware editor with ESLint integration
+- **Browser**: Test in Chrome, Firefox, Safari, and Edge
+
+## 📊 Performance Monitoring
+
+- **FPS**: Monitor frame rate during development
+- **Memory**: Watch for memory leaks in Three.js objects
+- **Bundle size**: Keep bundle size optimized for fast loading
+- **Mobile performance**: Test on actual mobile devices
+
+## 🚀 Deployment
+
+- **Vercel**: Automatic deployment on push to main branch
+- **GitHub Actions**: Automated release and deployment workflow
+- **Environment variables**: Configure in Vercel dashboard
+- **Domain**: Deployed at Vercel with custom domain support
+  description:
+  globs:
+  alwaysApply: false
+
+---
