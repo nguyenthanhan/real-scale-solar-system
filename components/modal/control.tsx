@@ -16,11 +16,10 @@ export function ControlModal({
   const [isPanelVisible, setIsPanelVisible] = useState(true);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
-const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
-  const rawValue = e.target.value;
-  const parsedValue = Number.parseInt(rawValue);
-  onSpeedChange(parsedValue);
-};
+    const rawValue = e.target.value;
+    const parsedValue = Number.parseInt(rawValue);
+    onSpeedChange(parsedValue);
+  };
 
   // Calculate time conversion
   const getTimeConversion = (speed: number): string => {
