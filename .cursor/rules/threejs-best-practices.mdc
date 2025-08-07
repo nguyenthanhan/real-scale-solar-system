@@ -1,0 +1,48 @@
+# Three.js & React Three Fiber Best Practices
+
+## 🎯 Performance Guidelines
+
+- **Dispose of resources**: Always dispose of geometries, materials, and textures in useEffect cleanup
+- **Use `useFrame` sparingly**: Only use for animations that need 60fps updates
+- **Optimize re-renders**: Use `useMemo` for expensive calculations and `useCallback` for event handlers
+- **Group objects**: Use `<group>` to organize related 3D objects
+- **LOD (Level of Detail)**: Consider implementing LOD for distant objects
+
+## 🎨 Material & Texture Guidelines
+
+- **Procedural textures**: Use Canvas API for dynamic texture generation (see [hooks/usePlanetMaterial.ts](mdc:hooks/usePlanetMaterial.ts))
+- **Texture disposal**: Always dispose of textures when components unmount
+- **Material reuse**: Reuse materials when possible to reduce memory usage
+- **PBR materials**: Use `MeshStandardMaterial` for realistic lighting
+
+## 📐 Scene Organization
+
+- **Camera positioning**: Use realistic astronomical distances (see [data/planet-data.ts](mdc:data/planet-data.ts))
+- **Lighting setup**: Implement ambient, directional, and point lights for realistic illumination
+- **Fog effects**: Use fog to create depth and hide distant objects
+- **Star field**: Generate stars using instanced meshes for performance
+
+## 🎮 Interaction Patterns
+
+- **Raycasting**: Use `useThree` and `raycaster` for object selection
+- **Camera controls**: Implement smooth camera transitions with damping
+- **Event handling**: Use `onPointerOver`, `onPointerOut`, `onClick` for interactive elements
+- **Responsive design**: Adjust camera position and controls based on device type
+
+## 🔧 Code Structure
+
+- **Custom hooks**: Extract 3D logic into reusable hooks (see [hooks/](mdc:hooks/) directory)
+- **Component composition**: Break complex 3D scenes into smaller, focused components
+- **Type safety**: Use proper TypeScript types for Three.js objects
+- **Error boundaries**: Wrap 3D components in error boundaries
+
+## 📊 Performance Monitoring
+
+- **Frame rate**: Monitor FPS using React Three Fiber's built-in stats
+- **Memory usage**: Watch for memory leaks with texture and geometry disposal
+- **Object count**: Limit the number of draw calls for optimal performance
+  description:
+  globs:
+  alwaysApply: false
+
+---
