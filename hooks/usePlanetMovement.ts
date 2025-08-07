@@ -22,6 +22,7 @@ export function usePlanetMovement({
   const currentAngleRef = useRef(0);
   const lastTimeRef = useRef(0);
   const totalTimeRef = useRef(0);
+  const lastLoggedDayRef = useRef(-1);
 
   // Calculate orbital period in seconds for each planet
   const getOrbitalPeriodInSeconds = (planetName: string): number => {
@@ -77,8 +78,6 @@ export function usePlanetMovement({
           (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
 
         // Debug logging only in development
-        const lastLoggedDayRef = useRef(-1);
-
         if (process.env.NODE_ENV === "development") {
           if (planet.name === "Earth" && simulationSpeed === 1) {
             const currentOrbitalTime = totalTimeRef.current / (24 * 60 * 60); // Convert to days
