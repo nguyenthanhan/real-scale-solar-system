@@ -17,9 +17,15 @@ interface PlanetProps {
   planet: PlanetData;
   simulationSpeed: number;
   onClick: (planet: PlanetData) => void;
+  showLabels: boolean;
 }
 
-export function Planet({ planet, simulationSpeed, onClick }: PlanetProps) {
+export function Planet({
+  planet,
+  simulationSpeed,
+  onClick,
+  showLabels,
+}: PlanetProps) {
   const planetRef = useRef<THREE.Mesh | null>(null);
   const orbitRef = useRef<THREE.Group | null>(null);
 
@@ -75,7 +81,7 @@ export function Planet({ planet, simulationSpeed, onClick }: PlanetProps) {
           />
         )}
 
-        <PlanetLabel planet={planet} onClick={onClick} />
+        {showLabels && <PlanetLabel planet={planet} onClick={onClick} />}
       </group>
     </>
   );
