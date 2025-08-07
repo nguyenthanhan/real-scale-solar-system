@@ -21,10 +21,26 @@ export function usePlanetMovement({
   // Refs to store current position and angle
   const currentAngleRef = useRef(0);
   const lastTimeRef = useRef(0);
-  const lastSpeedRef = useRef(simulationSpeed);
+  const totalTimeRef = useRef(0);
 
-  // Adjust base speed to match real orbital periods
-  const baseSpeed = 0.00001;
+  // Calculate orbital period in seconds for each planet
+  const getOrbitalPeriodInSeconds = (planetName: string): number => {
+    const periods: { [key: string]: number } = {
+      Mercury: 88 * 24 * 60 * 60, // 88 days
+      Venus: 225 * 24 * 60 * 60, // 225 days
+      Earth: 365.25 * 24 * 60 * 60, // 365.25 days
+      Mars: 687 * 24 * 60 * 60, // 687 days
+      Jupiter: 4333 * 24 * 60 * 60, // 4333 days
+      Saturn: 10759 * 24 * 60 * 60, // 10759 days
+      Uranus: 30687 * 24 * 60 * 60, // 30687 days
+      Neptune: 60190 * 24 * 60 * 60, // 60190 days
+    };
+    return periods[planetName] || periods.Earth;
+  };
+
+  // Calculate base speed for real-time simulation
+  const orbitalPeriodSeconds = getOrbitalPeriodInSeconds(planet.name);
+  const baseSpeed = (2 * Math.PI) / orbitalPeriodSeconds; // radians per second for real-time
 
   // Create elliptical orbit path with more accurate eccentricity
   const orbitCurve = useMemo(() => {
@@ -40,29 +56,38 @@ export function usePlanetMovement({
     );
   }, [scaledDistance, planet.eccentricity]);
 
-  // Update position when speed changes
-  useEffect(() => {
-    lastSpeedRef.current = simulationSpeed;
-  }, [simulationSpeed]);
-
   // Calculate the position based on time and simulation speed
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime();
-    const deltaTime = elapsedTime - lastTimeRef.current;
+    const deltaTime = Math.max(elapsedTime - lastTimeRef.current, 0.001); // Minimum 1ms
     lastTimeRef.current = elapsedTime;
+    totalTimeRef.current += deltaTime;
 
     // Calculate the position on the orbit
     if (orbitRef?.current) {
       if (simulationSpeed === 0) {
         // Keep current position
       } else {
-        // Smooth transition for angle increment when speed changes
-        const averageSpeed = (lastSpeedRef.current + simulationSpeed) / 2; // Average speed
-        const angleIncrement =
-          (deltaTime * averageSpeed * baseSpeed) / planet.orbitSpeedByEarth;
+        // Real-time based simulation speed
+        // x1 = real-time, x1000 = 1000x faster than real-time
+        const angleIncrement = deltaTime * simulationSpeed * baseSpeed;
+
         // Update current angle
         currentAngleRef.current =
           (currentAngleRef.current + angleIncrement) % (2 * Math.PI);
+
+        // Debug: Log orbital period for Earth
+        if (planet.name === "Earth" && simulationSpeed === 1) {
+          const currentOrbitalTime = totalTimeRef.current / (24 * 60 * 60); // Convert to days
+          if (
+            Math.floor(currentOrbitalTime) % 50 === 0 &&
+            currentOrbitalTime > 0
+          ) {
+            console.log(
+              `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`
+            );
+          }
+        }
 
         // Get position on the elliptical curve
         const position = orbitCurve.getPoint(
@@ -77,10 +102,15 @@ export function usePlanetMovement({
 
     // Update planet rotation around its axis
     if (planetRef?.current) {
+      // Calculate rotation speed based on real day length
+      const dayLengthSeconds =
+        Math.abs(planet.rotationSpeedByDays) * 24 * 60 * 60;
+      const rotationSpeedRadiansPerSecond = (2 * Math.PI) / dayLengthSeconds;
+
       const rotationSpeed =
         simulationSpeed === 0
           ? 0
-          : simulationSpeed * baseSpeed * planet.rotationSpeedByDays;
+          : deltaTime * simulationSpeed * rotationSpeedRadiansPerSecond;
 
       // Apply axial tilt
       if (!planetRef.current.rotation.z) {

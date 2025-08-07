@@ -11,7 +11,7 @@ import { PlanetData } from "@/data/planet-types";
 import { ModalOverlay } from "@/components/modal/modal-overlay";
 import { GitHubButton } from "@/components/github-button";
 
-const MAX_SPEED = 100000;
+const MAX_SPEED = 10000000;
 const MIN_SPEED = 1;
 
 // Solar System component with updated simulation speed scale
@@ -39,7 +39,7 @@ export default function SolarSystem() {
     validSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, validSpeed));
 
     if (validSpeed > MIN_SPEED && validSpeed < MAX_SPEED) {
-      if (validSpeed >= 100) {
+      if (validSpeed >= 100 && validSpeed < MAX_SPEED) {
         validSpeed = Math.round(validSpeed / 100) * 100;
       }
       // For very small values, don't round
@@ -67,6 +67,7 @@ export default function SolarSystem() {
             planet={planet}
             simulationSpeed={simulationSpeed}
             onClick={handlePlanetClick}
+            showLabels={!selectedPlanet && !showSunInfo}
           />
         ))}
         <Stars

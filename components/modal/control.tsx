@@ -16,7 +16,20 @@ export function ControlModal({
   const [isPanelVisible, setIsPanelVisible] = useState(true);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onSpeedChange(Number.parseInt(e.target.value));
+    const rawValue = e.target.value;
+    const parsedValue = Number.parseInt(rawValue);
+    console.log(`Raw value: ${rawValue}, Parsed: ${parsedValue}`);
+    onSpeedChange(parsedValue);
+  };
+
+  // Calculate time conversion
+  const getTimeConversion = (speed: number): string => {
+    if (speed === 1) return "1s = 1s (real-time)";
+    if (speed < 60) return `1s = ${speed}s`;
+    if (speed < 3600) return `1s = ${(speed / 60).toFixed(1)}m`;
+    if (speed < 86400) return `1s = ${(speed / 3600).toFixed(1)}h`;
+    if (speed < 31536000) return `1s = ${(speed / 86400).toFixed(1)}d`;
+    return `1s = ${(speed / 31536000).toFixed(1)}y`;
   };
 
   // Toggle the entire panel visibility
@@ -28,7 +41,7 @@ export function ControlModal({
     <>
       {isPanelVisible ? (
         <motion.div
-          className="absolute bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-10 w-96"
+          className="absolute bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-96"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -52,8 +65,8 @@ export function ControlModal({
               <input
                 type="range"
                 min="1"
-                max="100000"
-                step="100"
+                max="10000000"
+                step="1"
                 value={simulationSpeed}
                 onChange={handleSpeedChange}
                 className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
@@ -62,15 +75,24 @@ export function ControlModal({
                 ×{simulationSpeed.toLocaleString()}
               </div>
             </div>
+
+            {/* Time conversion info */}
+            <div className="text-xs text-gray-300 bg-gray-900/50 p-2 rounded">
+              <div>
+                Time Conversion: {getTimeConversion(simulationSpeed)} • Earth
+                orbit: {(365.25 / simulationSpeed).toFixed(1)} days
+              </div>
+            </div>
+
             <div className="flex justify-between text-xs text-gray-400">
               <span>Real-time (×1)</span>
-              <span>Fast (×100,000)</span>
+              <span>Extreme (×10,000,000)</span>
             </div>
           </div>
         </motion.div>
       ) : (
         <motion.button
-          className="absolute bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-10"
+          className="absolute bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-[9999]"
           onClick={togglePanel}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
