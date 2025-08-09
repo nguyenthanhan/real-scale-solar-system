@@ -6,10 +6,10 @@
 // Pre-calculated constants for performance optimization
 export const ROTATION_CONSTANTS = {
   MINUTES_PER_DAY: 1440,
-  SECONDS_PER_DAY: 96, // 1440 minutes / 15 minutes per second
+  SIMULATED_SECONDS_PER_DAY: 1440 / 15, // MINUTES_PER_DAY / BASE_SPEED_MINUTES
   DEGREES_PER_ROTATION: 360,
   BASE_SPEED_MINUTES: 15,
-  DEGREES_PER_SECOND_BASE: 360 / 96, // Pre-calculated: 3.75
+  DEGREES_PER_SECOND_BASE: 360 / (1440 / 15), // DEGREES_PER_ROTATION / SIMULATED_SECONDS_PER_DAY
 } as const;
 
 /**

@@ -19,7 +19,11 @@ export function PlanetRings({
   return (
     <Ring
       args={[scaledSize * 1.4, scaledSize * 2.2, 64]}
-      rotation={[Math.PI / 2 + (axialTilt * Math.PI) / 180, ringTilt, 0]}
+      rotation={[
+        Math.PI / 2 + (axialTilt * Math.PI) / 180,
+        (ringTilt * Math.PI) / 180,
+        0,
+      ]}
     >
       <meshStandardMaterial
         color={ringColor}

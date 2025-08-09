@@ -19,10 +19,10 @@ export function createEarthTexture(
     const depth = Math.random();
     const blue = Math.floor(20 + depth * 40);
     const green = Math.floor(10 + depth * 20);
+    const red = 0;
+    const alpha = 0.3; // 4D in hex = 77 in decimal, which is ~0.3 alpha
 
-    ctx.fillStyle = `#00${green.toString(16).padStart(2, "0")}${blue
-      .toString(16)
-      .padStart(2, "0")}4D`;
+    ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();

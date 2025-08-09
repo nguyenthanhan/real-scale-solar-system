@@ -372,6 +372,340 @@ function createGasGiantTexture(
   }
 }
 
+// Helper function to parse hex color to RGB values
+function parseHexColor(hex: string): { r: number; g: number; b: number } {
+  const cleanHex = hex.replace("#", "");
+  const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+  return { r, g, b };
+}
+
+// Create sun texture with gradient, granulation, sunspots, and solar flares
+function createSunTexture(
+  ctx: OffscreenCanvasRenderingContext2D,
+  canvas: OffscreenCanvas
+): void {
+  try {
+    validateCanvasContext(ctx, "createSunTexture");
+    validateCanvasDimensions(canvas);
+
+    // Base gradient from center to edge (more realistic solar colors)
+    const gradient = ctx.createRadialGradient(
+      canvas.width / 2,
+      canvas.height / 2,
+      0,
+      canvas.width / 2,
+      canvas.height / 2,
+      Math.min(canvas.width, canvas.height) / 2
+    );
+    gradient.addColorStop(0, "#FFFFFF"); // Pure white core (hottest)
+    gradient.addColorStop(0.2, "#FFFF80"); // Bright yellow
+    gradient.addColorStop(0.4, "#FFD700"); // Golden yellow
+    gradient.addColorStop(0.6, "#FF8C00"); // Dark orange
+    gradient.addColorStop(0.8, "#FF4500"); // Red-orange
+    gradient.addColorStop(1, "#8B0000"); // Dark red edge (coolest)
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add solar granulation (convection cells) - more realistic pattern
+    for (let i = 0; i < 2000; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = 1 + Math.random() * 3;
+
+      // Distance from center determines brightness and color
+      const dx = x - canvas.width / 2;
+      const dy = y - canvas.height / 2;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxDistance = Math.min(canvas.width, canvas.height) / 2;
+      const normalizedDistance = distance / maxDistance;
+
+      // Brighter granules in center, darker at edges
+      const brightness = Math.min(1.0, 0.8 + (1 - normalizedDistance) * 0.4);
+      const red = Math.min(255, Math.floor(255 * brightness));
+      const green = Math.min(255, Math.floor(200 * brightness));
+      const blue = Math.min(255, Math.floor(50 * brightness));
+
+      ctx.fillStyle = `#${red.toString(16).padStart(2, "0")}${green
+        .toString(16)
+        .padStart(2, "0")}${blue.toString(16).padStart(2, "0")}66`;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Add sunspots (more realistic distribution and appearance)
+    for (let i = 0; i < 15; i++) {
+      // Sunspots appear in bands around the equator (solar latitude ±30°)
+      const y = canvas.height / 2 + (Math.random() * 0.4 - 0.2) * canvas.height;
+      const x = Math.random() * canvas.width;
+      const size = 2 + Math.random() * 8;
+
+      // Dark umbra (core of sunspot)
+      ctx.fillStyle = "#321400CC";
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Penumbra (lighter region around the dark spot)
+      ctx.fillStyle = "#96500080";
+      ctx.beginPath();
+      ctx.arc(x, y, size * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Add solar prominences and flares (more realistic)
+    for (let i = 0; i < 12; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const x = canvas.width / 2 + Math.cos(angle) * (canvas.width / 2 - 15);
+      const y = canvas.height / 2 + Math.sin(angle) * (canvas.height / 2 - 15);
+
+      // Different types of prominences
+      const prominenceType = Math.random();
+
+      if (prominenceType > 0.7) {
+        // Large prominence
+        ctx.fillStyle = "#FF6432CC";
+        const flareLength = 30 + Math.random() * 40;
+        const flareWidth = 15 + Math.random() * 25;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        const outX = x + Math.cos(angle) * flareLength;
+        const outY = y + Math.sin(angle) * flareLength;
+
+        const perpAngle = angle + Math.PI / 2;
+        const ctrlX1 =
+          x +
+          Math.cos(angle) * flareLength * 0.5 +
+          Math.cos(perpAngle) * flareWidth;
+        const ctrlY1 =
+          y +
+          Math.sin(angle) * flareLength * 0.5 +
+          Math.sin(perpAngle) * flareWidth;
+        const ctrlX2 =
+          x +
+          Math.cos(angle) * flareLength * 0.5 -
+          Math.cos(perpAngle) * flareWidth;
+        const ctrlY2 =
+          y +
+          Math.sin(angle) * flareLength * 0.5 -
+          Math.sin(perpAngle) * flareWidth;
+
+        ctx.quadraticCurveTo(ctrlX1, ctrlY1, outX, outY);
+        ctx.quadraticCurveTo(ctrlX2, ctrlY2, x, y);
+        ctx.fill();
+      } else {
+        // Smaller flare
+        ctx.fillStyle = "#FFC86499";
+        const flareLength = 10 + Math.random() * 20;
+        const flareWidth = 5 + Math.random() * 10;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        const outX = x + Math.cos(angle) * flareLength;
+        const outY = y + Math.sin(angle) * flareLength;
+
+        const perpAngle = angle + Math.PI / 2;
+        const ctrlX1 =
+          x +
+          Math.cos(angle) * flareLength * 0.5 +
+          Math.cos(perpAngle) * flareWidth;
+        const ctrlY1 =
+          y +
+          Math.sin(angle) * flareLength * 0.5 +
+          Math.sin(perpAngle) * flareWidth;
+        const ctrlX2 =
+          x +
+          Math.cos(angle) * flareLength * 0.5 -
+          Math.cos(perpAngle) * flareWidth;
+        const ctrlY2 =
+          y +
+          Math.sin(angle) * flareLength * 0.5 -
+          Math.sin(perpAngle) * flareWidth;
+
+        ctx.quadraticCurveTo(ctrlX1, ctrlY1, outX, outY);
+        ctx.quadraticCurveTo(ctrlX2, ctrlY2, x, y);
+        ctx.fill();
+      }
+    }
+
+    // Add subtle limb darkening effect (darker at edges)
+    const limbGradient = ctx.createRadialGradient(
+      canvas.width / 2,
+      canvas.height / 2,
+      0,
+      canvas.width / 2,
+      canvas.height / 2,
+      Math.min(canvas.width, canvas.height) / 2
+    );
+    limbGradient.addColorStop(0, "#00000000");
+    limbGradient.addColorStop(0.7, "#00000000");
+    limbGradient.addColorStop(1, "#0000004D");
+    ctx.fillStyle = limbGradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  } catch (error) {
+    handleCanvasError("createSunTexture", error);
+  }
+}
+
+// Create ice giant texture (Uranus, Neptune)
+function createIceGiantTexture(
+  ctx: OffscreenCanvasRenderingContext2D,
+  canvas: OffscreenCanvas,
+  color: string
+): void {
+  try {
+    validateCanvasContext(ctx, "createIceGiantTexture");
+    validateCanvasDimensions(canvas);
+    validateColor(color);
+
+    // Parse the base color
+    const baseColor = parseHexColor(color);
+
+    // Fill with base color
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add atmospheric bands (subtle for ice giants)
+    for (let i = 0; i < 8; i++) {
+      const y = (i / 8) * canvas.height;
+      const height = canvas.height / 8;
+
+      // Vary the color slightly for each band
+      const variation = (Math.random() - 0.5) * 0.3;
+      const r = Math.max(0, Math.min(1, baseColor.r + variation));
+      const g = Math.max(0, Math.min(1, baseColor.g + variation));
+      const b = Math.max(0, Math.min(1, baseColor.b + variation));
+
+      ctx.fillStyle = `#${Math.floor(r * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(g * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(b * 255)
+        .toString(16)
+        .padStart(2, "0")}`;
+
+      ctx.fillRect(0, y, canvas.width, height);
+    }
+
+    // Add subtle atmospheric features
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = 2 + Math.random() * 6;
+
+      const variation = (Math.random() - 0.5) * 0.2;
+      const r = Math.max(0, Math.min(1, baseColor.r + variation));
+      const g = Math.max(0, Math.min(1, baseColor.g + variation));
+      const b = Math.max(0, Math.min(1, baseColor.b + variation));
+
+      ctx.fillStyle = `#${Math.floor(r * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(g * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(b * 255)
+        .toString(16)
+        .padStart(2, "0")}80`;
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } catch (error) {
+    handleCanvasError("createIceGiantTexture", error);
+  }
+}
+
+// Create rocky planet texture (Mercury, Venus)
+function createRockyPlanetTexture(
+  ctx: OffscreenCanvasRenderingContext2D,
+  canvas: OffscreenCanvas,
+  color: string
+): void {
+  try {
+    validateCanvasContext(ctx, "createRockyPlanetTexture");
+    validateCanvasDimensions(canvas);
+    validateColor(color);
+
+    // Parse the base color
+    const baseColor = parseHexColor(color);
+
+    // Fill with base color
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add surface features (craters, mountains, plains)
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = 1 + Math.random() * 8;
+
+      // Different types of surface features
+      const featureType = Math.random();
+
+      if (featureType > 0.8) {
+        // Craters (darker)
+        const darkVariation = -0.3 - Math.random() * 0.2;
+        const r = Math.max(0, Math.min(1, baseColor.r + darkVariation));
+        const g = Math.max(0, Math.min(1, baseColor.g + darkVariation));
+        const b = Math.max(0, Math.min(1, baseColor.b + darkVariation));
+
+        ctx.fillStyle = `#${Math.floor(r * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(g * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(b * 255)
+          .toString(16)
+          .padStart(2, "0")}`;
+
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (featureType > 0.6) {
+        // Mountains (lighter)
+        const lightVariation = 0.1 + Math.random() * 0.2;
+        const r = Math.max(0, Math.min(1, baseColor.r + lightVariation));
+        const g = Math.max(0, Math.min(1, baseColor.g + lightVariation));
+        const b = Math.max(0, Math.min(1, baseColor.b + lightVariation));
+
+        ctx.fillStyle = `#${Math.floor(r * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(g * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(b * 255)
+          .toString(16)
+          .padStart(2, "0")}`;
+
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Plains (subtle variation)
+        const variation = (Math.random() - 0.5) * 0.1;
+        const r = Math.max(0, Math.min(1, baseColor.r + variation));
+        const g = Math.max(0, Math.min(1, baseColor.g + variation));
+        const b = Math.max(0, Math.min(1, baseColor.b + variation));
+
+        ctx.fillStyle = `#${Math.floor(r * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(g * 255)
+          .toString(16)
+          .padStart(2, "0")}${Math.floor(b * 255)
+          .toString(16)
+          .padStart(2, "0")}80`;
+
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  } catch (error) {
+    handleCanvasError("createRockyPlanetTexture", error);
+  }
+}
+
 // Handle texture generation requests
 self.addEventListener(
   "message",
@@ -412,6 +746,23 @@ self.addEventListener(
               createGasGiantTexture(ctx, canvas, color);
             } else {
               throw new Error("Color required for gas giant texture");
+            }
+            break;
+          case "sun":
+            createSunTexture(ctx, canvas);
+            break;
+          case "ice-giant":
+            if (color) {
+              createIceGiantTexture(ctx, canvas, color);
+            } else {
+              throw new Error("Color required for ice giant texture");
+            }
+            break;
+          case "rocky-planet":
+            if (color) {
+              createRockyPlanetTexture(ctx, canvas, color);
+            } else {
+              throw new Error("Color required for rocky planet texture");
             }
             break;
           default:

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { PlanetData } from "@/data/planet-types";
 import { createSunTexture } from "@/lib/planet-textures/sun-texture";
@@ -9,7 +9,21 @@ import { createRockyPlanetTexture } from "@/lib/planet-textures/rocky-planet-tex
 import { createIceGiantTexture } from "@/lib/planet-textures/ice-giant-texture";
 
 export function usePlanetMaterial(planet: PlanetData) {
-  return useMemo(() => {
+  const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+
+  const material = useMemo(() => {
+    // Dispose of previous material and texture
+    if (materialRef.current) {
+      if (materialRef.current.map) {
+        materialRef.current.map.dispose();
+      }
+      materialRef.current.dispose();
+    }
+    if (textureRef.current) {
+      textureRef.current.dispose();
+    }
+
     // Create a canvas for the texture
     const canvas = document.createElement("canvas");
     canvas.width = 512;
@@ -18,11 +32,13 @@ export function usePlanetMaterial(planet: PlanetData) {
 
     if (!ctx) {
       // Fallback to basic material if canvas context is unavailable
-      return new THREE.MeshStandardMaterial({
+      const fallbackMaterial = new THREE.MeshStandardMaterial({
         color: planet.color,
         metalness: 0.1,
         roughness: 0.6,
       });
+      materialRef.current = fallbackMaterial;
+      return fallbackMaterial;
     }
 
     // Fill with base color
@@ -48,11 +64,34 @@ export function usePlanetMaterial(planet: PlanetData) {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
+    textureRef.current = texture;
 
-    return new THREE.MeshStandardMaterial({
+    const material = new THREE.MeshStandardMaterial({
       map: texture,
       metalness: 0.1,
       roughness: 0.6,
     });
+    materialRef.current = material;
+
+    return material;
   }, [planet.name, planet.color]);
+
+  // Cleanup effect to dispose materials and textures on unmount
+  useEffect(() => {
+    return () => {
+      if (materialRef.current) {
+        if (materialRef.current.map) {
+          materialRef.current.map.dispose();
+        }
+        materialRef.current.dispose();
+        materialRef.current = null;
+      }
+      if (textureRef.current) {
+        textureRef.current.dispose();
+        textureRef.current = null;
+      }
+    };
+  }, []);
+
+  return material;
 }

@@ -17,6 +17,11 @@ export function PlanetAtmosphericGlow({
   const glowRef = useRef<THREE.Mesh | null>(null);
   const { camera } = useThree();
 
+  // Reusable Vector3 instances to avoid allocations
+  const worldPosition = useMemo(() => new THREE.Vector3(), []);
+  const toCamera = useMemo(() => new THREE.Vector3(), []);
+  const cameraDirection = useMemo(() => new THREE.Vector3(), []);
+
   // Only add atmospheric glow to certain planets
   const hasAtmosphere = [
     "Earth",
@@ -56,17 +61,17 @@ export function PlanetAtmosphericGlow({
       if (!glowRef.current) return 0.1;
 
       // Get the world position of the glow mesh
-      const worldPosition = new THREE.Vector3();
       glowRef.current.getWorldPosition(worldPosition);
 
-      // Calculate the vector from planet to camera
-      const toCamera = camera.position.clone().sub(worldPosition).normalize();
+      // Get camera's forward direction
+      camera.getWorldDirection(cameraDirection);
 
-      // Calculate the angle between the view direction and the planet's surface normal
-      // This simulates how atmosphere appears thicker at the edges (limb darkening)
-      const viewAngle = Math.acos(
-        Math.abs(toCamera.dot(new THREE.Vector3(0, 1, 0)))
-      );
+      // Calculate the vector from planet to camera
+      toCamera.copy(camera.position).sub(worldPosition).normalize();
+
+      // Calculate the angle between camera direction and planet-to-camera vector
+      // This gives us the viewing angle relative to the camera's orientation
+      const viewAngle = Math.acos(Math.abs(cameraDirection.dot(toCamera)));
 
       // Atmosphere appears thicker at the edges (grazing angle)
       const edgeFactor = Math.sin(viewAngle);
@@ -75,7 +80,7 @@ export function PlanetAtmosphericGlow({
 
       return baseOpacity + (edgeOpacity - baseOpacity) * edgeFactor;
     };
-  }, [camera]);
+  }, [camera, worldPosition, toCamera, cameraDirection]);
 
   // Update opacity based on viewing angle
   useFrame(() => {

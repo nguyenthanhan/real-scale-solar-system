@@ -33,6 +33,11 @@ export function ControlModal({
 
   // Calculate Earth orbit time display
   const getEarthOrbitTime = (speed: number): string => {
+    // Guard against division by zero or NaN
+    if (speed <= 0 || Number.isNaN(speed)) {
+      return "N/A";
+    }
+
     const earthOrbitDays = 365.25 / speed;
 
     if (earthOrbitDays >= 1) {
