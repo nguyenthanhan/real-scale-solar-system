@@ -94,8 +94,8 @@ export function createGasGiantTexture(
     ctx.fillRect(0, y, canvas.width, bandHeight);
   }
 
-  // Add atmospheric storms and cloud features
-  for (let i = 0; i < 50; i++) {
+  // Add atmospheric storms and cloud features (optimized)
+  for (let i = 0; i < 30; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const size = 5 + Math.random() * 20;
@@ -131,8 +131,8 @@ export function createGasGiantTexture(
     ctx.fill();
   }
 
-  // Add cloud texture variations
-  for (let i = 0; i < 300; i++) {
+  // Add cloud texture variations (optimized)
+  for (let i = 0; i < 200; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const size = 2 + Math.random() * 6;

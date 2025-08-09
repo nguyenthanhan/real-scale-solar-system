@@ -9,6 +9,11 @@ import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { AtmosphericGlow } from "@/components/modal/atmospheric-glow";
 import { RotationAxis } from "@/components/modal/rotation-axis";
+import {
+  calculateRotationMultiplier,
+  calculateAdjustedPlanetSize,
+  rotationCache,
+} from "@/utils/rotation-calculations";
 
 interface Planet3DModelProps {
   planet: PlanetData;
@@ -25,29 +30,21 @@ function PlanetMesh({
   const planetRef = useRef<THREE.Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
 
-  // Calculate rotation speed based on rotationSpeedMinutes
-  const rotationSpeed = useMemo(() => {
-    const planetRotationPeriod = Math.abs(planet.rotationSpeedByDays);
-    // If rotationSpeedMinutes = 15, then 1 second = 15 minutes
-    // So 1 Earth day (1440 minutes) = 96 seconds
-    // Planet should complete 1 rotation in: planetRotationPeriod * 96 seconds
-    const rotationSpeedPerSecond =
-      (360 / (planetRotationPeriod * 96)) * (rotationSpeedMinutes / 15);
-    return rotationSpeedPerSecond;
-  }, [planet.rotationSpeedByDays, rotationSpeedMinutes]);
+  // Optimized rotation multiplier calculation using utility functions and caching
+  const rotationMultiplier = useMemo(
+    () =>
+      rotationCache.getRotationSpeed(
+        planet.rotationSpeedByDays,
+        rotationSpeedMinutes
+      ) * (planet.rotationSpeedByDays < 0 ? -1 : 1),
+    [planet.rotationSpeedByDays, rotationSpeedMinutes]
+  );
 
-  // Determine rotation direction
-  const rotationDirection = useMemo(() => {
-    // Venus and Uranus rotate retrograde (opposite direction)
-    return planet.rotationSpeedByDays < 0 ? -1 : 1;
-  }, [planet.rotationSpeedByDays]);
-
-  // Apply rotation animation using useFrame for smooth animation
+  // Optimized rotation animation using useFrame
   useFrame((_, delta) => {
-    if (planetRef.current) {
-      // Rotate around Y-axis (vertical axis)
-      const actualRotation = rotationSpeed * rotationDirection * delta;
-      planetRef.current.rotation.y += actualRotation;
+    if (planetRef.current && rotationMultiplier !== 0) {
+      // Rotate around Y-axis (vertical axis) with pre-calculated multiplier
+      planetRef.current.rotation.y += rotationMultiplier * delta;
     }
   });
 
@@ -60,24 +57,11 @@ function PlanetMesh({
     }
   }, [planet.name]);
 
-  // Adjust size for planets with rings to ensure rings are visible
-  const getAdjustedPlanetSize = (planetName: string, baseSize: number) => {
-    // Saturn has the most spectacular and largest ring system
-    if (planetName === "Saturn") {
-      return baseSize * 0.55; // Reduce Saturn size significantly to show rings
-    }
-    // Neptune has prominent rings
-    if (planetName === "Neptune") {
-      return baseSize * 0.7; // Reduce Neptune size to show rings
-    }
-    // Jupiter and Uranus have subtle rings
-    if (planetName === "Jupiter" || planetName === "Uranus") {
-      return baseSize * 0.85; // Slight reduction for ring visibility
-    }
-    return baseSize;
-  };
-
-  const planetSize = getAdjustedPlanetSize(planet.name, size ?? 0);
+  // Optimized planet size calculation using utility function
+  const planetSize = useMemo(
+    () => calculateAdjustedPlanetSize(planet.name, size ?? 0),
+    [planet.name, size]
+  );
 
   return (
     <group>
@@ -95,15 +79,12 @@ function PlanetMesh({
           scaledSize={planetSize}
           ringColor={planet.ringColor || "#CDCDCD"}
           ringTilt={planet.ringTilt ?? 0}
-          axialTilt={planet.axialTilt ?? planet.axialTilt ?? 0}
+          axialTilt={planet.axialTilt ?? 0}
         />
       )}
 
       {/* Rotation axis line */}
-      <RotationAxis
-        planetSize={planetSize}
-        axialTilt={planet.axialTilt ?? planet.axialTilt ?? 0}
-      />
+      <RotationAxis planetSize={planetSize} axialTilt={planet.axialTilt ?? 0} />
     </group>
   );
 }

@@ -9,8 +9,8 @@ export function createEarthTexture(
   ctx.fillStyle = "#0B1426";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Add ocean depth variations
-  for (let i = 0; i < 500; i++) {
+  // Add ocean depth variations (optimized with fewer iterations)
+  for (let i = 0; i < 300; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const size = 5 + Math.random() * 15;
@@ -62,8 +62,8 @@ export function createEarthTexture(
     ctx.closePath();
     ctx.fill();
 
-    // Add continent detail (mountains, forests)
-    for (let i = 0; i < 20; i++) {
+    // Add continent detail (mountains, forests) - optimized
+    for (let i = 0; i < 15; i++) {
       const detailX = x + (Math.random() - 0.5) * size * 0.8;
       const detailY = y + (Math.random() - 0.5) * size * 0.8;
       const detailSize = 2 + Math.random() * 4;
