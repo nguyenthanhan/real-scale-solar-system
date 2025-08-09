@@ -20,23 +20,23 @@ const SimulationSpeedContext = createContext<
   SimulationSpeedContextType | undefined
 >(undefined);
 
-const MAX_SPEED = 10000000;
+const MAX_SPEED = 10_000_000;
 const MIN_SPEED = 1;
 
 export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
-  const [simulationSpeed, setSimulationSpeedState] = useState<number>(2000000);
+  const [simulationSpeed, setSimulationSpeedState] =
+    useState<number>(2_000_000);
   const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState<number>(15);
 
   const setSimulationSpeed = useCallback((speed: number) => {
-    let validSpeed = isNaN(speed) ? MIN_SPEED : Number(speed);
+    let validSpeed = Number.isFinite(speed) ? speed : MIN_SPEED;
     validSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, validSpeed));
 
     if (validSpeed > MIN_SPEED && validSpeed < MAX_SPEED) {
-      if (validSpeed >= 100 && validSpeed < MAX_SPEED) {
-        validSpeed = Math.round(validSpeed / 100) * 100;
-      } else {
-        validSpeed = Math.round(validSpeed);
-      }
+      validSpeed =
+        validSpeed >= 100
+          ? Math.round(validSpeed / 100) * 100
+          : Math.round(validSpeed);
     }
 
     setSimulationSpeedState(validSpeed);
@@ -80,7 +80,6 @@ export function useSimulationSpeed() {
   return context;
 }
 
-// Legacy hook for backward compatibility
 export function useRotationSpeed() {
   const context = useContext(SimulationSpeedContext);
   if (context === undefined) {
