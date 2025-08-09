@@ -4,12 +4,10 @@ import {
   createContext,
   useContext,
   useState,
-  ReactNode,
   useMemo,
   useCallback,
-  Dispatch,
-  SetStateAction,
 } from "react";
+import type { ReactNode, Dispatch, SetStateAction } from "react";
 
 interface SimulationSpeedContextType {
   simulationSpeed: number;
