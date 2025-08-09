@@ -118,14 +118,24 @@ export function usePlanetMovement({
           ? 0
           : deltaTime * simulationSpeed * rotationSpeedRadiansPerSecond;
 
+      // Determine rotation direction from the perspective of the Solar System's north pole
+      // When viewed from the Solar System's north pole (above the ecliptic):
+      // - Most planets rotate counterclockwise (prograde) - this is the standard direction
+      // - Venus and Uranus rotate clockwise (retrograde) - opposite to the standard
+      // In Three.js, positive Y rotation is counterclockwise when viewed from above
+      // Venus: -243.025 days (retrograde) - should rotate clockwise
+      // Uranus: -0.72 days (retrograde) - should rotate clockwise
+      // Earth, Mars, Jupiter, Saturn, Neptune: positive rotationSpeedByDays (prograde) - should rotate counterclockwise
+      const rotationDirection = planet.rotationSpeedByDays < 0 ? -1 : 1;
+
       // Apply axial tilt
-      if (!planetRef.current.rotation.z) {
-        planetRef.current.rotation.z = THREE.MathUtils.degToRad(
+      if (!planetRef.current.rotation.x) {
+        planetRef.current.rotation.x = THREE.MathUtils.degToRad(
           planet.axialTilt
         );
       }
 
-      planetRef.current.rotation.y += rotationSpeed;
+      planetRef.current.rotation.y += rotationSpeed * rotationDirection;
     }
   });
 

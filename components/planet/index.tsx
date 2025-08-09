@@ -10,7 +10,6 @@ import { usePlanetMovement } from "@/hooks/usePlanetMovement";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { OrbitPath } from "@/components/planet/orbit-path";
-import { sunData } from "@/data/planet-data";
 
 // Define the planet props
 interface PlanetProps {
@@ -78,6 +77,7 @@ export function Planet({
             scaledSize={scaledSize}
             ringColor={planet.ringColor}
             ringTilt={planet.ringTilt || 0}
+            axialTilt={planet.axialTilt}
           />
         )}
 

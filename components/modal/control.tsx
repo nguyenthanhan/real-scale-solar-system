@@ -24,11 +24,26 @@ export function ControlModal({
   // Calculate time conversion
   const getTimeConversion = (speed: number): string => {
     if (speed === 1) return "1s = 1s (real-time)";
-    if (speed < 60) return `1s = ${speed}s`;
-    if (speed < 3600) return `1s = ${(speed / 60).toFixed(1)}m`;
-    if (speed < 86400) return `1s = ${(speed / 3600).toFixed(1)}h`;
-    if (speed < 31_536_000) return `1s = ${(speed / 86400).toFixed(1)}d`;
-    return `1s = ${(speed / 31_536_000).toFixed(1)}y`;
+    if (speed < 60) return `1s = ${speed} seconds`;
+    if (speed < 3600) return `1s = ${(speed / 60).toFixed(1)} minutes`;
+    if (speed < 86400) return `1s = ${(speed / 3600).toFixed(1)} hours`;
+    if (speed < 31_536_000) return `1s = ${(speed / 86400).toFixed(1)} days`;
+    return `1s = ${(speed / 31_536_000).toFixed(1)} years`;
+  };
+
+  // Calculate Earth orbit time display
+  const getEarthOrbitTime = (speed: number): string => {
+    const earthOrbitDays = 365.25 / speed;
+
+    if (earthOrbitDays >= 1) {
+      return `${earthOrbitDays.toFixed(1)} days`;
+    } else if (earthOrbitDays >= 1 / 24) {
+      return `${(earthOrbitDays * 24).toFixed(1)} hours`;
+    } else if (earthOrbitDays >= 1 / 1440) {
+      return `${(earthOrbitDays * 1440).toFixed(1)} minutes`;
+    } else {
+      return `${(earthOrbitDays * 86400).toFixed(1)} seconds`;
+    }
   };
 
   // Toggle the entire panel visibility
@@ -76,11 +91,9 @@ export function ControlModal({
             </div>
 
             {/* Time conversion info */}
-            <div className="text-xs text-gray-300 bg-gray-900/50 p-2 rounded">
-              <div>
-                Time Conversion: {getTimeConversion(simulationSpeed)} • Earth
-                orbit: {(365.25 / simulationSpeed).toFixed(1)} days
-              </div>
+            <div className="text-xs text-gray-300 bg-gray-900/50 p-2 rounded space-y-1">
+              <div>Time Conversion: {getTimeConversion(simulationSpeed)}</div>
+              <div>Earth orbit: {getEarthOrbitTime(simulationSpeed)}</div>
             </div>
 
             <div className="flex justify-between text-xs text-gray-400">
