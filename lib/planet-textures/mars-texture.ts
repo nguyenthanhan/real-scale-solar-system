@@ -9,8 +9,8 @@ export function createMarsTexture(
   ctx.fillStyle = "#CD5C5C";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Add surface variations (different rock types)
-  for (let i = 0; i < 800; i++) {
+  // Add surface variations (different rock types) - optimized
+  for (let i = 0; i < 500; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const size = 3 + Math.random() * 8;
@@ -79,8 +79,8 @@ export function createMarsTexture(
     }
   });
 
-  // Add dust storm effects
-  for (let i = 0; i < 200; i++) {
+  // Add dust storm effects (optimized)
+  for (let i = 0; i < 150; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const size = 2 + Math.random() * 6;

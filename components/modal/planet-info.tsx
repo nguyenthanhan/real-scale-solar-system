@@ -139,7 +139,9 @@ export function PlanetInfo({
             </div>
             <div>
               <p className="text-xs opacity-70">Axial Tilt</p>
-              <p className="text-sm">{planet.axialTilt?.toFixed(1)}°</p>
+              <p className="text-sm">
+                {planet.axialTilt?.toFixed(1) || "N/A"}°
+              </p>
             </div>
             <div>
               <div className="grid grid-cols-3 gap-4">
