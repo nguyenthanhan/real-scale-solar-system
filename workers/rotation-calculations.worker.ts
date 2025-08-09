@@ -75,9 +75,8 @@ function generateCacheKey(
   planetRotationPeriod: number,
   rotationSpeedMinutes: number
 ): string {
-  // Use full precision values to avoid quantization issues
-  // This ensures distinct inputs generate distinct cache keys
-  return `${planetRotationPeriod}_${rotationSpeedMinutes}`;
+  // Stable, unambiguous tuple key
+  return JSON.stringify([planetRotationPeriod, rotationSpeedMinutes]);
 }
 
 function getCachedRotationMultiplier(
@@ -135,10 +134,12 @@ function calculateRotationMultiplier(
   }
 
   // Validate sensible ranges to prevent extreme calculations
-  const MAX_ROTATION_PERIOD = 1000; // 1000 days max
-  const MIN_ROTATION_PERIOD = 0.001; // 0.001 days min (about 1.4 minutes)
-  const MAX_SPEED_MINUTES = 1_000_000; // 1 million minutes per second max
-  const MIN_SPEED_MINUTES = 0.001; // 0.001 minutes per second min
+  const {
+    MAX_ROTATION_PERIOD,
+    MIN_ROTATION_PERIOD,
+    MAX_SPEED_MINUTES,
+    MIN_SPEED_MINUTES,
+  } = ROTATION_CONSTANTS;
 
   if (Math.abs(planetRotationPeriod) > MAX_ROTATION_PERIOD) {
     throw new Error(

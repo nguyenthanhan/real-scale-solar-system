@@ -10,6 +10,12 @@ export const ROTATION_CONSTANTS = {
   DEGREES_PER_ROTATION: 360,
   BASE_SPEED_MINUTES: 15,
   DEGREES_PER_SECOND_BASE: 360 / (1440 / 15), // DEGREES_PER_ROTATION / SIMULATED_SECONDS_PER_DAY
+
+  // Validation bounds for input parameters
+  MAX_ROTATION_PERIOD: 1000, // 1000 days max
+  MIN_ROTATION_PERIOD: 0.001, // 0.001 days min (about 1.4 minutes)
+  MAX_SPEED_MINUTES: 1_000_000, // 1 million minutes per second max
+  MIN_SPEED_MINUTES: 0.001, // 0.001 minutes per second min
 } as const;
 
 /**
