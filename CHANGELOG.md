@@ -5,6 +5,47 @@ All notable changes to the Real Scale Solar System project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2025-08-09
+
+### Added
+
+- **Unified Message Handling**: Consolidated multiple message event listeners into single, robust handlers with proper validation
+- **Enhanced Type Safety**: Discriminated union types for texture generation requests with compile-time color validation
+- **Improved Cache Management**: LRU (Least Recently Used) cache implementation with proper eviction strategies
+- **Robust Error Propagation**: Comprehensive error handling with structured error responses and proper promise rejection
+- **Input Validation**: Enhanced validation for canvas dimensions (integer-only), color formats, and rotation parameters
+- **Color Normalization**: Automatic color string normalization for canvas compatibility, preventing transparent output
+- **Worker Error Recovery**: Immediate promise rejection on worker errors, preventing hanging operations
+- **Memory Leak Prevention**: Proper cleanup of pending promises during component unmount and worker termination
+
+### Changed
+
+- **Worker Architecture**: Refactored texture generation and rotation calculation workers for better maintainability
+- **Error Handling**: Enhanced error messages with detailed context and structured response formats
+- **Cache Strategy**: Implemented proper LRU eviction instead of simple FIFO for better performance
+- **Type Safety**: Replaced optional color properties with discriminated unions for compile-time validation
+- **Color Processing**: Enhanced color parsing to support multiple formats (hex, rgb, rgba, named colors)
+- **Validation Logic**: Stricter input validation preventing silent failures and quantization issues
+
+### Fixed
+
+- **Silent Failures**: Fixed issues where invalid hex colors would silently return black instead of throwing errors
+- **Memory Leaks**: Prevented unresolved promises from hanging during worker termination or component unmount
+- **Canvas Compatibility**: Fixed color string normalization to prevent transparent output in canvas operations
+- **Cache Drift**: Eliminated potential drift between worker and main thread validation bounds
+- **Origin Validation**: Removed ineffective origin checks in Web Workers that never fired
+- **Integer Dimensions**: Fixed canvas dimension validation to prevent silent flooring of fractional values
+- **Promise Hanging**: Immediate rejection of pending promises when worker errors occur
+
+### Technical Improvements
+
+- **Worker Communication**: Streamlined message handling with unified validation and error reporting
+- **Type Definitions**: Enhanced TypeScript interfaces with proper discriminated unions and validation bounds
+- **Performance**: Improved cache hit rates with LRU strategy and better memory management
+- **Reliability**: Comprehensive error boundaries and validation throughout the worker system
+
+---
+
 ## [1.0.7] - 2025-08-08
 
 ### Added
