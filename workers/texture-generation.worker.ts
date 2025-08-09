@@ -74,6 +74,40 @@ function validateCanvasDimensions(canvas: OffscreenCanvas): void {
   }
 }
 
+// Helper function to normalize color strings for canvas fillStyle
+function normalizeColorForCanvas(color: string): string {
+  const trimmedColor = color.trim();
+
+  // If it's already a valid CSS color (starts with #, rgb, rgba, or is a named color), return as is
+  if (
+    trimmedColor.startsWith("#") ||
+    trimmedColor.startsWith("rgb") ||
+    /^(red|green|blue|yellow|cyan|magenta|black|white|gray|grey|orange|purple|brown|pink|navy|teal|lime|olive|maroon|silver)$/i.test(
+      trimmedColor
+    )
+  ) {
+    return trimmedColor;
+  }
+
+  // If it's a hex color without #, add the #
+  if (
+    /^[0-9a-f]{3}$/i.test(trimmedColor) ||
+    /^[0-9a-f]{6}$/i.test(trimmedColor)
+  ) {
+    return `#${trimmedColor}`;
+  }
+
+  // For any other format, try to parse it and return a hex string
+  const parsed = parseColor(trimmedColor);
+  return `#${Math.floor(parsed.r * 255)
+    .toString(16)
+    .padStart(2, "0")}${Math.floor(parsed.g * 255)
+    .toString(16)
+    .padStart(2, "0")}${Math.floor(parsed.b * 255)
+    .toString(16)
+    .padStart(2, "0")}`;
+}
+
 // Enhanced color parser that supports multiple formats
 function parseColor(color: string): { r: number; g: number; b: number } {
   if (!color || typeof color !== "string") {
@@ -629,8 +663,8 @@ function createIceGiantTexture(
     // Parse the base color
     const baseColor = parseColor(color);
 
-    // Fill with base color
-    ctx.fillStyle = color;
+    // Fill with base color (normalized for canvas)
+    ctx.fillStyle = normalizeColorForCanvas(color);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Add atmospheric bands (subtle for ice giants)
@@ -696,8 +730,8 @@ function createRockyPlanetTexture(
     // Parse the base color
     const baseColor = parseColor(color);
 
-    // Fill with base color
-    ctx.fillStyle = color;
+    // Fill with base color (normalized for canvas)
+    ctx.fillStyle = normalizeColorForCanvas(color);
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Add surface features (craters, mountains, plains)
