@@ -4,7 +4,7 @@
  * Shows real memory consumption vs estimates
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { textureCache } from "@/utils/texture-cache";
 
 export function MemoryMonitor() {
@@ -12,7 +12,7 @@ export function MemoryMonitor() {
   const [isVisible, setIsVisible] = useState(false);
   const [fps, setFps] = useState(0);
   const [frameCount, setFrameCount] = useState(0);
-  const [lastTime, setLastTime] = useState(0);
+  const lastTimeRef = useRef(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -27,13 +27,13 @@ export function MemoryMonitor() {
     let animationId: number;
 
     const measureFPS = (currentTime: number) => {
-      if (lastTime !== 0) {
-        const deltaTime = currentTime - lastTime;
+      if (lastTimeRef.current !== 0) {
+        const deltaTime = currentTime - lastTimeRef.current;
         const currentFps = 1000 / deltaTime;
         setFps(Math.round(currentFps));
       }
 
-      setLastTime(currentTime);
+      lastTimeRef.current = currentTime;
       setFrameCount((prev) => prev + 1);
       animationId = requestAnimationFrame(measureFPS);
     };
@@ -45,7 +45,7 @@ export function MemoryMonitor() {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [lastTime]);
+  }, []);
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 B";

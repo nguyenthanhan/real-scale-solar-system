@@ -7,13 +7,15 @@ import {
   ReactNode,
   useMemo,
   useCallback,
+  Dispatch,
+  SetStateAction,
 } from "react";
 
 interface SimulationSpeedContextType {
   simulationSpeed: number;
   setSimulationSpeed: (speed: number) => void;
   rotationSpeedMinutes: number;
-  setRotationSpeedMinutes: React.Dispatch<React.SetStateAction<number>>;
+  setRotationSpeedMinutes: Dispatch<SetStateAction<number>>;
 }
 
 const SimulationSpeedContext = createContext<
@@ -43,7 +45,7 @@ export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setRotationSpeedMinutesCallback = useCallback<
-    React.Dispatch<React.SetStateAction<number>>
+    Dispatch<SetStateAction<number>>
   >((value) => {
     setRotationSpeedMinutes(value);
   }, []);
