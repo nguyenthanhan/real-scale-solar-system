@@ -54,7 +54,9 @@ function setCachedRotationMultiplier(
   // Prevent cache from growing too large
   if (workerCache.size >= MAX_CACHE_SIZE) {
     const firstKey = workerCache.keys().next().value;
-    workerCache.delete(firstKey);
+    if (firstKey) {
+      workerCache.delete(firstKey);
+    }
   }
 
   workerCache.set(key, result);
