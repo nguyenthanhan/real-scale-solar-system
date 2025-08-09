@@ -837,7 +837,7 @@ self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
         }
 
         // Convert canvas to ImageBitmap for transfer
-        const imageBitmap = await canvas.transferToImageBitmap();
+        const imageBitmap = canvas.transferToImageBitmap();
 
         const response: TextureGenerationResponse = {
           type: "TEXTURE_GENERATED",
