@@ -84,7 +84,7 @@ export function Planet({
           <PlanetRings
             scaledSize={scaledSize}
             ringColor={planet.ringColor}
-            ringTilt={planet.ringTilt || 0}
+            ringTilt={planet.ringTilt}
             axialTilt={planet.axialTilt}
           />
         )}

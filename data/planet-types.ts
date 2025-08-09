@@ -23,8 +23,8 @@ export interface PlanetData {
   /** The color used to represent the planet in the visualization. */
   color: string;
 
-  /** (Optional) Path or URL to a texture image for the planet's surface. */
-  texture?: string;
+  /** Path or URL to a texture image for the planet's surface. */
+  texture: string;
 
   /** The orbital speed of the planet relative to Earth's orbital speed (Earth = 1). */
   orbitSpeedByEarth: number;
@@ -44,11 +44,11 @@ export interface PlanetData {
   /** Indicates whether the planet has rings. */
   hasRings: boolean;
 
-  /** (Optional) The color of the planet's rings. */
-  ringColor?: string;
+  /** The color of the planet's rings (empty string if no rings). */
+  ringColor: string;
 
-  /** (Optional) The tilt of the planet's rings in degrees. */
-  ringTilt?: number;
+  /** The tilt of the planet's rings in degrees (0 if no rings). */
+  ringTilt: number;
 
   /** A brief description of the planet. */
   description: string;

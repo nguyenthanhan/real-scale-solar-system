@@ -23,6 +23,7 @@ class TextureCache {
   private readonly maxCacheSize = 50; // Maximum number of cached textures
   private readonly maxMemoryUsage = 100 * 1024 * 1024; // 100MB limit
   private currentMemoryUsage = 0;
+  private memoryTrackingEnabled = false;
 
   private generateKey(key: TextureCacheKey): string {
     const { type, width, height, color } = key;
@@ -32,6 +33,50 @@ class TextureCache {
   private estimateTextureSize(width: number, height: number): number {
     // Estimate memory usage: width * height * 4 bytes (RGBA) * 2 (for mipmaps)
     return width * height * 4 * 2;
+  }
+
+  private getActualMemoryUsage(): number {
+    if (!this.memoryTrackingEnabled || typeof performance === "undefined") {
+      return this.currentMemoryUsage; // Fallback to estimated usage
+    }
+
+    try {
+      // Use Performance Memory API for actual memory tracking
+      const memoryInfo = (
+        performance as Performance & { memory?: { usedJSHeapSize: number } }
+      ).memory;
+      if (memoryInfo) {
+        return memoryInfo.usedJSHeapSize;
+      }
+    } catch (error) {
+      console.warn("Failed to get actual memory usage:", error);
+    }
+
+    return this.currentMemoryUsage;
+  }
+
+  private getTextureMemoryUsage(texture: Texture): number {
+    if (!texture.image) {
+      return this.estimateTextureSize(512, 256); // Default fallback
+    }
+
+    try {
+      // Try to get actual texture memory usage
+      if (texture.image instanceof ImageBitmap) {
+        return texture.image.width * texture.image.height * 4; // RGBA
+      } else if (texture.image instanceof HTMLCanvasElement) {
+        return texture.image.width * texture.image.height * 4; // RGBA
+      } else if (texture.image instanceof HTMLImageElement) {
+        return texture.image.naturalWidth * texture.image.naturalHeight * 4; // RGBA
+      } else if (texture.image instanceof ImageData) {
+        return texture.image.data.length; // Actual byte count
+      }
+    } catch (error) {
+      console.warn("Failed to get texture memory usage:", error);
+    }
+
+    // Fallback to estimation
+    return this.estimateTextureSize(512, 256);
   }
 
   private cleanupCache(): void {
@@ -79,7 +124,7 @@ class TextureCache {
 
   set(key: TextureCacheKey, texture: Texture): void {
     const cacheKey = this.generateKey(key);
-    const size = this.estimateTextureSize(key.width, key.height);
+    const actualSize = this.getTextureMemoryUsage(texture);
 
     // Remove existing entry if it exists
     const existing = this.cache.get(cacheKey);
@@ -88,14 +133,14 @@ class TextureCache {
       existing.texture.dispose();
     }
 
-    // Add new entry
+    // Add new entry with actual memory usage
     this.cache.set(cacheKey, {
       texture,
       timestamp: Date.now(),
-      size,
+      size: actualSize,
     });
 
-    this.currentMemoryUsage += size;
+    this.currentMemoryUsage += actualSize;
 
     // Cleanup if necessary
     this.cleanupCache();
@@ -119,15 +164,41 @@ class TextureCache {
   getStats(): {
     size: number;
     memoryUsage: number;
+    actualMemoryUsage: number;
     maxSize: number;
     maxMemoryUsage: number;
+    memoryTrackingEnabled: boolean;
   } {
     return {
       size: this.cache.size,
       memoryUsage: this.currentMemoryUsage,
+      actualMemoryUsage: this.getActualMemoryUsage(),
       maxSize: this.maxCacheSize,
       maxMemoryUsage: this.maxMemoryUsage,
+      memoryTrackingEnabled: this.memoryTrackingEnabled,
     };
+  }
+
+  // Enable/disable actual memory tracking
+  enableMemoryTracking(): boolean {
+    if (typeof performance !== "undefined" && (performance as any).memory) {
+      this.memoryTrackingEnabled = true;
+      console.log("Memory tracking enabled");
+      return true;
+    } else {
+      console.warn("Memory tracking not available - using estimates only");
+      return false;
+    }
+  }
+
+  disableMemoryTracking(): void {
+    this.memoryTrackingEnabled = false;
+    console.log("Memory tracking disabled");
+  }
+
+  // Initialize memory tracking
+  initialize(): void {
+    this.enableMemoryTracking();
   }
 
   // Preload common textures
