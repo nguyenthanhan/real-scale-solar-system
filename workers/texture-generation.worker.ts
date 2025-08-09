@@ -4,20 +4,27 @@
  */
 
 // Message types for worker communication
-interface TextureGenerationRequest {
+interface BaseTextureGenerationRequest {
   type: "GENERATE_TEXTURE";
-  textureType:
-    | "earth"
-    | "mars"
-    | "gas-giant"
-    | "sun"
-    | "ice-giant"
-    | "rocky-planet";
   width: number;
   height: number;
-  color?: string;
   id: string;
 }
+
+interface TextureGenerationRequestWithoutColor
+  extends BaseTextureGenerationRequest {
+  textureType: "earth" | "mars" | "sun";
+}
+
+interface TextureGenerationRequestWithColor
+  extends BaseTextureGenerationRequest {
+  textureType: "gas-giant" | "ice-giant" | "rocky-planet";
+  color: string;
+}
+
+type TextureGenerationRequest =
+  | TextureGenerationRequestWithoutColor
+  | TextureGenerationRequestWithColor;
 
 interface InitWorkerRequest {
   type: "INIT_WORKER";
@@ -76,7 +83,19 @@ function parseColor(color: string): { r: number; g: number; b: number } {
   const trimmedColor = color.trim().toLowerCase();
 
   // Handle hex colors (with or without #)
-  if (trimmedColor.startsWith("#") || /^[0-9a-f]{3,6}$/i.test(trimmedColor)) {
+  if (trimmedColor.startsWith("#")) {
+    // Strict validation for hex colors with #: exactly 3 or 6 valid hex digits
+    if (
+      /^#[0-9a-f]{3}$/i.test(trimmedColor) ||
+      /^#[0-9a-f]{6}$/i.test(trimmedColor)
+    ) {
+      return parseHexColor(trimmedColor);
+    }
+  } else if (
+    /^[0-9a-f]{3}$/i.test(trimmedColor) ||
+    /^[0-9a-f]{6}$/i.test(trimmedColor)
+  ) {
+    // Strict validation for hex colors without #: exactly 3 or 6 valid hex digits
     return parseHexColor(trimmedColor);
   }
 
@@ -758,7 +777,7 @@ self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
 
     switch (type) {
       case "GENERATE_TEXTURE": {
-        const { textureType, width, height, color, id } = event.data;
+        const { textureType, width, height, id } = event.data;
 
         // Validate input parameters
         if (!width || !height || width <= 0 || height <= 0) {
@@ -792,30 +811,27 @@ self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
           case "mars":
             createMarsTexture(ctx, canvas);
             break;
-          case "gas-giant":
-            if (color) {
-              createGasGiantTexture(ctx, canvas, color);
-            } else {
-              throw new Error("Color required for gas giant texture");
-            }
-            break;
           case "sun":
             createSunTexture(ctx, canvas);
             break;
+          case "gas-giant":
           case "ice-giant":
-            if (color) {
-              createIceGiantTexture(ctx, canvas, color);
-            } else {
-              throw new Error("Color required for ice giant texture");
+          case "rocky-planet": {
+            // TypeScript now ensures color exists for these texture types
+            const { color } = event.data as TextureGenerationRequestWithColor;
+            switch (textureType) {
+              case "gas-giant":
+                createGasGiantTexture(ctx, canvas, color);
+                break;
+              case "ice-giant":
+                createIceGiantTexture(ctx, canvas, color);
+                break;
+              case "rocky-planet":
+                createRockyPlanetTexture(ctx, canvas, color);
+                break;
             }
             break;
-          case "rocky-planet":
-            if (color) {
-              createRockyPlanetTexture(ctx, canvas, color);
-            } else {
-              throw new Error("Color required for rocky planet texture");
-            }
-            break;
+          }
           default:
             throw new Error(`Unsupported texture type: ${textureType}`);
         }

@@ -75,6 +75,15 @@ export function useRotationWorker() {
         workerRef.current.onerror = (error) => {
           console.error("Rotation worker error:", error);
           setIsWorkerReady(false);
+
+          // Reject all pending promises immediately
+          const workerError = new Error(
+            `Worker error: ${error.message || "Unknown worker error"}`
+          );
+          for (const [id, request] of pendingRequests.current.entries()) {
+            request.reject(workerError);
+          }
+          pendingRequests.current.clear();
         };
 
         // Initialize worker
@@ -85,6 +94,12 @@ export function useRotationWorker() {
           if (workerRef.current) {
             workerRef.current.terminate();
             workerRef.current = null;
+          }
+
+          // Reject all pending promises before clearing
+          const cleanupError = new Error("Worker terminated during cleanup");
+          for (const [id, request] of pendingRequests.current.entries()) {
+            request.reject(cleanupError);
           }
           pendingRequests.current.clear();
         };
