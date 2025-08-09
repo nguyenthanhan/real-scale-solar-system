@@ -216,6 +216,11 @@ export function useTextureGeneration() {
     await Promise.all(promises);
   }, [generateTexture]);
 
+  // Initialize memory tracking on mount
+  useEffect(() => {
+    textureCache.initialize();
+  }, []);
+
   // Get cache statistics
   const cacheStats = useMemo(() => textureCache.getStats(), []);
 

@@ -77,14 +77,14 @@ function PlanetMesh({
       {planet.hasRings && (
         <PlanetRings
           scaledSize={planetSize}
-          ringColor={planet.ringColor || "#CDCDCD"}
-          ringTilt={planet.ringTilt ?? 0}
-          axialTilt={planet.axialTilt ?? 0}
+          ringColor={planet.ringColor}
+          ringTilt={planet.ringTilt}
+          axialTilt={planet.axialTilt}
         />
       )}
 
       {/* Rotation axis line */}
-      <RotationAxis planetSize={planetSize} axialTilt={planet.axialTilt ?? 0} />
+      <RotationAxis planetSize={planetSize} axialTilt={planet.axialTilt} />
     </group>
   );
 }

@@ -5,16 +5,16 @@ import * as THREE from "three";
 
 interface PlanetRingsProps {
   scaledSize: number;
-  ringColor?: string;
-  ringTilt?: number;
-  axialTilt?: number;
+  ringColor: string;
+  ringTilt: number;
+  axialTilt: number;
 }
 
 export function PlanetRings({
   scaledSize,
-  ringColor = "#CDCDCD",
-  ringTilt = 0,
-  axialTilt = 0,
+  ringColor,
+  ringTilt,
+  axialTilt,
 }: PlanetRingsProps) {
   return (
     <Ring
