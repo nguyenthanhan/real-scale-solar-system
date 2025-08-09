@@ -42,24 +42,18 @@ export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
     setSimulationSpeedState(validSpeed);
   }, []);
 
-  const setRotationSpeedMinutesCallback = useCallback<
-    Dispatch<SetStateAction<number>>
-  >((value) => {
-    setRotationSpeedMinutes(value);
-  }, []);
-
   const contextValue = useMemo<SimulationSpeedContextType>(
     () => ({
       simulationSpeed,
       setSimulationSpeed,
       rotationSpeedMinutes,
-      setRotationSpeedMinutes: setRotationSpeedMinutesCallback,
+      setRotationSpeedMinutes,
     }),
     [
       simulationSpeed,
       setSimulationSpeed,
       rotationSpeedMinutes,
-      setRotationSpeedMinutesCallback,
+      setRotationSpeedMinutes,
     ]
   );
 
