@@ -23,12 +23,12 @@ export function ControlModal({
 
   // Calculate time conversion
   const getTimeConversion = (speed: number): string => {
-    if (speed === 1) return "1s = 1s (real-time)";
-    if (speed < 60) return `1s = ${speed} seconds`;
-    if (speed < 3600) return `1s = ${(speed / 60).toFixed(1)} minutes`;
-    if (speed < 86400) return `1s = ${(speed / 3600).toFixed(1)} hours`;
-    if (speed < 31_536_000) return `1s = ${(speed / 86400).toFixed(1)} days`;
-    return `1s = ${(speed / 31_536_000).toFixed(1)} years`;
+    if (speed === 1) return "1s <-> 1s (real-time)";
+    if (speed < 60) return `1s <-> ${speed} seconds`;
+    if (speed < 3600) return `1s <-> ${(speed / 60).toFixed(1)} minutes`;
+    if (speed < 86400) return `1s <-> ${(speed / 3600).toFixed(1)} hours`;
+    if (speed < 31_536_000) return `1s <-> ${(speed / 86400).toFixed(1)} days`;
+    return `1s <-> ${(speed / 31_536_000).toFixed(1)} years`;
   };
 
   // Calculate Earth orbit time display

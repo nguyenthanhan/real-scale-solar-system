@@ -1,10 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
 
 interface RotationSpeedContextType {
   rotationSpeedMinutes: number;
-  setRotationSpeedMinutes: (speed: number) => void;
+  setRotationSpeedMinutes: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const RotationSpeedContext = createContext<
@@ -12,12 +19,24 @@ const RotationSpeedContext = createContext<
 >(undefined);
 
 export function RotationSpeedProvider({ children }: { children: ReactNode }) {
-  const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState(15);
+  const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState<number>(15);
+
+  const setRotationSpeedMinutesCallback = useCallback<
+    React.Dispatch<React.SetStateAction<number>>
+  >((value) => {
+    setRotationSpeedMinutes(value);
+  }, []);
+
+  const contextValue = useMemo<RotationSpeedContextType>(
+    () => ({
+      rotationSpeedMinutes,
+      setRotationSpeedMinutes: setRotationSpeedMinutesCallback,
+    }),
+    [rotationSpeedMinutes, setRotationSpeedMinutesCallback]
+  );
 
   return (
-    <RotationSpeedContext.Provider
-      value={{ rotationSpeedMinutes, setRotationSpeedMinutes }}
-    >
+    <RotationSpeedContext.Provider value={contextValue}>
       {children}
     </RotationSpeedContext.Provider>
   );

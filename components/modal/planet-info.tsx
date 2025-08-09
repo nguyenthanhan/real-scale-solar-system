@@ -14,22 +14,23 @@ export function PlanetInfo({
   planet: PlanetData;
   onClose: () => void;
 }) {
+  if (!planet) return null;
+
   const { rotationSpeedMinutes, setRotationSpeedMinutes } = useRotationSpeed();
   const [show3DModel, setShow3DModel] = useState(false);
 
   useEffect(() => {
-    // Delay 3D model loading to prevent lag
+    // Delay 3D model loading per planet to prevent lag and show placeholder
+    setShow3DModel(false);
     const timer = setTimeout(() => {
       setShow3DModel(true);
     }, 100);
     return () => clearTimeout(timer);
-  }, [planet.name]);
-
-  if (!planet) return null;
+  }, [planet?.name]);
 
   return (
     <motion.div
-      className="bg-black/80 text-white p-4 rounded-lg w-[900px] backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10"
+      className="bg-black/80 text-white p-4 rounded-lg w-full max-w-[900px] mx-auto backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -46,10 +47,10 @@ export function PlanetInfo({
         </button>
       </div>
 
-      <div className="flex gap-6 min-h-[450px]">
+      <div className="flex flex-col lg:flex-row gap-6 min-h-[450px]">
         {/* 3D Planet Model - Left Side */}
-        <div className="w-[400px] flex flex-col">
-          <div className="flex-1 rounded-lg overflow-hidden bg-black/20">
+        <div className="w-full lg:w-[400px] flex flex-col">
+          <div className="flex-1 rounded-lg overflow-hidden bg-black/20 min-h-[300px] lg:min-h-0">
             {show3DModel ? (
               <Planet3DModel
                 planet={planet}
@@ -74,7 +75,7 @@ export function PlanetInfo({
             <p className="text-sm opacity-80">{planet.description}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
             <div>
               <p className="text-xs opacity-70">Diameter</p>
               <p className="text-sm">
@@ -141,25 +142,29 @@ export function PlanetInfo({
               <p className="text-sm">{planet.axialTilt?.toFixed(1)}°</p>
             </div>
             <div>
-              <div>
-                <p className="text-xs opacity-70">Rotation Speed</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">1s = {rotationSpeedMinutes}m</span>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs opacity-70">Rotation Speed</p>
+                  <span className="text-sm">
+                    1s &lt;-&gt; {rotationSpeedMinutes}m
+                  </span>
+                </div>
+                <div className="col-span-2 space-y-2">
                   <input
                     type="range"
-                    min="5"
-                    max="1440"
-                    step="5"
+                    min="0.5"
+                    max="720"
+                    step="0.5"
                     value={rotationSpeedMinutes}
                     onChange={(e) =>
                       setRotationSpeedMinutes(Number(e.target.value))
                     }
-                    className="w-72 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                   />
-                </div>
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>5 min</span>
-                  <span>24 hours</span>
+                  <div className="flex justify-between text-xs text-gray-400">
+                    <span>30s</span>
+                    <span>12 hours</span>
+                  </div>
                 </div>
               </div>
             </div>

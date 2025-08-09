@@ -1,6 +1,6 @@
 # Real Scale Solar System 🌌
 
-An immersive, true-to-scale 3D visualization of our solar system with accurate planetary sizes, distances, orbits, and scientific data. Experience the real proportions of our cosmic neighborhood directly in your browser through this educational and scientifically accurate simulation.
+An immersive, true-to-scale 3D visualization of our solar system with accurate planetary sizes, distances, orbits, and scientific data. Experience the real proportions of our cosmic neighborhood directly in your browser.
 
 > 🚀 **Experience the vastness of space** - See how small Earth really is compared to the Sun, and how far apart the planets actually are in our solar system.
 
@@ -14,98 +14,123 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 
 ### 🌟 Core Experience
 
-- **True-to-Scale 3D Visualization**: Explore a scientifically accurate model of our solar system with real proportions
-- **Real Scale Accuracy**: Planetary sizes and distances at true astronomical proportions - see how vast space really is!
+- **True-to-Scale 3D Visualization**: Explore a scientifically accurate model with real proportions
+- **Realistic Planetary Details**: Accurate representation of planet sizes, colors, and features
 - **Immersive Star Field**: 10,000+ stars create a realistic space environment
-- **Realistic Planetary Details**: Accurate representation of planet sizes, colors, and features including Saturn's, Jupiter's, Uranus', and Neptune's rings
-- **3D Planet Models in Modal**: Interactive 3D rotating planet models with realistic textures and axial tilts
-- **Realistic Planet Textures**: Procedurally generated surfaces with accurate colors, features, and atmospheric effects
+- **Dynamic Atmospheric Effects**: View-dependent atmospheric glow for planets with atmospheres
+- **3D Planet Models**: Interactive rotating planet models with realistic textures and axial tilts
+- **Procedural Textures**: Dynamically generated surfaces with accurate colors and features
 
 ### 🎮 Interactive Controls
 
-- **Advanced Camera Controls**: Navigate the solar system with intuitive mouse controls
-- **Extreme Simulation Speed**: Control the pace from 1x (real-time) to 10,000,000x with smooth slider control
+- **Advanced Camera Controls**: Navigate with intuitive mouse/touch controls
+- **Extreme Simulation Speed**: Control from 1x (real-time) to 10,000,000x
 - **Real-Time Conversion Display**: See exactly how much real time corresponds to simulation time
 - **Click to Explore**: Click on any planet or the Sun for detailed scientific information
-- **3D Planet Rotation Control**: Adjust rotation speed in modal from 5 minutes to 24 hours per second
-- **Smart Modal Management**: Planet labels automatically hide when viewing detailed information
+- **3D Planet Rotation Control**: Adjust rotation speed in modal from 30 seconds to 12 hours per second
+- **Optimized Context Performance**: Memoized rotation speed controls prevent unnecessary re-renders
 - **Responsive Design**: Fully responsive layout that works across all devices
 
 ### 🔬 Scientific Accuracy
 
-- **Procedural Textures**: Dynamically generated planet surfaces with realistic variations
-- **Axial Tilt**: Realistic planetary axial tilts affecting rotation visualization
-- **Elliptical Orbits**: True orbital paths with proper eccentricity calculations
+- **Accurate Orbital Mechanics**: True orbital paths with proper eccentricity calculations
 - **Real Scale Proportions**: Sun dominates the scene as in reality, planets appear as small objects
-- **Accurate Orbital Periods**: Each planet moves at its real orbital speed relative to Earth
-- **Realistic Planet Surfaces**: Earth with continents, oceans, and ice caps; Mars with volcanoes and dust storms
-- **Gas Giant Atmospheres**: Jupiter and Saturn with atmospheric bands, storms, and cloud patterns
+- **Axial Tilt Visualization**: Realistic planetary axial tilts affecting rotation
+- **Retrograde Rotation**: Venus and Uranus rotate in the opposite direction
+- **Ring Systems**: Saturn, Jupiter, Uranus, and Neptune with accurate ring representations
 - **Solar Features**: Sun with granulation, sunspots, prominences, and limb darkening
 
-## 🛠️ Technical Implementation
+## ✅ Project Checklist
 
-This project leverages cutting-edge web technologies to deliver a performant and visually stunning experience:
+### 🌟 Core Features
 
-### 🎯 Frontend Framework
+- [x] **True-to-scale 3D solar system visualization**
+- [x] **Realistic planetary sizes and distances**
+- [x] **Accurate orbital mechanics with elliptical paths**
+- [x] **Procedurally generated planet textures**
+- [x] **Interactive 3D planet models in modal**
+- [x] **Realistic star field with 10,000+ stars**
+- [x] **Dynamic atmospheric effects (view-dependent)**
+- [x] **Axial tilt visualization**
+- [x] **Planet rotation with accurate speeds**
+- [x] **Saturn, Jupiter, Uranus, and Neptune ring systems**
 
-- **Next.js 15.2.4**: React framework with App Router providing the foundation
-- **React 19**: Latest React version with improved performance and features
-- **TypeScript 5**: Type-safe code ensuring reliability and better developer experience
+### 🎮 User Interface & Controls
 
-### 🌌 3D Graphics & Visualization
+- [x] **Advanced camera controls (orbit, zoom, pan)**
+- [x] **Simulation speed control (1x to 10,000,000x)**
+- [x] **Real-time conversion display**
+- [x] **Click-to-explore planet information**
+- [x] **Responsive design for all devices**
+- [x] **Touch controls for mobile devices**
+- [x] **Smart UI with auto-hiding labels**
+- [x] **3D planet rotation speed control in modal**
+- [x] **Optimized context performance with memoization**
+- [x] **Enhanced type safety with explicit TypeScript typing**
 
-- **React Three Fiber 9.1.2**: React renderer for Three.js, enabling declarative 3D scene creation
-- **Three.js 0.176.0**: JavaScript 3D library powering the visualization
-- **Canvas API**: Procedural texture generation for realistic planet surfaces
+### 🔬 Scientific Accuracy
 
-### 🎨 Styling & Animation
+- [x] **Accurate orbital periods and speeds**
+- [x] **Realistic planet surfaces and features**
+- [x] **Earth with continents, oceans, and ice caps**
+- [x] **Mars with volcanoes and dust storms**
+- [x] **Gas giants with atmospheric bands**
+- [x] **Sun with granulation and limb darkening**
+- [x] **Retrograde rotation for Venus and Uranus**
+- [x] **Realistic atmospheric glow effects**
 
-- **Tailwind CSS 3.4.17**: Utility-first CSS framework for responsive styling
-- **Framer Motion 12.9.2**: Smooth animations and transitions for UI elements
+### 🚀 Future Enhancements
 
-### 🏗️ Architecture
+- [ ] **Timeline feature for historical planetary positions**
+- [ ] **Enhanced texture generation with more detail**
+- [ ] **Additional camera presets**
+- [ ] **Multi-language support**
 
-- **Custom React Hooks**: Modular state management and lifecycle control
-- **Component-Based Design**: Reusable, maintainable code structure
-- **Performance Optimized**: Efficient rendering with proper Three.js practices
+## 🛠️ Technical Stack
 
-## 🎮 Controls and Interaction
+### Frontend Framework
 
-### 🖱️ Mouse Controls
+- **Next.js 15.2.4**: React framework with App Router
+- **React 19**: Latest React version with improved performance and hooks optimization
+- **TypeScript 5**: Type-safe code ensuring reliability and explicit typing
 
-- **Click and Drag**: Orbit around the solar system
-- **Scroll**: Zoom in/out with smooth camera movement
+### 3D Graphics & Visualization
+
+- **React Three Fiber 9.1.2**: React renderer for Three.js
+- **Three.js 0.176.0**: JavaScript 3D library
+- **Canvas API**: Procedural texture generation
+
+### Styling & Animation
+
+- **Tailwind CSS 3.4.17**: Utility-first CSS framework
+- **Framer Motion 12.9.2**: Smooth animations and transitions
+
+### Performance & State Management
+
+- **React Context API**: Optimized with useMemo and useCallback for stable references
+- **Explicit TypeScript Typing**: Enhanced type safety across all components
+- **Memoized Context Values**: Prevents unnecessary re-renders and improves performance
+
+## 🎮 How to Use
+
+### Controls
+
+- **Mouse/Touch**: Orbit around the solar system
+- **Scroll/Pinch**: Zoom in/out with smooth camera movement
 - **Right-Click and Drag**: Pan the view
+- **Click on Planets**: View detailed scientific information
+- **Speed Slider**: Adjust simulation speed from 1x to 10,000,000x
 
-### 🔍 Interaction
+### Features
 
-- **Click on any planet or the sun**: View detailed scientific information in a modal with 3D rotating model
-- **Click outside of information cards**: Close the current information panel
-- **Speed Control Slider**: Manually adjust simulation speed from 1x to 10,000,000x with real-time updates
-- **Time Conversion Display**: See how much real time corresponds to simulation time (e.g., "1s = 8.3m • Earth orbit: 0.7 days")
-- **Rotation Speed Control**: Adjust 3D planet rotation speed from 5 minutes to 24 hours per second
-- **Hide/Show Controls**: Double-click the control panel to toggle visibility
+- **Real-Time Conversion**: See how much real time corresponds to simulation time
+- **3D Planet Models**: Interactive rotating models in modal with accurate axial tilts
 - **Smart UI**: Planet labels automatically hide when viewing detailed information
-
-### 📱 Mobile Support
-
-- **Touch Controls**: Full support for touch devices
-- **Responsive Interface**: Optimized for all screen sizes
-- **Gesture Support**: Pinch to zoom, swipe to orbit
+- **Responsive Design**: Optimized for all screen sizes and devices
 
 ## 🌍 Planet Information
 
-The simulation includes scientifically accurate data for all major celestial bodies in our solar system:
-
-### ☀️ The Sun
-
-- **Central star** of our solar system with realistic glow effects
-- **Procedurally generated surface** with granulation, sunspots, and solar prominences
-- **Real-time rotation** synchronized with simulation speed
-- **Limb darkening effect** for realistic solar appearance
-- **Detailed information** including temperature, composition, and fun facts
-
-### 🪐 The Planets
+The simulation includes scientifically accurate data for all major celestial bodies:
 
 | Planet      | Key Features    | Special Characteristics                         |
 | ----------- | --------------- | ----------------------------------------------- |
@@ -118,39 +143,22 @@ The simulation includes scientifically accurate data for all major celestial bod
 | **Uranus**  | Ice giant       | Unique sideways rotation, subtle rings          |
 | **Neptune** | Windiest planet | Speeds reaching 2,100 km/h, ring system         |
 
-### 🔬 Scientific Data
+Each celestial body features realistic orbital periods, accurate rotation speeds, true-to-scale sizes, procedurally generated textures, and comprehensive scientific data.
 
-Each celestial body features:
+## 🔧 Recent Improvements
 
-- **Realistic orbital periods** relative to Earth with elliptical paths
-- **Accurate rotation speeds** with proper axial tilts
-- **True-to-scale sizes and distances** (real astronomical proportions)
-- **Procedurally generated textures** showing surface variations
-- **Comprehensive scientific data** including diameter, gravity, atmosphere composition
-- **Dynamic labels** that adjust based on camera distance and modal state
-- **3D rotation visualization** with accurate axial tilts and rotation directions
-- **Realistic surface features** including continents, volcanoes, atmospheric storms
+### Performance Optimizations
 
-## 🏗️ Technical Architecture
+- **Context Memoization**: Rotation speed context now uses `useMemo` and `useCallback` for stable references
+- **Explicit TypeScript Typing**: All state and context values have explicit types for better type safety
+- **Reduced Re-renders**: Memoized context values prevent unnecessary component re-renders
+- **Enhanced Error Handling**: Improved context provider error boundaries and null checks
 
-### 🧩 Component Structure
+### Code Quality Enhancements
 
-- **SolarSystem**: Main 3D scene container with camera and lighting
-- **Planet**: Individual planet component with orbital and rotation logic
-- **Sun**: Central star with glow effects and light emission
-- **Modal Components**: Information display with 3D planet models and rotation controls
-- **Custom Hooks**: Modular logic for movement, materials, and interactions
-- **Texture Generators**: Procedural texture creation for realistic planet surfaces
-
-### ⚡ Key Features
-
-- **Elliptical Orbits**: Realistic orbital paths with eccentricity calculations
-- **Procedural Textures**: Canvas-generated surfaces for each planet type with realistic features
-- **3D Planet Models**: Interactive rotating models in modal with accurate axial tilts
-- **Rotation Speed Control**: Adjustable planet rotation speed with context-based state management
-- **Performance Optimization**: Efficient rendering with proper Three.js practices
-- **Type Safety**: Comprehensive TypeScript interfaces for all data structures
-- **Responsive Design**: Mobile-friendly interface with adaptive controls
+- **Type Safety**: Explicit typing for all context state and callback functions
+- **Performance Monitoring**: Optimized context value stability across renders
+- **Maintainability**: Clear type definitions and memoization patterns
 
 ## 🚀 Getting Started
 
@@ -187,10 +195,12 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 
 ### Development Guidelines
 
-- Follow TypeScript best practices
-- Maintain component reusability
+- Follow TypeScript best practices with explicit typing
+- Use React hooks optimization (useMemo, useCallback) for performance
+- Maintain component reusability and proper context patterns
 - Add proper documentation for new features
 - Ensure responsive design compatibility
+- Implement proper error boundaries and null checks
 
 ## 📄 License
 
@@ -203,98 +213,38 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **React Three Fiber** for seamless React integration
 - **Next.js team** for the excellent framework
 
-## 📊 Performance and Browser Compatibility
+## 📊 Performance & Compatibility
 
-This application is optimized for modern browsers and requires WebGL support. For the best experience:
+This application is optimized for modern browsers and requires WebGL support:
 
 - **Recommended browsers**: Chrome, Firefox, Safari, or Edge (latest versions)
 - **WebGL support**: Ensure WebGL is enabled in your browser
 - **Hardware**: Dedicated graphics card recommended for smoother performance
 - **Mobile**: Full support for touch devices with optimized controls
+- **Minimum requirements**: 4GB RAM and modern CPU
 
 ## 🔄 Release Process
 
-The project uses semantic versioning for releases. To create a new release:
+The project uses semantic versioning for releases:
 
 ```bash
-# Push current changes without version bumping
+# Create a new release
 pnpm release
 
-# Release a patch version (bug fixes, small improvements)
-pnpm release:patch
-
-# Release a minor version (new features, backward compatible)
-pnpm release:minor
-
-# Release a major version (breaking changes)
-pnpm release:major
+# Release specific versions
+pnpm release:patch  # Bug fixes, small improvements
+pnpm release:minor  # New features, backward compatible
+pnpm release:major  # Breaking changes
 ```
 
-### 🚀 Automated GitHub Releases
+### Automated GitHub Releases
 
-When you create a release using the release commands, the system will:
+When you create a release, the system will:
 
-1. **Create a git tag** with the new version
-2. **Trigger GitHub Actions** to automatically create a GitHub release
-3. **Extract changelog content** from CHANGELOG.md for that specific version
-4. **Create a formatted release** with:
-   - Release title and description
-   - Changelog content from CHANGELOG.md
-   - Links to compare changes
-   - Automatic deployment to Vercel
-
-### 📝 Manual Changelog Extraction
-
-You can manually extract changelog content for any version:
-
-```bash
-# Extract changelog for a specific version
-pnpm changelog 1.0.0
-
-# Or use the script directly
-node scripts/extract-changelog.js 1.0.0
-```
-
-- Minimum: 4GB RAM and modern CPU
-
-## Credits and Attribution
-
-- Initially created with [v0.dev](https://v0.dev) by Vercel
-- Astronomical data sourced from NASA's public databases
-- 3D visualization powered by Three.js and React Three Fiber
-- Procedural textures generated using HTML5 Canvas API
-- Special thanks to the open-source community for their contributions to the libraries used in this project
-
-## Development and Contributions
-
-This project is open to contributions. Feel free to submit issues and pull requests to help improve the simulation or add new features.
-
-### Contributing Guidelines
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Future Improvements
-
-- Add dwarf planets (Pluto, Ceres, etc.)
-- Implement asteroid belt visualization
-- Add moon systems for the outer planets
-- Create a timeline feature to observe planetary positions at different dates
-- Enhanced texture generation with more realistic surface details
-- Additional camera presets for different viewing angles
-- Educational mode with interactive learning elements
-- VR/AR support for immersive experiences
-- Multi-language support for global accessibility
-- Real-time weather data integration for Earth
-- Enhanced atmospheric effects and cloud systems
-- Interactive planet surface exploration
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+1. Create a git tag with the new version
+2. Trigger GitHub Actions to automatically create a GitHub release
+3. Extract changelog content from CHANGELOG.md
+4. Create a formatted release with automatic deployment to Vercel
 
 ## Support
 

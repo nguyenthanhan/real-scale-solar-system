@@ -50,13 +50,13 @@ export function createMarsTexture(
 
   features.forEach((feature) => {
     ctx.fillStyle = feature.color;
-    ctx.beginPath();
     const x = feature.x * canvas.width;
     const y = feature.y * canvas.height;
     const size = feature.size * Math.min(canvas.width, canvas.height);
 
     if (feature.type === "volcano") {
       // Create volcano shape
+      ctx.beginPath();
       ctx.moveTo(x, y);
       for (let i = 0; i < 16; i++) {
         const angle = (i * Math.PI) / 8;
@@ -73,6 +73,7 @@ export function createMarsTexture(
       ctx.fillRect(x - size / 2, y - size / 4, size, size / 2);
     } else {
       // Create crater
+      ctx.beginPath();
       ctx.arc(x, y, size, 0, Math.PI * 2);
       ctx.fill();
     }
@@ -84,7 +85,7 @@ export function createMarsTexture(
     const y = Math.random() * canvas.height;
     const size = 2 + Math.random() * 6;
 
-    ctx.fillStyle = "rgba(255, 228, 196, 0.4)";
+    ctx.fillStyle = "#FFE4C466";
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
@@ -104,9 +105,9 @@ export function createMarsTexture(
     canvas.height / 2,
     canvas.width / 2
   );
-  dustGradient.addColorStop(0, "rgba(255, 228, 196, 0.1)");
-  dustGradient.addColorStop(0.8, "rgba(255, 228, 196, 0.05)");
-  dustGradient.addColorStop(1, "rgba(255, 228, 196, 0)");
+  dustGradient.addColorStop(0, "#FFE4C41A");
+  dustGradient.addColorStop(0.8, "#FFE4C40D");
+  dustGradient.addColorStop(1, "#FFE4C400");
   ctx.fillStyle = dustGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }

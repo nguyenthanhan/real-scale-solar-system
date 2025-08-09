@@ -10,6 +10,7 @@ import { usePlanetMovement } from "@/hooks/usePlanetMovement";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { OrbitPath } from "@/components/planet/orbit-path";
+import { PlanetAtmosphericGlow } from "@/components/planet/planet-atmospheric-glow";
 
 // Define the planet props
 interface PlanetProps {
@@ -72,6 +73,13 @@ export function Planet({
         >
           <primitive object={planetMaterial} attach="material" />
         </Sphere>
+
+        {/* Atmospheric glow effect */}
+        <PlanetAtmosphericGlow
+          planetSize={scaledSize}
+          planetName={planet.name}
+        />
+
         {planet.hasRings && (
           <PlanetRings
             scaledSize={scaledSize}
