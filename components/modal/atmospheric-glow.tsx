@@ -8,28 +8,44 @@ interface AtmosphericGlowProps {
   planetName: string;
 }
 
-export function AtmosphericGlow({ planetSize, planetName }: AtmosphericGlowProps) {
-  // Only add atmospheric glow to certain planets
-  const hasAtmosphere = ["Earth", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"].includes(planetName);
-  
+export function AtmosphericGlow({
+  planetSize,
+  planetName,
+}: AtmosphericGlowProps) {
+  // Normalize planet name to lowercase for case-insensitive comparison
+  const normalizedPlanetName = planetName.toLowerCase();
+
+  // Only add atmospheric glow to certain planets (using Set for efficient lookup)
+  const planetsWithAtmosphere = new Set([
+    "earth",
+    "venus",
+    "mars",
+    "jupiter",
+    "saturn",
+    "uranus",
+    "neptune",
+  ]);
+
+  const hasAtmosphere = planetsWithAtmosphere.has(normalizedPlanetName);
+
   if (!hasAtmosphere) return null;
 
   // Different glow colors for different planets
   const getGlowColor = (planetName: string) => {
-    switch (planetName) {
-      case "Earth":
+    switch (planetName.toLowerCase()) {
+      case "earth":
         return "#4B6CB7";
-      case "Venus":
+      case "venus":
         return "#E6E6FA";
-      case "Mars":
+      case "mars":
         return "#d14b28";
-      case "Jupiter":
+      case "jupiter":
         return "#D8CA9D";
-      case "Saturn":
+      case "saturn":
         return "#f5deb3";
-      case "Uranus":
+      case "uranus":
         return "#afeeee";
-      case "Neptune":
+      case "neptune":
         return "#4169e1";
       default:
         return "#ffffff";

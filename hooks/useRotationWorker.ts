@@ -4,6 +4,7 @@
  */
 
 import { useRef, useCallback, useEffect, useState } from "react";
+import { calculateRotationMultiplier } from "@/utils/rotation-calculations";
 
 interface RotationCalculationRequest {
   type: "CALCULATE_ROTATION_MULTIPLIER";
@@ -85,15 +86,20 @@ export function useRotationWorker() {
     }
   }, []);
 
-  // Calculate rotation multiplier using worker
-  const calculateRotationMultiplier = useCallback(
+  // Calculate rotation multiplier using worker with synchronous fallback
+  const calculateRotationMultiplierAsync = useCallback(
     (
       planetRotationPeriod: number,
       rotationSpeedMinutes: number
     ): Promise<number> => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         if (!workerRef.current || !isWorkerReady) {
-          reject(new Error("Worker not ready"));
+          // Synchronous fallback when worker is not ready
+          const result = calculateRotationMultiplier(
+            planetRotationPeriod,
+            rotationSpeedMinutes
+          );
+          resolve(result);
           return;
         }
 
@@ -112,11 +118,16 @@ export function useRotationWorker() {
 
         workerRef.current.postMessage(request);
 
-        // Timeout after 1 second
+        // Timeout after 1 second - fallback to synchronous calculation
         setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
             pendingRequests.current.delete(requestId);
-            reject(new Error("Worker calculation timeout"));
+            // Fallback to synchronous calculation on timeout
+            const result = calculateRotationMultiplier(
+              planetRotationPeriod,
+              rotationSpeedMinutes
+            );
+            resolve(result);
           }
         }, 1000);
       });
@@ -126,6 +137,6 @@ export function useRotationWorker() {
 
   return {
     isWorkerReady,
-    calculateRotationMultiplier,
+    calculateRotationMultiplier: calculateRotationMultiplierAsync,
   };
 }

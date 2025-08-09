@@ -23,6 +23,7 @@ export function usePlanetMovement({
   const lastTimeRef = useRef(0);
   const totalTimeRef = useRef(0);
   const lastLoggedDayRef = useRef(-1);
+  const axialTiltSetRef = useRef(false);
 
   // Calculate orbital period in seconds for each planet
   const getOrbitalPeriodInSeconds = (planetName: string): number => {
@@ -128,11 +129,12 @@ export function usePlanetMovement({
       // Earth, Mars, Jupiter, Saturn, Neptune: positive rotationSpeedByDays (prograde) - should rotate counterclockwise
       const rotationDirection = planet.rotationSpeedByDays < 0 ? -1 : 1;
 
-      // Apply axial tilt
-      if (!planetRef.current.rotation.x) {
+      // Apply axial tilt only once
+      if (!axialTiltSetRef.current) {
         planetRef.current.rotation.x = THREE.MathUtils.degToRad(
           planet.axialTilt
         );
+        axialTiltSetRef.current = true;
       }
 
       planetRef.current.rotation.y += rotationSpeed * rotationDirection;

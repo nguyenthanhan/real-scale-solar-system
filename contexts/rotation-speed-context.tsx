@@ -9,17 +9,38 @@ import {
   useCallback,
 } from "react";
 
-interface RotationSpeedContextType {
+interface SimulationSpeedContextType {
+  simulationSpeed: number;
+  setSimulationSpeed: (speed: number) => void;
   rotationSpeedMinutes: number;
   setRotationSpeedMinutes: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RotationSpeedContext = createContext<
-  RotationSpeedContextType | undefined
+const SimulationSpeedContext = createContext<
+  SimulationSpeedContextType | undefined
 >(undefined);
 
-export function RotationSpeedProvider({ children }: { children: ReactNode }) {
+const MAX_SPEED = 10000000;
+const MIN_SPEED = 1;
+
+export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
+  const [simulationSpeed, setSimulationSpeedState] = useState<number>(2000000);
   const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState<number>(15);
+
+  const setSimulationSpeed = useCallback((speed: number) => {
+    let validSpeed = isNaN(speed) ? MIN_SPEED : Number(speed);
+    validSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, validSpeed));
+
+    if (validSpeed > MIN_SPEED && validSpeed < MAX_SPEED) {
+      if (validSpeed >= 100 && validSpeed < MAX_SPEED) {
+        validSpeed = Math.round(validSpeed / 100) * 100;
+      } else {
+        validSpeed = Math.round(validSpeed);
+      }
+    }
+
+    setSimulationSpeedState(validSpeed);
+  }, []);
 
   const setRotationSpeedMinutesCallback = useCallback<
     React.Dispatch<React.SetStateAction<number>>
@@ -27,27 +48,48 @@ export function RotationSpeedProvider({ children }: { children: ReactNode }) {
     setRotationSpeedMinutes(value);
   }, []);
 
-  const contextValue = useMemo<RotationSpeedContextType>(
+  const contextValue = useMemo<SimulationSpeedContextType>(
     () => ({
+      simulationSpeed,
+      setSimulationSpeed,
       rotationSpeedMinutes,
       setRotationSpeedMinutes: setRotationSpeedMinutesCallback,
     }),
-    [rotationSpeedMinutes, setRotationSpeedMinutesCallback]
+    [
+      simulationSpeed,
+      setSimulationSpeed,
+      rotationSpeedMinutes,
+      setRotationSpeedMinutesCallback,
+    ]
   );
 
   return (
-    <RotationSpeedContext.Provider value={contextValue}>
+    <SimulationSpeedContext.Provider value={contextValue}>
       {children}
-    </RotationSpeedContext.Provider>
+    </SimulationSpeedContext.Provider>
   );
 }
 
-export function useRotationSpeed() {
-  const context = useContext(RotationSpeedContext);
+export function useSimulationSpeed() {
+  const context = useContext(SimulationSpeedContext);
   if (context === undefined) {
     throw new Error(
-      "useRotationSpeed must be used within a RotationSpeedProvider"
+      "useSimulationSpeed must be used within a SimulationSpeedProvider"
     );
   }
   return context;
+}
+
+// Legacy hook for backward compatibility
+export function useRotationSpeed() {
+  const context = useContext(SimulationSpeedContext);
+  if (context === undefined) {
+    throw new Error(
+      "useRotationSpeed must be used within a SimulationSpeedProvider"
+    );
+  }
+  return {
+    rotationSpeedMinutes: context.rotationSpeedMinutes,
+    setRotationSpeedMinutes: context.setRotationSpeedMinutes,
+  };
 }

@@ -33,14 +33,14 @@ export function createSunTexture(
     const dx = x - canvas.width / 2;
     const dy = y - canvas.height / 2;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const maxDistance = canvas.width / 2;
+    const maxDistance = Math.min(canvas.width, canvas.height) / 2;
     const normalizedDistance = distance / maxDistance;
 
     // Brighter granules in center, darker at edges
-    const brightness = 0.8 + (1 - normalizedDistance) * 0.4;
-    const red = Math.floor(255 * brightness);
-    const green = Math.floor(200 * brightness);
-    const blue = Math.floor(50 * brightness);
+    const brightness = Math.min(1.0, 0.8 + (1 - normalizedDistance) * 0.4);
+    const red = Math.min(255, Math.floor(255 * brightness));
+    const green = Math.min(255, Math.floor(200 * brightness));
+    const blue = Math.min(255, Math.floor(50 * brightness));
 
     ctx.fillStyle = `#${red.toString(16).padStart(2, "0")}${green
       .toString(16)

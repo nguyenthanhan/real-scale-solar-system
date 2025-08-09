@@ -77,6 +77,9 @@ export function useTextureGeneration() {
                 const texture = new Texture(imageData);
                 texture.needsUpdate = true;
 
+                // Close the ImageBitmap to free GPU memory
+                imageData.close();
+
                 callback(texture);
                 pendingRequests.current.delete(id);
                 setIsGenerating(false);
@@ -85,6 +88,12 @@ export function useTextureGeneration() {
                   "Error creating texture from ImageBitmap:",
                   error
                 );
+                // Ensure ImageBitmap is closed even on error
+                try {
+                  imageData.close();
+                } catch (closeError) {
+                  console.warn("Error closing ImageBitmap:", closeError);
+                }
                 setIsGenerating(false);
               }
             }

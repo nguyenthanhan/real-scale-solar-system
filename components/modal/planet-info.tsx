@@ -14,10 +14,10 @@ export function PlanetInfo({
   planet: PlanetData;
   onClose: () => void;
 }) {
-  if (!planet) return null;
-
   const { rotationSpeedMinutes, setRotationSpeedMinutes } = useRotationSpeed();
   const [show3DModel, setShow3DModel] = useState(false);
+
+  if (!planet) return null;
 
   useEffect(() => {
     // Delay 3D model loading per planet to prevent lag and show placeholder

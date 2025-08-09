@@ -3,7 +3,7 @@
  * Prevents unnecessary regeneration and improves performance
  */
 
-import { Texture } from "three";
+import { Texture, Color } from "three";
 
 export interface TextureCacheKey {
   type: "earth" | "mars" | "gas-giant" | "sun" | "ice-giant" | "rocky-planet";
@@ -27,7 +27,9 @@ class TextureCache {
 
   private generateKey(key: TextureCacheKey): string {
     const { type, width, height, color } = key;
-    return `${type}_${width}x${height}_${color || "default"}`;
+    const normalizedColor =
+      typeof color === "string" ? color.trim().toLowerCase() : "default";
+    return `${type}_${width}x${height}_${normalizedColor}`;
   }
 
   private estimateTextureSize(width: number, height: number): number {
@@ -61,15 +63,27 @@ class TextureCache {
     }
 
     try {
-      // Try to get actual texture memory usage
-      if (texture.image instanceof ImageBitmap) {
-        return texture.image.width * texture.image.height * 4; // RGBA
-      } else if (texture.image instanceof HTMLCanvasElement) {
-        return texture.image.width * texture.image.height * 4; // RGBA
-      } else if (texture.image instanceof HTMLImageElement) {
-        return texture.image.naturalWidth * texture.image.naturalHeight * 4; // RGBA
-      } else if (texture.image instanceof ImageData) {
-        return texture.image.data.length; // Actual byte count
+      // Try to get actual texture memory usage with safe instanceof checks
+      if (
+        typeof ImageBitmap !== "undefined" &&
+        texture.image instanceof ImageBitmap
+      ) {
+        return texture.image.width * texture.image.height * 4 * 2; // RGBA + mipmaps
+      } else if (
+        typeof HTMLCanvasElement !== "undefined" &&
+        texture.image instanceof HTMLCanvasElement
+      ) {
+        return texture.image.width * texture.image.height * 4 * 2; // RGBA + mipmaps
+      } else if (
+        typeof HTMLImageElement !== "undefined" &&
+        texture.image instanceof HTMLImageElement
+      ) {
+        return texture.image.naturalWidth * texture.image.naturalHeight * 4 * 2; // RGBA + mipmaps
+      } else if (
+        typeof ImageData !== "undefined" &&
+        texture.image instanceof ImageData
+      ) {
+        return texture.image.data.length * 2; // Actual byte count + mipmaps
       }
     } catch (error) {
       console.warn("Failed to get texture memory usage:", error);
