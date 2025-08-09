@@ -101,9 +101,9 @@ class RotationCalculationCache {
     planetRotationPeriod: number,
     rotationSpeedMinutes: number
   ): string {
-    return `${planetRotationPeriod.toFixed(6)}_${rotationSpeedMinutes.toFixed(
-      1
-    )}`;
+    // Use full precision values to avoid quantization issues
+    // This ensures distinct inputs generate distinct cache keys
+    return `${planetRotationPeriod}_${rotationSpeedMinutes}`;
   }
 
   getRotationSpeed(

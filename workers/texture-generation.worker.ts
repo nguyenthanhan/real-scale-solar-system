@@ -19,6 +19,10 @@ interface TextureGenerationRequest {
   id: string;
 }
 
+interface InitWorkerRequest {
+  type: "INIT_WORKER";
+}
+
 interface TextureGenerationResponse {
   type: "TEXTURE_GENERATED";
   imageData: ImageBitmap;
@@ -30,6 +34,8 @@ interface WorkerErrorResponse {
   error: string;
   id: string;
 }
+
+type WorkerRequest = TextureGenerationRequest | InitWorkerRequest;
 
 // Error handling utilities
 function handleCanvasError(operation: string, error: unknown): never {
@@ -681,20 +687,21 @@ function createRockyPlanetTexture(
   }
 }
 
-// Handle texture generation requests
-self.addEventListener(
-  "message",
-  async (event: MessageEvent<TextureGenerationRequest>) => {
-    // Validate message origin for security
-    if (event.origin !== "" && event.origin !== self.location.origin) {
-      console.warn("Rejected message from unauthorized origin:", event.origin);
-      return;
-    }
+// Handle all worker messages
+self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
+  // Validate message origin for security
+  if (event.origin !== "" && event.origin !== self.location.origin) {
+    console.warn("Rejected message from unauthorized origin:", event.origin);
+    return;
+  }
 
-    try {
-      const { type, textureType, width, height, color, id } = event.data;
+  try {
+    const { type } = event.data;
 
-      if (type === "GENERATE_TEXTURE") {
+    switch (type) {
+      case "GENERATE_TEXTURE": {
+        const { textureType, width, height, color, id } = event.data;
+
         // Validate input parameters
         if (!width || !height || width <= 0 || height <= 0) {
           throw new Error(`Invalid dimensions: ${width}x${height}`);
@@ -760,38 +767,30 @@ self.addEventListener(
         };
 
         self.postMessage(response, { transfer: [imageBitmap] });
-      } else {
-        throw new Error(`Unknown message type: ${type}`);
+        break;
       }
-    } catch (error) {
-      const errorResponse: WorkerErrorResponse = {
-        type: "TEXTURE_ERROR",
-        error: error instanceof Error ? error.message : "Unknown error",
-        id: event.data?.id || "unknown",
-      };
-      self.postMessage(errorResponse);
+
+      case "INIT_WORKER":
+        self.postMessage({ type: "WORKER_READY" });
+        break;
+
+      default:
+        throw new Error(`Unknown message type: ${type}`);
     }
-  }
-);
-
-// Handle worker initialization
-self.addEventListener("message", (event: MessageEvent) => {
-  // Validate message origin for security
-  if (event.origin !== "" && event.origin !== self.location.origin) {
-    console.warn(
-      "Rejected initialization message from unauthorized origin:",
-      event.origin
-    );
-    return;
-  }
-
-  if (event.data.type === "INIT_WORKER") {
-    self.postMessage({ type: "WORKER_READY" });
+  } catch (error) {
+    const errorResponse: WorkerErrorResponse = {
+      type: "TEXTURE_ERROR",
+      error: error instanceof Error ? error.message : "Unknown error",
+      id: "id" in event.data ? event.data.id : "unknown",
+    };
+    self.postMessage(errorResponse);
   }
 });
 
 export type {
   TextureGenerationRequest,
+  InitWorkerRequest,
+  WorkerRequest,
   TextureGenerationResponse,
   WorkerErrorResponse,
 };
