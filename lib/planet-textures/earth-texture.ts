@@ -20,7 +20,9 @@ export function createEarthTexture(
     const blue = Math.floor(20 + depth * 40);
     const green = Math.floor(10 + depth * 20);
 
-    ctx.fillStyle = `rgba(0, ${green}, ${blue}, 0.3)`;
+    ctx.fillStyle = `#00${green.toString(16).padStart(2, "0")}${blue
+      .toString(16)
+      .padStart(2, "0")}4D`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
@@ -85,19 +87,4 @@ export function createEarthTexture(
   ctx.fillStyle = "#E8F4FD";
   ctx.fillRect(0, 0, canvas.width, canvas.height * 0.12);
   ctx.fillRect(0, canvas.height * 0.88, canvas.width, canvas.height * 0.12);
-
-  // Add atmospheric glow effect
-  const atmosphereGradient = ctx.createRadialGradient(
-    canvas.width / 2,
-    canvas.height / 2,
-    0,
-    canvas.width / 2,
-    canvas.height / 2,
-    canvas.width / 2
-  );
-  atmosphereGradient.addColorStop(0, "rgba(135, 206, 235, 0.1)");
-  atmosphereGradient.addColorStop(0.7, "rgba(135, 206, 235, 0.05)");
-  atmosphereGradient.addColorStop(1, "rgba(135, 206, 235, 0)");
-  ctx.fillStyle = atmosphereGradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }

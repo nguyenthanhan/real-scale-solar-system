@@ -17,7 +17,13 @@ export function createRockyPlanetTexture(
     const g = Math.min(1, baseColor.g * shade);
     const b = Math.min(1, baseColor.b * shade);
 
-    ctx.fillStyle = `rgb(${r * 255}, ${g * 255}, ${b * 255})`;
+    ctx.fillStyle = `#${Math.floor(r * 255)
+      .toString(16)
+      .padStart(2, "0")}${Math.floor(g * 255)
+      .toString(16)
+      .padStart(2, "0")}${Math.floor(b * 255)
+      .toString(16)
+      .padStart(2, "0")}`;
     ctx.beginPath();
     ctx.arc(
       Math.random() * canvas.width,

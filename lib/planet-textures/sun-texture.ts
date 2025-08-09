@@ -42,7 +42,9 @@ export function createSunTexture(
     const green = Math.floor(200 * brightness);
     const blue = Math.floor(50 * brightness);
 
-    ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.4)`;
+    ctx.fillStyle = `#${red.toString(16).padStart(2, "0")}${green
+      .toString(16)
+      .padStart(2, "0")}${blue.toString(16).padStart(2, "0")}66`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
@@ -56,13 +58,13 @@ export function createSunTexture(
     const size = 2 + Math.random() * 8;
 
     // Dark umbra (core of sunspot)
-    ctx.fillStyle = "rgba(50, 20, 0, 0.8)";
+    ctx.fillStyle = "#321400CC";
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
 
     // Penumbra (lighter region around the dark spot)
-    ctx.fillStyle = "rgba(150, 80, 0, 0.5)";
+    ctx.fillStyle = "#96500080";
     ctx.beginPath();
     ctx.arc(x, y, size * 1.8, 0, Math.PI * 2);
     ctx.fill();
@@ -73,7 +75,7 @@ export function createSunTexture(
       const offsetY = y + (Math.random() - 0.5) * 20;
       const smallSize = 1 + Math.random() * 3;
 
-      ctx.fillStyle = "rgba(50, 20, 0, 0.6)";
+      ctx.fillStyle = "#32140099";
       ctx.beginPath();
       ctx.arc(offsetX, offsetY, smallSize, 0, Math.PI * 2);
       ctx.fill();
@@ -91,7 +93,7 @@ export function createSunTexture(
 
     if (prominenceType > 0.7) {
       // Large prominence
-      ctx.fillStyle = "rgba(255, 100, 50, 0.8)";
+      ctx.fillStyle = "#FF6432CC";
       const flareLength = 30 + Math.random() * 40;
       const flareWidth = 15 + Math.random() * 25;
 
@@ -123,7 +125,7 @@ export function createSunTexture(
       ctx.fill();
     } else {
       // Smaller flare
-      ctx.fillStyle = "rgba(255, 200, 100, 0.6)";
+      ctx.fillStyle = "#FFC86499";
       const flareLength = 10 + Math.random() * 20;
       const flareWidth = 5 + Math.random() * 10;
 
@@ -165,9 +167,9 @@ export function createSunTexture(
     canvas.height / 2,
     canvas.width / 2
   );
-  limbGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-  limbGradient.addColorStop(0.7, "rgba(0, 0, 0, 0)");
-  limbGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
+  limbGradient.addColorStop(0, "#00000000");
+  limbGradient.addColorStop(0.7, "#00000000");
+  limbGradient.addColorStop(1, "#0000004D");
   ctx.fillStyle = limbGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }

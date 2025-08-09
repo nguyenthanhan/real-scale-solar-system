@@ -39,7 +39,7 @@ function PlanetMesh({
   // Determine rotation direction
   const rotationDirection = useMemo(() => {
     // Venus and Uranus rotate retrograde (opposite direction)
-    return planet.rotationSpeedByDays < 0 ? 1 : -1;
+    return planet.rotationSpeedByDays < 0 ? -1 : 1;
   }, [planet.rotationSpeedByDays]);
 
   // Apply rotation animation using useFrame for smooth animation
@@ -60,8 +60,24 @@ function PlanetMesh({
     }
   }, [planet.name]);
 
-  // Use fixed size for all planets in modal
-  const planetSize = size ?? 0; // All planets same size
+  // Adjust size for planets with rings to ensure rings are visible
+  const getAdjustedPlanetSize = (planetName: string, baseSize: number) => {
+    // Saturn has the most spectacular and largest ring system
+    if (planetName === "Saturn") {
+      return baseSize * 0.55; // Reduce Saturn size significantly to show rings
+    }
+    // Neptune has prominent rings
+    if (planetName === "Neptune") {
+      return baseSize * 0.7; // Reduce Neptune size to show rings
+    }
+    // Jupiter and Uranus have subtle rings
+    if (planetName === "Jupiter" || planetName === "Uranus") {
+      return baseSize * 0.85; // Slight reduction for ring visibility
+    }
+    return baseSize;
+  };
+
+  const planetSize = getAdjustedPlanetSize(planet.name, size ?? 0);
 
   return (
     <group>
@@ -78,13 +94,16 @@ function PlanetMesh({
         <PlanetRings
           scaledSize={planetSize}
           ringColor={planet.ringColor || "#CDCDCD"}
-          ringTilt={planet.ringTilt || 0}
-          axialTilt={0}
+          ringTilt={planet.ringTilt ?? 0}
+          axialTilt={planet.axialTilt ?? planet.axialTilt ?? 0}
         />
       )}
 
       {/* Rotation axis line */}
-      <RotationAxis planetSize={planetSize} axialTilt={0} />
+      <RotationAxis
+        planetSize={planetSize}
+        axialTilt={planet.axialTilt ?? planet.axialTilt ?? 0}
+      />
     </group>
   );
 }
@@ -98,7 +117,10 @@ function Planet3DModel({
   return (
     <div className="w-full h-full relative">
       <Canvas
-        camera={{ position: [0, 0, 300], fov: 30 }}
+        camera={{
+          position: [0, 0, planet.hasRings ? 350 : 300],
+          fov: planet.hasRings ? 25 : 30,
+        }}
         style={{ background: "transparent" }}
       >
         <ambientLight intensity={0.4} />

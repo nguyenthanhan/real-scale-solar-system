@@ -1,4 +1,31 @@
-import * as THREE from "three";
+/**
+ * Converts a hex color string to normalized RGB values (0-1)
+ * Supports formats: #RGB, #RRGGBB, #RRGGBBAA
+ */
+function parseHexColor(hex: string): { r: number; g: number; b: number } {
+  // Remove # if present
+  const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
+
+  // Handle different hex formats
+  let r: number, g: number, b: number;
+
+  if (cleanHex.length === 3) {
+    // #RGB format
+    r = parseInt(cleanHex[0] + cleanHex[0], 16) / 255;
+    g = parseInt(cleanHex[1] + cleanHex[1], 16) / 255;
+    b = parseInt(cleanHex[2] + cleanHex[2], 16) / 255;
+  } else if (cleanHex.length === 6) {
+    // #RRGGBB format
+    r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+    g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+    b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+  } else {
+    // Default to black if invalid format
+    r = g = b = 0;
+  }
+
+  return { r, g, b };
+}
 
 /**
  * Creates a realistic gas giant texture with atmospheric bands, storms, and cloud patterns
@@ -9,7 +36,7 @@ export function createGasGiantTexture(
   color: string
 ): void {
   // Base color
-  const baseColor = new THREE.Color(color);
+  const baseColor = parseHexColor(color);
 
   // Create atmospheric bands with realistic variations
   const numBands = 15;
@@ -32,9 +59,36 @@ export function createGasGiantTexture(
     const g = Math.min(1, baseColor.g * shade * intensity);
     const b = Math.min(1, baseColor.b * shade * intensity);
 
-    gradient.addColorStop(0, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 0.8)`);
-    gradient.addColorStop(0.5, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 1)`);
-    gradient.addColorStop(1, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 0.8)`);
+    gradient.addColorStop(
+      0,
+      `#${Math.floor(r * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(g * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(b * 255)
+        .toString(16)
+        .padStart(2, "0")}CC`
+    );
+    gradient.addColorStop(
+      0.5,
+      `#${Math.floor(r * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(g * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(b * 255)
+        .toString(16)
+        .padStart(2, "0")}FF`
+    );
+    gradient.addColorStop(
+      1,
+      `#${Math.floor(r * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(g * 255)
+        .toString(16)
+        .padStart(2, "0")}${Math.floor(b * 255)
+        .toString(16)
+        .padStart(2, "0")}CC`
+    );
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, y, canvas.width, bandHeight);
@@ -56,13 +110,19 @@ export function createGasGiantTexture(
 
     if (stormType > 0.8) {
       // Red spots (like Jupiter's Great Red Spot)
-      stormColor = `rgba(200, 50, 50, ${stormIntensity})`;
+      stormColor = `#C83232${Math.floor(stormIntensity * 255)
+        .toString(16)
+        .padStart(2, "0")}`;
     } else if (stormType > 0.6) {
       // White storms
-      stormColor = `rgba(255, 255, 255, ${stormIntensity * 0.5})`;
+      stormColor = `#FFFFFF${Math.floor(stormIntensity * 0.5 * 255)
+        .toString(16)
+        .padStart(2, "0")}`;
     } else {
       // Dark storms
-      stormColor = `rgba(50, 50, 100, ${stormIntensity})`;
+      stormColor = `#323264${Math.floor(stormIntensity * 255)
+        .toString(16)
+        .padStart(2, "0")}`;
     }
 
     ctx.fillStyle = stormColor;
@@ -83,7 +143,15 @@ export function createGasGiantTexture(
     const g = Math.min(1, baseColor.g * (0.8 + Math.random() * 0.4));
     const b = Math.min(1, baseColor.b * (0.8 + Math.random() * 0.4));
 
-    ctx.fillStyle = `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${opacity})`;
+    ctx.fillStyle = `#${Math.floor(r * 255)
+      .toString(16)
+      .padStart(2, "0")}${Math.floor(g * 255)
+      .toString(16)
+      .padStart(2, "0")}${Math.floor(b * 255)
+      .toString(16)
+      .padStart(2, "0")}${Math.floor(opacity * 255)
+      .toString(16)
+      .padStart(2, "0")}`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
@@ -98,8 +166,8 @@ export function createGasGiantTexture(
     0,
     canvas.width / 3
   );
-  polarGradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
-  polarGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  polarGradient.addColorStop(0, "#0000004D");
+  polarGradient.addColorStop(1, "#00000000");
   ctx.fillStyle = polarGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
 
@@ -111,8 +179,8 @@ export function createGasGiantTexture(
     canvas.height,
     canvas.width / 3
   );
-  southPolarGradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
-  southPolarGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  southPolarGradient.addColorStop(0, "#0000004D");
+  southPolarGradient.addColorStop(1, "#00000000");
   ctx.fillStyle = southPolarGradient;
   ctx.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
 }

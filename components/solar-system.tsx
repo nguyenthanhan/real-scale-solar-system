@@ -18,12 +18,10 @@ const MIN_SPEED = 1;
 // Solar System component with updated simulation speed scale
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
-  const [showSunInfo, setShowSunInfo] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(2000000);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
-    setShowSunInfo(false);
   }, []);
 
   const handleSunClick = useCallback(() => {
@@ -32,7 +30,6 @@ export default function SolarSystem() {
 
   const handleCloseInfo = () => {
     setSelectedPlanet(null);
-    setShowSunInfo(false);
   };
 
   const handleSpeedChange = (speed: number) => {
@@ -69,7 +66,7 @@ export default function SolarSystem() {
               planet={planet}
               simulationSpeed={simulationSpeed}
               onClick={handlePlanetClick}
-              showLabels={!selectedPlanet && !showSunInfo}
+              showLabels={!selectedPlanet}
             />
           ))}
           <Stars
@@ -91,10 +88,6 @@ export default function SolarSystem() {
         </Canvas>
 
         <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
-        <ModalOverlay
-          planet={showSunInfo ? sunData : null}
-          onClose={handleCloseInfo}
-        />
 
         <ControlModal
           simulationSpeed={simulationSpeed}
@@ -104,7 +97,6 @@ export default function SolarSystem() {
         <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
           <div className="flex flex-col space-y-1">
             <p>• Click objects for info</p>
-            <p>• W/S - Orbit forward/back</p>
           </div>
         </div>
 
