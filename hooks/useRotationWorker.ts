@@ -5,19 +5,11 @@
 
 import { useRef, useCallback, useEffect, useState } from "react";
 import { calculateRotationMultiplier } from "@/utils/rotation-calculations";
-
-interface RotationCalculationRequest {
-  type: "CALCULATE_ROTATION_MULTIPLIER";
-  planetRotationPeriod: number;
-  rotationSpeedMinutes: number;
-  id: string;
-}
-
-interface RotationCalculationResponse {
-  type: "ROTATION_MULTIPLIER_RESULT";
-  result: number;
-  id: string;
-}
+import type {
+  RotationCalculationRequest,
+  RotationCalculationResponse,
+  RotationCalculationErrorResponse,
+} from "@/workers/rotation-calculations.worker";
 
 interface WorkerMessage {
   type: "WORKER_READY";
@@ -26,9 +18,12 @@ interface WorkerMessage {
 export function useRotationWorker() {
   const workerRef = useRef<Worker | null>(null);
   const [isWorkerReady, setIsWorkerReady] = useState(false);
-  const pendingRequests = useRef<Map<string, (result: number) => void>>(
-    new Map()
-  );
+  const pendingRequests = useRef<
+    Map<
+      string,
+      { resolve: (result: number) => void; reject: (error: Error) => void }
+    >
+  >(new Map());
 
   // Initialize worker
   useEffect(() => {
@@ -45,7 +40,11 @@ export function useRotationWorker() {
 
         // Handle worker messages
         workerRef.current.onmessage = (
-          event: MessageEvent<RotationCalculationResponse | WorkerMessage>
+          event: MessageEvent<
+            | RotationCalculationResponse
+            | RotationCalculationErrorResponse
+            | WorkerMessage
+          >
         ) => {
           const { type } = event.data;
 
@@ -53,10 +52,20 @@ export function useRotationWorker() {
             setIsWorkerReady(true);
           } else if (type === "ROTATION_MULTIPLIER_RESULT") {
             const { result, id } = event.data as RotationCalculationResponse;
-            const callback = pendingRequests.current.get(id);
+            const request = pendingRequests.current.get(id);
 
-            if (callback) {
-              callback(result);
+            if (request) {
+              request.resolve(result);
+              pendingRequests.current.delete(id);
+            }
+          } else if (type === "ROTATION_CALCULATION_ERROR") {
+            const { error, id } =
+              event.data as RotationCalculationErrorResponse;
+            const request = pendingRequests.current.get(id);
+
+            if (request) {
+              console.error("Rotation calculation error:", error);
+              request.reject(new Error(error));
               pendingRequests.current.delete(id);
             }
           }
@@ -92,7 +101,7 @@ export function useRotationWorker() {
       planetRotationPeriod: number,
       rotationSpeedMinutes: number
     ): Promise<number> => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         if (!workerRef.current || !isWorkerReady) {
           // Synchronous fallback when worker is not ready
           const result = calculateRotationMultiplier(
@@ -105,8 +114,8 @@ export function useRotationWorker() {
 
         const requestId = `${Date.now()}_${Math.random()}`;
 
-        // Store callback for when worker responds
-        pendingRequests.current.set(requestId, resolve);
+        // Store resolve and reject callbacks for when worker responds
+        pendingRequests.current.set(requestId, { resolve, reject });
 
         // Send calculation request to worker
         const request: RotationCalculationRequest = {

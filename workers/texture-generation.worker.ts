@@ -58,18 +58,85 @@ function validateCanvasDimensions(canvas: OffscreenCanvas): void {
       `Invalid canvas dimensions: ${canvas?.width}x${canvas?.height}`
     );
   }
+
+  // Validate that dimensions are integers to prevent silent flooring
+  if (!Number.isInteger(canvas.width) || !Number.isInteger(canvas.height)) {
+    throw new Error(
+      `Canvas dimensions must be integers: ${canvas.width}x${canvas.height}`
+    );
+  }
 }
 
-function validateColor(color: string): void {
+// Enhanced color parser that supports multiple formats
+function parseColor(color: string): { r: number; g: number; b: number } {
   if (!color || typeof color !== "string") {
     throw new Error("Invalid color parameter");
   }
 
-  // Basic hex color validation
-  const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-  if (!hexRegex.test(color)) {
-    throw new Error(`Invalid hex color format: ${color}`);
+  const trimmedColor = color.trim().toLowerCase();
+
+  // Handle hex colors (with or without #)
+  if (trimmedColor.startsWith("#") || /^[0-9a-f]{3,6}$/i.test(trimmedColor)) {
+    return parseHexColor(trimmedColor);
   }
+
+  // Handle rgb() format
+  const rgbMatch = trimmedColor.match(
+    /^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/
+  );
+  if (rgbMatch) {
+    const [, r, g, b] = rgbMatch;
+    return {
+      r: Math.min(255, Math.max(0, parseInt(r))) / 255,
+      g: Math.min(255, Math.max(0, parseInt(g))) / 255,
+      b: Math.min(255, Math.max(0, parseInt(b))) / 255,
+    };
+  }
+
+  // Handle rgba() format (ignore alpha)
+  const rgbaMatch = trimmedColor.match(
+    /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)$/
+  );
+  if (rgbaMatch) {
+    const [, r, g, b] = rgbaMatch;
+    return {
+      r: Math.min(255, Math.max(0, parseInt(r))) / 255,
+      g: Math.min(255, Math.max(0, parseInt(g))) / 255,
+      b: Math.min(255, Math.max(0, parseInt(b))) / 255,
+    };
+  }
+
+  // Handle named colors
+  const namedColors: Record<string, string> = {
+    red: "#ff0000",
+    green: "#00ff00",
+    blue: "#0000ff",
+    yellow: "#ffff00",
+    cyan: "#00ffff",
+    magenta: "#ff00ff",
+    black: "#000000",
+    white: "#ffffff",
+    gray: "#808080",
+    grey: "#808080",
+    orange: "#ffa500",
+    purple: "#800080",
+    brown: "#a52a2a",
+    pink: "#ffc0cb",
+    navy: "#000080",
+    teal: "#008080",
+    lime: "#00ff00",
+    olive: "#808000",
+    maroon: "#800000",
+    silver: "#c0c0c0",
+  };
+
+  if (namedColors[trimmedColor]) {
+    return parseHexColor(namedColors[trimmedColor]);
+  }
+
+  throw new Error(
+    `Unsupported color format: ${color}. Supported formats: hex (#fff, #ffffff), rgb(r,g,b), rgba(r,g,b,a), or named colors.`
+  );
 }
 
 // Texture generation functions (moved from main thread)
@@ -279,9 +346,8 @@ function createGasGiantTexture(
   try {
     validateCanvasContext(ctx, "createGasGiantTexture");
     validateCanvasDimensions(canvas);
-    validateColor(color);
 
-    const baseColor = parseHexColor(color);
+    const baseColor = parseColor(color);
 
     // Create atmospheric bands with realistic variations
     const numBands = 15;
@@ -540,10 +606,9 @@ function createIceGiantTexture(
   try {
     validateCanvasContext(ctx, "createIceGiantTexture");
     validateCanvasDimensions(canvas);
-    validateColor(color);
 
     // Parse the base color
-    const baseColor = parseHexColor(color);
+    const baseColor = parseColor(color);
 
     // Fill with base color
     ctx.fillStyle = color;
@@ -608,10 +673,9 @@ function createRockyPlanetTexture(
   try {
     validateCanvasContext(ctx, "createRockyPlanetTexture");
     validateCanvasDimensions(canvas);
-    validateColor(color);
 
     // Parse the base color
-    const baseColor = parseHexColor(color);
+    const baseColor = parseColor(color);
 
     // Fill with base color
     ctx.fillStyle = color;
@@ -689,12 +753,6 @@ function createRockyPlanetTexture(
 
 // Handle all worker messages
 self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
-  // Validate message origin for security
-  if (event.origin !== "" && event.origin !== self.location.origin) {
-    console.warn("Rejected message from unauthorized origin:", event.origin);
-    return;
-  }
-
   try {
     const { type } = event.data;
 
@@ -705,6 +763,11 @@ self.addEventListener("message", async (event: MessageEvent<WorkerRequest>) => {
         // Validate input parameters
         if (!width || !height || width <= 0 || height <= 0) {
           throw new Error(`Invalid dimensions: ${width}x${height}`);
+        }
+
+        // Validate that dimensions are integers to prevent silent flooring
+        if (!Number.isInteger(width) || !Number.isInteger(height)) {
+          throw new Error(`Dimensions must be integers: ${width}x${height}`);
         }
 
         if (width > 4096 || height > 4096) {
