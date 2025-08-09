@@ -5,7 +5,7 @@ export function createSunTexture(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
 ): void {
-  // Base gradient from center to edge
+  // Base gradient from center to edge (more realistic solar colors)
   const gradient = ctx.createRadialGradient(
     canvas.width / 2,
     canvas.height / 2,
@@ -14,91 +14,160 @@ export function createSunTexture(
     canvas.height / 2,
     canvas.width / 2
   );
-  gradient.addColorStop(0, "#FFFF00"); // Bright yellow core
-  gradient.addColorStop(0.4, "#FDB813"); // Orange-yellow
-  gradient.addColorStop(0.7, "#FF8C00"); // Dark orange
-  gradient.addColorStop(1, "#FF4500"); // Red-orange edge
+  gradient.addColorStop(0, "#FFFFFF"); // Pure white core (hottest)
+  gradient.addColorStop(0.2, "#FFFF80"); // Bright yellow
+  gradient.addColorStop(0.4, "#FFD700"); // Golden yellow
+  gradient.addColorStop(0.6, "#FF8C00"); // Dark orange
+  gradient.addColorStop(0.8, "#FF4500"); // Red-orange
+  gradient.addColorStop(1, "#8B0000"); // Dark red edge (coolest)
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Add solar granulation texture (small cells across surface)
-  for (let i = 0; i < 1000; i++) {
+  // Add solar granulation (convection cells) - more realistic pattern
+  for (let i = 0; i < 2000; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
-    const size = 2 + Math.random() * 4;
+    const size = 1 + Math.random() * 3;
 
-    // Distance from center determines brightness
+    // Distance from center determines brightness and color
     const dx = x - canvas.width / 2;
     const dy = y - canvas.height / 2;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const maxDistance = canvas.width / 2;
-    const brightness = 1 - (distance / maxDistance) * 0.5;
+    const normalizedDistance = distance / maxDistance;
 
-    ctx.fillStyle = `rgba(255, 255, ${Math.floor(100 * brightness)}, 0.3)`;
+    // Brighter granules in center, darker at edges
+    const brightness = 0.8 + (1 - normalizedDistance) * 0.4;
+    const red = Math.floor(255 * brightness);
+    const green = Math.floor(200 * brightness);
+    const blue = Math.floor(50 * brightness);
+
+    ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.4)`;
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // Add some darker sunspots
-  for (let i = 0; i < 12; i++) {
-    // Sunspots tend to appear in bands around the equator
-    const y = canvas.height / 2 + (Math.random() * 0.6 - 0.3) * canvas.height;
+  // Add sunspots (more realistic distribution and appearance)
+  for (let i = 0; i < 15; i++) {
+    // Sunspots appear in bands around the equator (solar latitude ±30°)
+    const y = canvas.height / 2 + (Math.random() * 0.4 - 0.2) * canvas.height;
     const x = Math.random() * canvas.width;
-    const size = 3 + Math.random() * 10;
+    const size = 2 + Math.random() * 8;
 
-    ctx.fillStyle = "rgba(180, 50, 0, 0.6)";
+    // Dark umbra (core of sunspot)
+    ctx.fillStyle = "rgba(50, 20, 0, 0.8)";
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
 
-    // Add penumbra (lighter region around the dark spot)
-    ctx.fillStyle = "rgba(255, 150, 0, 0.4)";
+    // Penumbra (lighter region around the dark spot)
+    ctx.fillStyle = "rgba(150, 80, 0, 0.5)";
     ctx.beginPath();
-    ctx.arc(x, y, size * 1.5, 0, Math.PI * 2);
+    ctx.arc(x, y, size * 1.8, 0, Math.PI * 2);
     ctx.fill();
+
+    // Sometimes add smaller spots nearby (sunspot groups)
+    if (Math.random() > 0.7) {
+      const offsetX = x + (Math.random() - 0.5) * 20;
+      const offsetY = y + (Math.random() - 0.5) * 20;
+      const smallSize = 1 + Math.random() * 3;
+
+      ctx.fillStyle = "rgba(50, 20, 0, 0.6)";
+      ctx.beginPath();
+      ctx.arc(offsetX, offsetY, smallSize, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  // Add solar prominences (flares) at the edges
-  for (let i = 0; i < 8; i++) {
+  // Add solar prominences and flares (more realistic)
+  for (let i = 0; i < 12; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const x = canvas.width / 2 + Math.cos(angle) * (canvas.width / 2 - 10);
-    const y = canvas.height / 2 + Math.sin(angle) * (canvas.height / 2 - 10);
+    const x = canvas.width / 2 + Math.cos(angle) * (canvas.width / 2 - 15);
+    const y = canvas.height / 2 + Math.sin(angle) * (canvas.height / 2 - 15);
 
-    ctx.fillStyle = "rgba(255, 200, 50, 0.7)";
+    // Different types of prominences
+    const prominenceType = Math.random();
 
-    // Create flame-like shape
-    ctx.beginPath();
-    ctx.moveTo(x, y);
+    if (prominenceType > 0.7) {
+      // Large prominence
+      ctx.fillStyle = "rgba(255, 100, 50, 0.8)";
+      const flareLength = 30 + Math.random() * 40;
+      const flareWidth = 15 + Math.random() * 25;
 
-    const flareLength = 20 + Math.random() * 30;
-    const flareWidth = 10 + Math.random() * 20;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      const outX = x + Math.cos(angle) * flareLength;
+      const outY = y + Math.sin(angle) * flareLength;
 
-    const outX = x + Math.cos(angle) * flareLength;
-    const outY = y + Math.sin(angle) * flareLength;
+      const perpAngle = angle + Math.PI / 2;
+      const ctrlX1 =
+        x +
+        Math.cos(angle) * flareLength * 0.5 +
+        Math.cos(perpAngle) * flareWidth;
+      const ctrlY1 =
+        y +
+        Math.sin(angle) * flareLength * 0.5 +
+        Math.sin(perpAngle) * flareWidth;
+      const ctrlX2 =
+        x +
+        Math.cos(angle) * flareLength * 0.5 -
+        Math.cos(perpAngle) * flareWidth;
+      const ctrlY2 =
+        y +
+        Math.sin(angle) * flareLength * 0.5 -
+        Math.sin(perpAngle) * flareWidth;
 
-    const perpAngle = angle + Math.PI / 2;
-    const ctrlX1 =
-      x +
-      Math.cos(angle) * flareLength * 0.5 +
-      Math.cos(perpAngle) * flareWidth;
-    const ctrlY1 =
-      y +
-      Math.sin(angle) * flareLength * 0.5 +
-      Math.sin(perpAngle) * flareWidth;
+      ctx.quadraticCurveTo(ctrlX1, ctrlY1, outX, outY);
+      ctx.quadraticCurveTo(ctrlX2, ctrlY2, x, y);
+      ctx.fill();
+    } else {
+      // Smaller flare
+      ctx.fillStyle = "rgba(255, 200, 100, 0.6)";
+      const flareLength = 10 + Math.random() * 20;
+      const flareWidth = 5 + Math.random() * 10;
 
-    const ctrlX2 =
-      x +
-      Math.cos(angle) * flareLength * 0.5 -
-      Math.cos(perpAngle) * flareWidth;
-    const ctrlY2 =
-      y +
-      Math.sin(angle) * flareLength * 0.5 -
-      Math.sin(perpAngle) * flareWidth;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      const outX = x + Math.cos(angle) * flareLength;
+      const outY = y + Math.sin(angle) * flareLength;
 
-    ctx.quadraticCurveTo(ctrlX1, ctrlY1, outX, outY);
-    ctx.quadraticCurveTo(ctrlX2, ctrlY2, x, y);
+      const perpAngle = angle + Math.PI / 2;
+      const ctrlX1 =
+        x +
+        Math.cos(angle) * flareLength * 0.5 +
+        Math.cos(perpAngle) * flareWidth;
+      const ctrlY1 =
+        y +
+        Math.sin(angle) * flareLength * 0.5 +
+        Math.sin(perpAngle) * flareWidth;
+      const ctrlX2 =
+        x +
+        Math.cos(angle) * flareLength * 0.5 -
+        Math.cos(perpAngle) * flareWidth;
+      const ctrlY2 =
+        y +
+        Math.sin(angle) * flareLength * 0.5 -
+        Math.sin(perpAngle) * flareWidth;
 
-    ctx.fill();
+      ctx.quadraticCurveTo(ctrlX1, ctrlY1, outX, outY);
+      ctx.quadraticCurveTo(ctrlX2, ctrlY2, x, y);
+      ctx.fill();
+    }
   }
+
+  // Add subtle limb darkening effect (darker at edges)
+  const limbGradient = ctx.createRadialGradient(
+    canvas.width / 2,
+    canvas.height / 2,
+    0,
+    canvas.width / 2,
+    canvas.height / 2,
+    canvas.width / 2
+  );
+  limbGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+  limbGradient.addColorStop(0.7, "rgba(0, 0, 0, 0)");
+  limbGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
+  ctx.fillStyle = limbGradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }

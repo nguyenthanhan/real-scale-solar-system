@@ -5,18 +5,25 @@ import { useFrame, ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import type { Mesh } from "three";
 import { sunData } from "@/data/planet-data";
+import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 
 interface SunProps {
   onClick?: () => void;
+  simulationSpeed: number;
 }
 
-export function Sun({ onClick }: SunProps) {
+export function Sun({ onClick, simulationSpeed }: SunProps) {
   const sunRef = useRef<Mesh | null>(null);
   const glowRef = useRef<Mesh | null>(null);
+  const sunMaterial = usePlanetMaterial(sunData);
 
   useFrame(({ clock }) => {
     if (sunRef.current) {
-      sunRef.current.rotation.y += 0.001;
+      // Sun rotates once every 25.38 Earth days
+      // Use elapsed time for smoother rotation
+      const baseRotationSpeed = (2 * Math.PI) / (25.38 * 24 * 60 * 60); // radians per second
+      const sunRotationSpeed = baseRotationSpeed * simulationSpeed;
+      sunRef.current.rotation.y = sunRotationSpeed * clock.getElapsedTime();
     }
 
     if (glowRef.current) {
@@ -39,12 +46,7 @@ export function Sun({ onClick }: SunProps) {
         args={[109.2, 64, 64]} // Real scale: Sun = 109.2x Earth diameter
         position={[0, 0, 0]}
       >
-        <meshStandardMaterial
-          color={sunData.color}
-          emissive={sunData.color}
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
+        <primitive object={sunMaterial} attach="material" />
       </Sphere>
 
       {/* Light sources */}

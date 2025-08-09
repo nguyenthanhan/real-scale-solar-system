@@ -7,17 +7,19 @@ interface PlanetRingsProps {
   scaledSize: number;
   ringColor?: string;
   ringTilt?: number;
+  axialTilt?: number;
 }
 
 export function PlanetRings({
   scaledSize,
   ringColor = "#CDCDCD",
   ringTilt = 0,
+  axialTilt = 0,
 }: PlanetRingsProps) {
   return (
     <Ring
       args={[scaledSize * 1.4, scaledSize * 2.2, 64]}
-      rotation={[Math.PI / 2, ringTilt, 0]}
+      rotation={[Math.PI / 2 + (axialTilt * Math.PI) / 180, ringTilt, 0]}
     >
       <meshStandardMaterial
         color={ringColor}

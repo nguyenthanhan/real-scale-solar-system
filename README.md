@@ -18,6 +18,8 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - **Real Scale Accuracy**: Planetary sizes and distances at true astronomical proportions - see how vast space really is!
 - **Immersive Star Field**: 10,000+ stars create a realistic space environment
 - **Realistic Planetary Details**: Accurate representation of planet sizes, colors, and features including Saturn's, Jupiter's, Uranus', and Neptune's rings
+- **3D Planet Models in Modal**: Interactive 3D rotating planet models with realistic textures and axial tilts
+- **Realistic Planet Textures**: Procedurally generated surfaces with accurate colors, features, and atmospheric effects
 
 ### 🎮 Interactive Controls
 
@@ -25,6 +27,7 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - **Extreme Simulation Speed**: Control the pace from 1x (real-time) to 10,000,000x with smooth slider control
 - **Real-Time Conversion Display**: See exactly how much real time corresponds to simulation time
 - **Click to Explore**: Click on any planet or the Sun for detailed scientific information
+- **3D Planet Rotation Control**: Adjust rotation speed in modal from 5 minutes to 24 hours per second
 - **Smart Modal Management**: Planet labels automatically hide when viewing detailed information
 - **Responsive Design**: Fully responsive layout that works across all devices
 
@@ -35,6 +38,9 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - **Elliptical Orbits**: True orbital paths with proper eccentricity calculations
 - **Real Scale Proportions**: Sun dominates the scene as in reality, planets appear as small objects
 - **Accurate Orbital Periods**: Each planet moves at its real orbital speed relative to Earth
+- **Realistic Planet Surfaces**: Earth with continents, oceans, and ice caps; Mars with volcanoes and dust storms
+- **Gas Giant Atmospheres**: Jupiter and Saturn with atmospheric bands, storms, and cloud patterns
+- **Solar Features**: Sun with granulation, sunspots, prominences, and limb darkening
 
 ## 🛠️ Technical Implementation
 
@@ -73,10 +79,11 @@ This project leverages cutting-edge web technologies to deliver a performant and
 
 ### 🔍 Interaction
 
-- **Click on any planet or the sun**: View detailed scientific information in a modal
+- **Click on any planet or the sun**: View detailed scientific information in a modal with 3D rotating model
 - **Click outside of information cards**: Close the current information panel
 - **Speed Control Slider**: Manually adjust simulation speed from 1x to 10,000,000x with real-time updates
 - **Time Conversion Display**: See how much real time corresponds to simulation time (e.g., "1s = 8.3m • Earth orbit: 0.7 days")
+- **Rotation Speed Control**: Adjust 3D planet rotation speed from 5 minutes to 24 hours per second
 - **Hide/Show Controls**: Double-click the control panel to toggle visibility
 - **Smart UI**: Planet labels automatically hide when viewing detailed information
 
@@ -93,8 +100,9 @@ The simulation includes scientifically accurate data for all major celestial bod
 ### ☀️ The Sun
 
 - **Central star** of our solar system with realistic glow effects
-- **Procedurally generated surface** with sunspots and solar flares
-- **Real-time rotation** and light emission
+- **Procedurally generated surface** with granulation, sunspots, and solar prominences
+- **Real-time rotation** synchronized with simulation speed
+- **Limb darkening effect** for realistic solar appearance
 - **Detailed information** including temperature, composition, and fun facts
 
 ### 🪐 The Planets
@@ -120,6 +128,8 @@ Each celestial body features:
 - **Procedurally generated textures** showing surface variations
 - **Comprehensive scientific data** including diameter, gravity, atmosphere composition
 - **Dynamic labels** that adjust based on camera distance and modal state
+- **3D rotation visualization** with accurate axial tilts and rotation directions
+- **Realistic surface features** including continents, volcanoes, atmospheric storms
 
 ## 🏗️ Technical Architecture
 
@@ -128,13 +138,16 @@ Each celestial body features:
 - **SolarSystem**: Main 3D scene container with camera and lighting
 - **Planet**: Individual planet component with orbital and rotation logic
 - **Sun**: Central star with glow effects and light emission
-- **Modal Components**: Information display and speed controls
+- **Modal Components**: Information display with 3D planet models and rotation controls
 - **Custom Hooks**: Modular logic for movement, materials, and interactions
+- **Texture Generators**: Procedural texture creation for realistic planet surfaces
 
 ### ⚡ Key Features
 
 - **Elliptical Orbits**: Realistic orbital paths with eccentricity calculations
-- **Procedural Textures**: Canvas-generated surfaces for each planet type
+- **Procedural Textures**: Canvas-generated surfaces for each planet type with realistic features
+- **3D Planet Models**: Interactive rotating models in modal with accurate axial tilts
+- **Rotation Speed Control**: Adjustable planet rotation speed with context-based state management
 - **Performance Optimization**: Efficient rendering with proper Three.js practices
 - **Type Safety**: Comprehensive TypeScript interfaces for all data structures
 - **Responsive Design**: Mobile-friendly interface with adaptive controls
@@ -275,6 +288,9 @@ This project is open to contributions. Feel free to submit issues and pull reque
 - Educational mode with interactive learning elements
 - VR/AR support for immersive experiences
 - Multi-language support for global accessibility
+- Real-time weather data integration for Earth
+- Enhanced atmospheric effects and cloud systems
+- Interactive planet surface exploration
 
 ## License
 

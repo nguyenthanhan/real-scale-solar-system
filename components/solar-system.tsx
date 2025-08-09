@@ -10,6 +10,7 @@ import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";
 import { ModalOverlay } from "@/components/modal/modal-overlay";
 import { GitHubButton } from "@/components/github-button";
+import { RotationSpeedProvider } from "@/contexts/rotation-speed-context";
 
 const MAX_SPEED = 10000000;
 const MIN_SPEED = 1;
@@ -18,7 +19,7 @@ const MIN_SPEED = 1;
 export default function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [showSunInfo, setShowSunInfo] = useState(false);
-  const [simulationSpeed, setSimulationSpeed] = useState(500);
+  const [simulationSpeed, setSimulationSpeed] = useState(2000000);
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
@@ -52,61 +53,63 @@ export default function SolarSystem() {
   };
 
   return (
-    <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
-      <Canvas
-        camera={{ position: [0, 2000, 4000], fov: 45, near: 0.1, far: 50000 }}
-      >
-        <color attach="background" args={["#000"]} />
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[0, 10, 5]} intensity={1.5} />
-        <directionalLight position={[0, -10, -5]} intensity={0.8} />
-        <Sun onClick={handleSunClick} />
-        {planetData.map((planet) => (
-          <Planet
-            key={planet.name}
-            planet={planet}
-            simulationSpeed={simulationSpeed}
-            onClick={handlePlanetClick}
-            showLabels={!selectedPlanet && !showSunInfo}
+    <RotationSpeedProvider>
+      <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+        <Canvas
+          camera={{ position: [0, 2000, 4000], fov: 45, near: 0.1, far: 50000 }}
+        >
+          <color attach="background" args={["#000"]} />
+          <ambientLight intensity={1.2} />
+          <directionalLight position={[0, 10, 5]} intensity={1.5} />
+          <directionalLight position={[0, -10, -5]} intensity={0.8} />
+          <Sun onClick={handleSunClick} simulationSpeed={simulationSpeed} />
+          {planetData.map((planet) => (
+            <Planet
+              key={planet.name}
+              planet={planet}
+              simulationSpeed={simulationSpeed}
+              onClick={handlePlanetClick}
+              showLabels={!selectedPlanet && !showSunInfo}
+            />
+          ))}
+          <Stars
+            radius={10000}
+            depth={2000}
+            count={10000}
+            factor={4}
+            saturation={1}
+            fade
+            speed={1.5}
           />
-        ))}
-        <Stars
-          radius={10000}
-          depth={2000}
-          count={10000}
-          factor={4}
-          saturation={1}
-          fade
-          speed={1.5}
+          <OrbitControls
+            enableZoom
+            enableRotate
+            minDistance={200}
+            maxDistance={20000}
+            zoomSpeed={1.2}
+          />
+        </Canvas>
+
+        <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
+        <ModalOverlay
+          planet={showSunInfo ? sunData : null}
+          onClose={handleCloseInfo}
         />
-        <OrbitControls
-          enableZoom
-          enableRotate
-          minDistance={200}
-          maxDistance={20000}
-          zoomSpeed={1.2}
+
+        <ControlModal
+          simulationSpeed={simulationSpeed}
+          onSpeedChange={handleSpeedChange}
         />
-      </Canvas>
 
-      <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
-      <ModalOverlay
-        planet={showSunInfo ? sunData : null}
-        onClose={handleCloseInfo}
-      />
-
-      <ControlModal
-        simulationSpeed={simulationSpeed}
-        onSpeedChange={handleSpeedChange}
-      />
-
-      <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
-        <div className="flex flex-col space-y-1">
-          <p>• Click objects for info</p>
-          <p>• W/S - Orbit forward/back</p>
+        <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
+          <div className="flex flex-col space-y-1">
+            <p>• Click objects for info</p>
+            <p>• W/S - Orbit forward/back</p>
+          </div>
         </div>
-      </div>
 
-      <GitHubButton />
-    </div>
+        <GitHubButton />
+      </div>
+    </RotationSpeedProvider>
   );
 }
