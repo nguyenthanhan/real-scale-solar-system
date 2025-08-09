@@ -66,22 +66,6 @@ function validateColor(color: string): void {
   }
 }
 
-function safeCanvasOperation<T>(
-  operation: () => T,
-  operationName: string,
-  fallback?: T
-): T {
-  try {
-    return operation();
-  } catch (error) {
-    console.warn(`Canvas operation failed (${operationName}):`, error);
-    if (fallback !== undefined) {
-      return fallback;
-    }
-    throw error;
-  }
-}
-
 // Texture generation functions (moved from main thread)
 function createEarthTexture(
   ctx: OffscreenCanvasRenderingContext2D,
@@ -291,26 +275,6 @@ function createGasGiantTexture(
     validateCanvasDimensions(canvas);
     validateColor(color);
 
-    // Parse hex color
-    function parseHexColor(hex: string): { r: number; g: number; b: number } {
-      const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
-      let r: number, g: number, b: number;
-
-      if (cleanHex.length === 3) {
-        r = parseInt(cleanHex[0] + cleanHex[0], 16) / 255;
-        g = parseInt(cleanHex[1] + cleanHex[1], 16) / 255;
-        b = parseInt(cleanHex[2] + cleanHex[2], 16) / 255;
-      } else if (cleanHex.length === 6) {
-        r = parseInt(cleanHex.slice(0, 2), 16) / 255;
-        g = parseInt(cleanHex.slice(2, 4), 16) / 255;
-        b = parseInt(cleanHex.slice(4, 6), 16) / 255;
-      } else {
-        r = g = b = 0;
-      }
-
-      return { r, g, b };
-    }
-
     const baseColor = parseHexColor(color);
 
     // Create atmospheric bands with realistic variations
@@ -374,10 +338,21 @@ function createGasGiantTexture(
 
 // Helper function to parse hex color to RGB values
 function parseHexColor(hex: string): { r: number; g: number; b: number } {
-  const cleanHex = hex.replace("#", "");
-  const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
-  const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
-  const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+  const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
+  let r: number, g: number, b: number;
+
+  if (cleanHex.length === 3) {
+    r = parseInt(cleanHex[0] + cleanHex[0], 16) / 255;
+    g = parseInt(cleanHex[1] + cleanHex[1], 16) / 255;
+    b = parseInt(cleanHex[2] + cleanHex[2], 16) / 255;
+  } else if (cleanHex.length === 6) {
+    r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+    g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+    b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+  } else {
+    r = g = b = 0;
+  }
+
   return { r, g, b };
 }
 
@@ -710,6 +685,12 @@ function createRockyPlanetTexture(
 self.addEventListener(
   "message",
   async (event: MessageEvent<TextureGenerationRequest>) => {
+    // Validate message origin for security
+    if (event.origin !== "" && event.origin !== self.location.origin) {
+      console.warn("Rejected message from unauthorized origin:", event.origin);
+      return;
+    }
+
     try {
       const { type, textureType, width, height, color, id } = event.data;
 
@@ -795,6 +776,15 @@ self.addEventListener(
 
 // Handle worker initialization
 self.addEventListener("message", (event: MessageEvent) => {
+  // Validate message origin for security
+  if (event.origin !== "" && event.origin !== self.location.origin) {
+    console.warn(
+      "Rejected initialization message from unauthorized origin:",
+      event.origin
+    );
+    return;
+  }
+
   if (event.data.type === "INIT_WORKER") {
     self.postMessage({ type: "WORKER_READY" });
   }
