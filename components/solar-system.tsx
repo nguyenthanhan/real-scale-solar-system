@@ -53,6 +53,7 @@ function SceneContent({
         speed={1}
       />
       <OrbitControls
+        makeDefault
         enableZoom
         enableRotate
         minDistance={100}

@@ -40,6 +40,10 @@ export function MemoryMonitor() {
         setHeapLimit(
           typeof mem.jsHeapSizeLimit === "number" ? mem.jsHeapSizeLimit : null
         );
+      } else {
+        setHeapUsed(null);
+        setHeapTotal(null);
+        setHeapLimit(null);
       }
     } catch {
       // ignore
