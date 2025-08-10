@@ -12,93 +12,35 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 
 ## ✨ Features
 
-### 🌟 Core Experience
+- **True-to-scale 3D model** with realistic sizes, distances, and orbital mechanics
+- **Interactive controls**: orbit/zoom/pan, click-to-explore, rotation controls
+- **Performance**: Web Workers, texture caching, real memory monitor, optimized renders
+- **Visual fidelity**: 10k+ star field, atmospheric glow, ring systems, detailed sun
+- **Responsive**: Works across desktop and mobile with touch support
 
-- **True-to-Scale 3D Visualization**: Explore a scientifically accurate model with real proportions
-- **Realistic Planetary Details**: Accurate representation of planet sizes, colors, and features
-- **Immersive Star Field**: 10,000+ stars create a realistic space environment
-- **Dynamic Atmospheric Effects**: View-dependent atmospheric glow for planets with atmospheres
-- **3D Planet Models**: Interactive rotating planet models with realistic textures and axial tilts
-- **Procedural Textures**: Dynamically generated surfaces with accurate colors and features
+## ✅ Project Status
 
-### 🎮 Interactive Controls
+The project checklist is complete. Here’s a concise overview of what’s shipped and what’s next:
 
-- **Advanced Camera Controls**: Navigate with intuitive mouse/touch controls
-- **Extreme Simulation Speed**: Control from 1x (real-time) to 10,000,000x
-- **Real-Time Conversion Display**: See exactly how much real time corresponds to simulation time
-- **Click to Explore**: Click on any planet or the Sun for detailed scientific information
-- **3D Planet Rotation Control**: Adjust rotation speed in modal from 30 seconds to 12 hours per second
-- **Optimized Context Performance**: Memoized rotation speed controls prevent unnecessary re-renders
-- **Responsive Design**: Fully responsive layout that works across all devices
-
-### 🔬 Scientific Accuracy
-
-- **Accurate Orbital Mechanics**: True orbital paths with proper eccentricity calculations
-- **Real Scale Proportions**: Sun dominates the scene as in reality, planets appear as small objects
-- **Axial Tilt Visualization**: Realistic planetary axial tilts affecting rotation
-- **Retrograde Rotation**: Venus and Uranus rotate in the opposite direction
-- **Ring Systems**: Saturn, Jupiter, Uranus, and Neptune with accurate ring representations
-- **Solar Features**: Sun with granulation, sunspots, prominences, and limb darkening
-
-## ✅ Project Checklist
-
-### 🌟 Core Features
-
-- [x] **True-to-scale 3D solar system visualization**
-- [x] **Realistic planetary sizes and distances**
-- [x] **Accurate orbital mechanics with elliptical paths**
-- [x] **Procedurally generated planet textures**
-- [x] **Interactive 3D planet models in modal**
-- [x] **Realistic star field with 10,000+ stars**
-- [x] **Dynamic atmospheric effects (view-dependent)**
-- [x] **Axial tilt visualization**
-- [x] **Planet rotation with accurate speeds**
-- [x] **Saturn, Jupiter, Uranus, and Neptune ring systems**
-
-### 🎮 User Interface & Controls
-
-- [x] **Advanced camera controls (orbit, zoom, pan)**
-- [x] **Simulation speed control (1x to 10,000,000x)**
-- [x] **Real-time conversion display**
-- [x] **Click-to-explore planet information**
-- [x] **Responsive design for all devices**
-- [x] **Touch controls for mobile devices**
-- [x] **Smart UI with auto-hiding labels**
-- [x] **3D planet rotation speed control in modal**
-- [x] **Optimized context performance with memoization**
-- [x] **Enhanced type safety with explicit TypeScript typing**
-- [x] **Centralized rotation calculations with caching**
-- [x] **Web Worker support for complex calculations**
-- [x] **Optimized texture generation with Web Workers**
-- [x] **Texture caching system with actual memory tracking**
-- [x] **Real memory monitoring with Performance Memory API**
-- [x] **Strengthened TypeScript interfaces with complete data structures**
-
-### 🔬 Scientific Accuracy
-
-- [x] **Accurate orbital periods and speeds**
-- [x] **Realistic planet surfaces and features**
-- [x] **Earth with continents, oceans, and ice caps**
-- [x] **Mars with volcanoes and dust storms**
-- [x] **Gas giants with atmospheric bands**
-- [x] **Sun with granulation and limb darkening**
-- [x] **Retrograde rotation for Venus and Uranus**
-- [x] **Realistic atmospheric glow effects**
+- **Core**: True-to-scale 3D solar system, realistic planetary details, 10k+ star field, atmospheric glow, ring systems, interactive 3D planet models.
+- **UI & Controls**: Orbit/zoom/pan camera, speed control up to 10,000,000x with real-time conversion, responsive and touch-friendly UI, info modals, optimized context performance.
+- **Performance**: Web Workers for heavy work, texture caching with memory tracking, real memory monitor, debounced generation, reduced re-renders.
+- **Scientific**: Accurate orbital mechanics, axial tilts, retrograde rotations (Venus, Uranus), solar surface features.
 
 ### ⚠️ Known Issues
 
-- [ ] **Performance: Investigate and fix FPS drops under load**
+- Occasional FPS dips on low-end devices under heavy load.
 
-### 🚀 Future Enhancements
+### 🚀 Roadmap
 
-- [ ] **Real planet surface images**: Replace procedural textures with actual images for more realistic planet surfaces
-- [ ] **Multi-language support**
-- [ ] **Timeline feature for historical planetary positions**
-- [ ] **Additional camera presets**
+- Real planet surface imagery for higher realism
+- Multi-language support
+- Timeline for historical planetary positions
+- Additional camera presets
 
 ## 🛠️ Technical Stack
 
-### Frontend Framework
+### Core Technologies
 
 - **Next.js 15.2.4**: React framework with App Router
 - **React 19**: Latest React version with improved performance and hooks optimization
@@ -142,48 +84,12 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - **Smart UI**: Planet labels automatically hide when viewing detailed information
 - **Responsive Design**: Optimized for all screen sizes and devices
 
-## 🌍 Planet Information
+## 🔧 Recent Highlights
 
-The simulation includes scientifically accurate data for all major celestial bodies:
-
-| Planet      | Key Features    | Special Characteristics                         |
-| ----------- | --------------- | ----------------------------------------------- |
-| **Mercury** | Smallest planet | Extreme temperature variations, rocky surface   |
-| **Venus**   | Hottest planet  | Thick atmospheric pressure, retrograde rotation |
-| **Earth**   | Our home planet | Only known world with liquid water oceans       |
-| **Mars**    | The Red Planet  | Largest dust storms in the solar system         |
-| **Jupiter** | Largest planet  | Famous Great Red Spot, ring system              |
-| **Saturn**  | Ringed beauty   | Spectacular ring system, pale gold appearance   |
-| **Uranus**  | Ice giant       | Unique sideways rotation, subtle rings          |
-| **Neptune** | Windiest planet | Speeds reaching 2,100 km/h, ring system         |
-
-Each celestial body features realistic orbital periods, accurate rotation speeds, true-to-scale sizes, procedurally generated textures, and comprehensive scientific data.
-
-## 🔧 Recent Improvements
-
-### Performance Optimizations
-
-- **Context Memoization**: Rotation speed context now uses `useMemo` and `useCallback` for stable references
-- **Explicit TypeScript Typing**: All state and context values have explicit types for better type safety
-- **Reduced Re-renders**: Memoized context values prevent unnecessary component re-renders
-- **Enhanced Error Handling**: Improved context provider error boundaries and null checks
-- **Calculation Optimization**: Centralized rotation calculations with intelligent caching system
-- **Web Worker Support**: Complex mathematical operations can be moved off the main thread
-- **Render Cycle Optimization**: Eliminated complex calculations from render cycles using utility functions
-- **Texture Generation Optimization**: Web Worker-based texture generation prevents UI freezing
-- **Intelligent Caching**: Texture cache system with actual memory tracking and LRU eviction
-- **Debounced Generation**: Prevents excessive texture regeneration with smart debouncing
-- **Robust Error Handling**: Comprehensive validation and error boundaries for canvas operations
-- **Type Safety**: Complete TypeScript interfaces with no optional fields
-- **Real Memory Monitoring**: Performance Memory API integration for accurate memory usage tracking
-- **Comprehensive Error Handling**: Robust error boundaries and validation for canvas operations
-- **Strengthened TypeScript Interfaces**: Complete data structures with no optional chaining required
-
-### Code Quality Enhancements
-
-- **Type Safety**: Explicit typing for all context state and callback functions
-- **Performance Monitoring**: Optimized context value stability across renders
-- **Maintainability**: Clear type definitions and memoization patterns
+- Performance: Memory Monitor pauses FPS/polling when hidden or tab inactive
+- Hydration: Client-only guards to prevent SSR mismatches
+- Accuracy: Fixed cache usage percentage edge cases
+- See full details in [CHANGELOG.md](CHANGELOG.md)
 
 ## 🚀 Getting Started
 
@@ -195,10 +101,6 @@ Each celestial body features realistic orbital periods, accurate rotation speeds
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/nguyenthanhan/real-scale-solar-system.git
-cd real-scale-solar-system
-
 # Install dependencies
 pnpm install
 
