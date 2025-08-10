@@ -78,6 +78,11 @@ export function MemoryMonitor() {
     let rafId: number;
 
     const measure = (now: number) => {
+      // Guard: early return if visibility changed mid-frame
+      if (!isClient || !isVisible || typeof document === 'undefined' || document.visibilityState !== 'visible') {
+        return;
+      }
+
       if (lastTimeRef.current) {
         const dt = now - lastTimeRef.current;
         const current = dt > 0 ? 1000 / dt : 0;
@@ -97,6 +102,10 @@ export function MemoryMonitor() {
 
     // Only start measuring if panel is visible and document is visible
     if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+      // Clear stale data before starting/restarting measurement
+      fpsSamplesRef.current = [];
+      lastTimeRef.current = 0;
+      
       rafId = requestAnimationFrame(measure);
     }
     
