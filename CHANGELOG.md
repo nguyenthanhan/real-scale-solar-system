@@ -5,6 +5,29 @@ All notable changes to the Real Scale Solar System project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2025-08-10
+
+### Added
+
+- **Performance Monitoring Optimizations**: Enhanced memory monitor component with intelligent resource management
+- **Visibility-Based Resource Control**: FPS sampling and stats polling now pause when panel is hidden or browser tab is inactive
+- **SSR Hydration Safety**: Added client-side hydration checks to prevent server-side rendering mismatches
+- **Clean FPS Measurement**: Implemented proper data clearing and guards to prevent stale FPS readings
+
+### Changed
+
+- **Memory Monitor Performance**: FPS tracking and stats refresh now respect panel visibility and document visibility states
+- **Resource Management**: Eliminated unnecessary `requestAnimationFrame` calls and polling when components are not visible
+- **Hydration Compatibility**: Protected browser-only APIs with proper client-side checks for Next.js compatibility
+- **FPS Accuracy**: Enhanced FPS measurement with sample clearing and mid-frame visibility guards
+
+### Fixed
+
+- **Hydration Errors**: Resolved "Hydration failed" errors by ensuring server and client render identical initial HTML
+- **Cache Usage Display**: Fixed division by zero errors and improved cache percentage calculations
+- **Resource Leaks**: Prevented unnecessary background processing when debug panel is hidden
+- **Stale Data Issues**: Eliminated contamination of FPS readings from previous measurement sessions
+
 ## [1.0.8] - 2025-08-09
 
 ### Added
