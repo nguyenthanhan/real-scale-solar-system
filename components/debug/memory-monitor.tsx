@@ -14,6 +14,8 @@ export function MemoryMonitor() {
   const [fps, setFps] = useState(0);
   const lastTimeRef = useRef(0);
   const fpsSamplesRef = useRef<number[]>([]);
+  const [visibilityTrigger, setVisibilityTrigger] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
   // JS heap (when supported)
   const [heapUsed, setHeapUsed] = useState<number | null>(null);
@@ -25,7 +27,12 @@ export function MemoryMonitor() {
   const [cacheMaxSize, setCacheMaxSize] = useState<number | null>(null);
 
   const supportsPerformanceMemory =
-    typeof performance !== "undefined" && (performance as any).memory;
+    isClient && typeof performance !== "undefined" && (performance as any).memory;
+
+  // Client-side hydration effect
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const updateHeapStats = useCallback(() => {
     try {
@@ -81,23 +88,54 @@ export function MemoryMonitor() {
         setFps(Math.round(avg));
       }
       lastTimeRef.current = now;
-      rafId = requestAnimationFrame(measure);
+      
+      // Only schedule next frame if panel is visible and document is visible
+      if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        rafId = requestAnimationFrame(measure);
+      }
     };
 
-    rafId = requestAnimationFrame(measure);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
+    // Only start measuring if panel is visible and document is visible
+    if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+      rafId = requestAnimationFrame(measure);
+    }
+    
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [isClient, isVisible, visibilityTrigger]);
+
+  // Listen for document visibility changes to resume/pause FPS tracking
+  useEffect(() => {
+    if (!isClient || typeof document === 'undefined') return;
+    
+    const handleVisibilityChange = () => {
+      // Trigger the FPS effect to re-run by updating the visibility trigger
+      setVisibilityTrigger(prev => prev + 1);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isClient]);
 
   // Periodic stats refresh
   useEffect(() => {
-    updateHeapStats();
-    updateCacheStats();
-    const id = setInterval(() => {
+    // Only set up polling if panel is visible and document is visible
+    if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
       updateHeapStats();
       updateCacheStats();
-    }, 1000);
-    return () => clearInterval(id);
-  }, [updateHeapStats, updateCacheStats]);
+      const id = setInterval(() => {
+        // Double-check visibility state before each update
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          updateHeapStats();
+          updateCacheStats();
+        }
+      }, 1000);
+      return () => clearInterval(id);
+    }
+  }, [updateHeapStats, updateCacheStats, isClient, isVisible, visibilityTrigger]);
 
   const formatBytes = (bytes: number | null): string => {
     if (bytes == null || isNaN(bytes)) return "n/a";
@@ -132,7 +170,7 @@ export function MemoryMonitor() {
     }
   }, [updateCacheStats]);
 
-  const cacheUsagePct = cacheMaxSize ? (cacheSize / cacheMaxSize) * 100 : 0;
+  const cacheUsagePct = cacheMaxSize && cacheMaxSize > 0 ? (cacheSize / cacheMaxSize) * 100 : null;
 
   if (!isVisible) {
     return (
@@ -182,7 +220,7 @@ export function MemoryMonitor() {
               {cacheMaxSize != null ? ` / ${cacheMaxSize}` : ""} textures
             </span>
           </div>
-          {cacheMaxSize != null && (
+          {cacheUsagePct != null && cacheUsagePct > 0 && (
             <div className="mt-2">
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
