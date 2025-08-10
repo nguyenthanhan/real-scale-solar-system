@@ -2,15 +2,14 @@
 
 import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
+import { Sphere } from "@react-three/drei";
+import { Mesh } from "three";
 import { PlanetData } from "@/data/planet-types";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { AtmosphericGlow } from "@/components/modal/atmospheric-glow";
 import { RotationAxis } from "@/components/modal/rotation-axis";
 import {
-  calculateRotationMultiplier,
   calculateAdjustedPlanetSize,
   rotationCache,
 } from "@/utils/rotation-calculations";
@@ -27,7 +26,7 @@ function PlanetMesh({
   size,
   rotationSpeedMinutes = 15,
 }: Planet3DModelProps) {
-  const planetRef = useRef<THREE.Mesh | null>(null);
+  const planetRef = useRef<Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
 
   // Optimized rotation multiplier calculation using utility functions and caching
@@ -113,14 +112,6 @@ function Planet3DModel({
           planet={planet}
           size={size}
           rotationSpeedMinutes={rotationSpeedMinutes}
-        />
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={false}
-          autoRotate={false}
-          autoRotateSpeed={0}
         />
       </Canvas>
     </div>

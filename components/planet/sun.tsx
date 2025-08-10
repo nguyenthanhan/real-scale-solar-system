@@ -52,12 +52,6 @@ export function Sun({ onClick, simulationSpeed }: SunProps) {
       {/* Light sources */}
       <pointLight
         position={[0, 0, 0]}
-        intensity={3.0}
-        distance={5000}
-        decay={1}
-      />
-      <pointLight
-        position={[0, 0, 0]}
         intensity={1.5}
         distance={3000}
         decay={1}

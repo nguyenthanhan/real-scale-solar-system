@@ -9,12 +9,61 @@ import { ControlModal } from "@/components/modal/control";
 import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";
 import { ModalOverlay } from "@/components/modal/modal-overlay";
-import { GitHubButton } from "@/components/github-button";
+import { GitHubButton } from "@/components/button/github-button";
 import {
   SimulationSpeedProvider,
   useSimulationSpeed,
 } from "@/contexts/rotation-speed-context";
 import { MemoryMonitor } from "@/components/debug/memory-monitor";
+
+// Component that runs inside the Canvas (has access to Three.js context)
+function SceneContent({
+  simulationSpeed,
+  onSunClick,
+  onPlanetClick,
+  selectedPlanet,
+}: {
+  simulationSpeed: number;
+  onSunClick: () => void;
+  onPlanetClick: (planet: PlanetData) => void;
+  selectedPlanet: PlanetData | null;
+}) {
+  return (
+    <>
+      <ambientLight intensity={1.2} />
+      <directionalLight position={[0, 10, 5]} intensity={1.5} />
+      <directionalLight position={[0, -10, -5]} intensity={0.8} />
+      <Sun onClick={onSunClick} simulationSpeed={simulationSpeed} />
+      {planetData.map((planet) => (
+        <Planet
+          key={planet.name}
+          planet={planet}
+          simulationSpeed={simulationSpeed}
+          onClick={onPlanetClick}
+          showLabels={!selectedPlanet}
+        />
+      ))}
+      <Stars
+        radius={15000}
+        depth={2000}
+        count={3000}
+        factor={4}
+        saturation={1}
+        fade
+        speed={1}
+      />
+      <OrbitControls
+        enableZoom
+        enableRotate
+        minDistance={100}
+        maxDistance={38000}
+        zoomSpeed={1.2}
+        enableDamping
+        dampingFactor={0.05}
+      />
+    </>
+  );
+}
 
 // Inner component that uses the context
 function SolarSystemContent() {
@@ -36,37 +85,13 @@ function SolarSystemContent() {
   return (
     <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       <Canvas
-        camera={{ position: [0, 2000, 4000], fov: 45, near: 0.1, far: 50000 }}
+        camera={{ position: [0, 2000, 4000], fov: 60, near: 0.1, far: 70000 }}
       >
-        <color attach="background" args={["#000"]} />
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[0, 10, 5]} intensity={1.5} />
-        <directionalLight position={[0, -10, -5]} intensity={0.8} />
-        <Sun onClick={handleSunClick} simulationSpeed={simulationSpeed} />
-        {planetData.map((planet) => (
-          <Planet
-            key={planet.name}
-            planet={planet}
-            simulationSpeed={simulationSpeed}
-            onClick={handlePlanetClick}
-            showLabels={!selectedPlanet}
-          />
-        ))}
-        <Stars
-          radius={10000}
-          depth={2000}
-          count={10000}
-          factor={4}
-          saturation={1}
-          fade
-          speed={1.5}
-        />
-        <OrbitControls
-          enableZoom
-          enableRotate
-          minDistance={200}
-          maxDistance={20000}
-          zoomSpeed={1.2}
+        <SceneContent
+          simulationSpeed={simulationSpeed}
+          onSunClick={handleSunClick}
+          onPlanetClick={handlePlanetClick}
+          selectedPlanet={selectedPlanet}
         />
       </Canvas>
 

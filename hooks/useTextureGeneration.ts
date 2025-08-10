@@ -3,7 +3,7 @@
  * Prevents UI freezing during heavy texture generation operations
  */
 
-import { useRef, useCallback, useEffect, useState, useMemo } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import { Texture } from "three";
 import { textureCache, TextureCacheKey } from "@/utils/texture-cache";
 
@@ -225,20 +225,11 @@ export function useTextureGeneration() {
     await Promise.all(promises);
   }, [generateTexture]);
 
-  // Initialize memory tracking on mount
-  useEffect(() => {
-    textureCache.initialize();
-  }, []);
-
-  // Get cache statistics
-  const cacheStats = useMemo(() => textureCache.getStats(), []);
-
   return {
     isWorkerReady,
     isGenerating,
     generateTexture,
     preloadTextures,
-    cacheStats,
     clearCache: () => textureCache.clear(),
   };
 }
