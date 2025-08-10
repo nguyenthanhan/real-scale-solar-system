@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
-import * as THREE from "three";
+import { Mesh, Group } from "three";
 import { PlanetData } from "@/data/planet-types";
 import { PlanetLabel } from "@/components/planet/planet-label";
 import { usePlanetMovement } from "@/hooks/usePlanetMovement";
@@ -26,9 +26,10 @@ export function Planet({
   onClick,
   showLabels,
 }: PlanetProps) {
-  const planetRef = useRef<THREE.Mesh | null>(null);
-  const orbitRef = useRef<THREE.Group | null>(null);
+  const planetRef = useRef<Mesh | null>(null);
+  const orbitRef = useRef<Group | null>(null);
 
+  // In main simulation: keep Sun detailed, simplify others to reduce render cost
   const planetMaterial = usePlanetMaterial(planet);
 
   // TRUE TO SCALE - No artificial scaling for visibility
@@ -68,7 +69,7 @@ export function Planet({
       <group ref={orbitRef}>
         <Sphere
           ref={planetRef}
-          args={[scaledSize, 128, 128]} // Increased segments for better detail when zoomed
+          args={[scaledSize, 32, 32]}
           onClick={handlePlanetClick}
         >
           <primitive object={planetMaterial} attach="material" />

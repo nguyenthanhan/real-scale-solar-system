@@ -71,9 +71,7 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - [x] **Web Worker support for complex calculations**
 - [x] **Optimized texture generation with Web Workers**
 - [x] **Texture caching system with actual memory tracking**
-- [x] **Debounced texture generation to prevent UI freezing**
 - [x] **Real memory monitoring with Performance Memory API**
-- [x] **Comprehensive error handling for canvas operations**
 - [x] **Strengthened TypeScript interfaces with complete data structures**
 
 ### 🔬 Scientific Accuracy
@@ -86,6 +84,10 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 - [x] **Sun with granulation and limb darkening**
 - [x] **Retrograde rotation for Venus and Uranus**
 - [x] **Realistic atmospheric glow effects**
+
+### ⚠️ Known Issues
+
+- [ ] **Performance: Investigate and fix FPS drops under load**
 
 ### 🚀 Future Enhancements
 
@@ -211,6 +213,7 @@ pnpm dev
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
 - `pnpm release` - Create a new release
+- `pnpm changelog` - Generate changelog from conventional commits
 
 ## 🤝 Contributing
 

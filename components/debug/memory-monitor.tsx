@@ -1,81 +1,140 @@
 "use client";
-/**
- * Debug component for monitoring actual memory usage
- * Shows real memory consumption vs estimates
- */
 
-import { useState, useEffect, useRef } from "react";
+/**
+ * Debug component for monitoring actual memory usage and performance.
+ */
+import { useState, useEffect, useRef, useCallback } from "react";
 import { textureCache } from "@/utils/texture-cache";
 
 export function MemoryMonitor() {
-  const [stats, setStats] = useState(textureCache.getStats());
-  const [isVisible, setIsVisible] = useState(false);
-  const [fps, setFps] = useState(0);
-  const [frameCount, setFrameCount] = useState(0);
-  const lastTimeRef = useRef(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(textureCache.getStats());
-    }, 1000); // Update every second
-
-    return () => clearInterval(interval);
-  }, []);
+  // UI state
+  const [isVisible, setIsVisible] = useState(true);
 
   // FPS tracking
-  useEffect(() => {
-    let animationId: number;
+  const [fps, setFps] = useState(0);
+  const lastTimeRef = useRef(0);
+  const fpsSamplesRef = useRef<number[]>([]);
 
-    const measureFPS = (currentTime: number) => {
-      if (lastTimeRef.current !== 0) {
-        const deltaTime = currentTime - lastTimeRef.current;
-        const currentFps = 1000 / deltaTime;
-        setFps(Math.round(currentFps));
+  // JS heap (when supported)
+  const [heapUsed, setHeapUsed] = useState<number | null>(null);
+  const [heapTotal, setHeapTotal] = useState<number | null>(null);
+  const [heapLimit, setHeapLimit] = useState<number | null>(null);
+
+  // Texture cache stats (safe introspection without external edits)
+  const [cacheSize, setCacheSize] = useState<number>(0);
+  const [cacheMaxSize, setCacheMaxSize] = useState<number | null>(null);
+
+  const supportsPerformanceMemory =
+    typeof performance !== "undefined" && (performance as any).memory;
+
+  const updateHeapStats = useCallback(() => {
+    try {
+      const mem = (performance as any).memory;
+      if (mem) {
+        setHeapUsed(
+          typeof mem.usedJSHeapSize === "number" ? mem.usedJSHeapSize : null
+        );
+        setHeapTotal(
+          typeof mem.totalJSHeapSize === "number" ? mem.totalJSHeapSize : null
+        );
+        setHeapLimit(
+          typeof mem.jsHeapSizeLimit === "number" ? mem.jsHeapSizeLimit : null
+        );
       }
-
-      lastTimeRef.current = currentTime;
-      setFrameCount((prev) => prev + 1);
-      animationId = requestAnimationFrame(measureFPS);
-    };
-
-    animationId = requestAnimationFrame(measureFPS);
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-    };
+    } catch {
+      // ignore
+    }
   }, []);
 
-  const formatBytes = (bytes: number): string => {
+  const updateCacheStats = useCallback(() => {
+    try {
+      const size =
+        typeof textureCache.getSize === "function" ? textureCache.getSize() : 0;
+      const max =
+        typeof textureCache.getMaxSize === "function"
+          ? textureCache.getMaxSize()
+          : null;
+      setCacheSize(size ?? 0);
+      setCacheMaxSize(typeof max === "number" ? max : null);
+    } catch {
+      setCacheSize(0);
+      setCacheMaxSize(null);
+    }
+  }, []);
+
+  // FPS tracking using rAF with simple smoothing (last 20 samples)
+  useEffect(() => {
+    let rafId: number;
+
+    const measure = (now: number) => {
+      if (lastTimeRef.current) {
+        const dt = now - lastTimeRef.current;
+        const current = dt > 0 ? 1000 / dt : 0;
+        const samples = fpsSamplesRef.current;
+        samples.push(current);
+        if (samples.length > 20) samples.shift();
+        const avg = samples.reduce((a, b) => a + b, 0) / samples.length;
+        setFps(Math.round(avg));
+      }
+      lastTimeRef.current = now;
+      rafId = requestAnimationFrame(measure);
+    };
+
+    rafId = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  // Periodic stats refresh
+  useEffect(() => {
+    updateHeapStats();
+    updateCacheStats();
+    const id = setInterval(() => {
+      updateHeapStats();
+      updateCacheStats();
+    }, 1000);
+    return () => clearInterval(id);
+  }, [updateHeapStats, updateCacheStats]);
+
+  const formatBytes = (bytes: number | null): string => {
+    if (bytes == null || isNaN(bytes)) return "n/a";
     if (bytes === 0) return "0 B";
     const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const sizes = ["B", "KB", "MB", "GB"] as const;
+    const i = Math.min(
+      Math.floor(Math.log(bytes) / Math.log(k)),
+      sizes.length - 1
+    );
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
-  const getMemoryUsagePercentage = (): number => {
-    return (stats.actualMemoryUsage / stats.maxMemoryUsage) * 100;
-  };
-
   const getMemoryBarColor = (percentage: number): string => {
-    if (percentage < 50) return "bg-green-500";
-    if (percentage < 80) return "bg-yellow-500";
+    if (percentage < 30) return "bg-green-500";
+    if (percentage < 70) return "bg-yellow-500";
     return "bg-red-500";
   };
 
-  const getFpsColor = (fps: number): string => {
-    if (fps >= 55) return "text-green-400";
-    if (fps >= 30) return "text-yellow-400";
+  const getFpsColor = (value: number): string => {
+    if (value >= 55) return "text-green-400";
+    if (value >= 30) return "text-yellow-400";
     return "text-red-400";
   };
+
+  const handleClearCache = useCallback(() => {
+    try {
+      textureCache.clear();
+      updateCacheStats();
+    } catch (e) {
+      console.warn("Failed to clear texture cache", e);
+    }
+  }, [updateCacheStats]);
+
+  const cacheUsagePct = cacheMaxSize ? (cacheSize / cacheMaxSize) * 100 : 0;
 
   if (!isVisible) {
     return (
       <button
         onClick={() => setIsVisible(true)}
-        className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-3 py-1 rounded text-xs hover:bg-gray-700"
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-3 py-1 rounded text-xs hover:bg-gray-700"
       >
         Memory Monitor
       </button>
@@ -83,20 +142,21 @@ export function MemoryMonitor() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-w-sm">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white p-4 rounded-lg shadow-lg w-[320px]">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold">Memory Monitor</h3>
         <button
           onClick={() => setIsVisible(false)}
           className="text-gray-400 hover:text-white"
+          aria-label="Close"
         >
           ×
         </button>
       </div>
 
-      <div className="space-y-2 text-xs">
+      <div className="space-y-3 text-xs">
         {/* Performance Section */}
-        <div className="border-b border-gray-700 pb-2 mb-2">
+        <div className="border-b border-gray-700 pb-2">
           <div className="flex justify-between mb-1">
             <span className="font-medium">Performance</span>
           </div>
@@ -104,123 +164,70 @@ export function MemoryMonitor() {
             <span>FPS:</span>
             <span className={getFpsColor(fps)}>{fps}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Frames:</span>
-            <span>{frameCount.toLocaleString()}</span>
-          </div>
         </div>
 
-        {/* Cache Section */}
-        <div className="border-b border-gray-700 pb-2 mb-2">
+        {/* Texture Cache Section */}
+        <div className="border-b border-gray-700 pb-2">
           <div className="flex justify-between mb-1">
             <span className="font-medium">Texture Cache</span>
           </div>
-          {/* Cache Size */}
           <div className="flex justify-between">
             <span>Cache Size:</span>
             <span>
-              {stats.size} / {stats.maxSize} textures
+              {cacheSize}
+              {cacheMaxSize != null ? ` / ${cacheMaxSize}` : ""} textures
             </span>
           </div>
-
-          {/* Cache Efficiency */}
-          <div className="flex justify-between">
-            <span>Cache Usage:</span>
-            <span>{((stats.size / stats.maxSize) * 100).toFixed(1)}%</span>
+          {cacheMaxSize != null && (
+            <div className="mt-2">
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full transition-all duration-300 ${getMemoryBarColor(
+                    cacheUsagePct
+                  )}`}
+                  style={{ width: `${Math.min(cacheUsagePct, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+          <div className="flex gap-2 mt-2 justify-end">
+            <button
+              onClick={updateCacheStats}
+              className="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs"
+            >
+              Refresh
+            </button>
+            <button
+              onClick={handleClearCache}
+              className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
+            >
+              Clear Cache
+            </button>
           </div>
         </div>
 
-        {/* Memory Section */}
-        <div className="border-b border-gray-700 pb-2 mb-2">
+        {/* Browser Memory Section (reference) */}
+        <div className="pb-1">
           <div className="flex justify-between mb-1">
-            <span className="font-medium">Memory Usage</span>
-          </div>
-          {/* Estimated Memory */}
-          <div className="flex justify-between">
-            <span>Estimated:</span>
-            <span>{formatBytes(stats.memoryUsage)}</span>
-          </div>
-
-          {/* Actual Memory */}
-          <div className="flex justify-between">
-            <span>Actual:</span>
-            <span
-              className={
-                stats.memoryTrackingEnabled
-                  ? "text-green-400"
-                  : "text-yellow-400"
-              }
-            >
-              {formatBytes(stats.actualMemoryUsage)}
-              {!stats.memoryTrackingEnabled && " (est)"}
+            <span className="font-medium">Browser Memory</span>
+            <span className="text-gray-400">
+              {supportsPerformanceMemory
+                ? "from performance.memory"
+                : "not supported"}
             </span>
           </div>
-
-          {/* Memory Usage Bar */}
-          <div className="mt-2">
-            <div className="flex justify-between text-xs mb-1">
-              <span>Usage</span>
-              <span>{getMemoryUsagePercentage().toFixed(1)}%</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-300 ${getMemoryBarColor(
-                  getMemoryUsagePercentage()
-                )}`}
-                style={{
-                  width: `${Math.min(getMemoryUsagePercentage(), 100)}%`,
-                }}
-              />
-            </div>
+          <div className="flex justify-between">
+            <span>Used:</span>
+            <span className="text-gray-300">{formatBytes(heapUsed)}</span>
           </div>
-
-          {/* Memory Limit */}
-          <div className="flex justify-between text-gray-400">
+          <div className="flex justify-between">
+            <span>Total:</span>
+            <span className="text-gray-300">{formatBytes(heapTotal)}</span>
+          </div>
+          <div className="flex justify-between">
             <span>Limit:</span>
-            <span>{formatBytes(stats.maxMemoryUsage)}</span>
+            <span className="text-gray-300">{formatBytes(heapLimit)}</span>
           </div>
-        </div>
-
-        {/* Status Section */}
-        <div className="border-b border-gray-700 pb-2 mb-2">
-          <div className="flex justify-between mb-1">
-            <span className="font-medium">Status</span>
-          </div>
-          {/* Tracking Status */}
-          <div className="flex justify-between text-xs">
-            <span>Memory Tracking:</span>
-            <span
-              className={
-                stats.memoryTrackingEnabled
-                  ? "text-green-400"
-                  : "text-yellow-400"
-              }
-            >
-              {stats.memoryTrackingEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-
-          {/* Environment */}
-          <div className="flex justify-between text-xs">
-            <span>Environment:</span>
-            <span className="text-blue-400">{process.env.NODE_ENV}</span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 mt-3 pt-2">
-          <button
-            onClick={() => textureCache.clear()}
-            className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
-          >
-            Clear Cache
-          </button>
-          <button
-            onClick={() => textureCache.enableMemoryTracking()}
-            className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
-          >
-            Enable Tracking
-          </button>
         </div>
       </div>
     </div>

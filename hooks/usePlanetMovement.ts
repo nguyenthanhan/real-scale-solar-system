@@ -1,14 +1,14 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import { EllipseCurve, Group, Mesh, MathUtils } from "three";
 import { PlanetData } from "@/data/planet-types";
 
 interface PlanetMovementProps {
   planet: PlanetData;
   simulationSpeed: number;
   scaledDistance: number;
-  orbitRef: React.RefObject<THREE.Group | null>;
-  planetRef: React.RefObject<THREE.Mesh | null>;
+  orbitRef: React.RefObject<Group | null>;
+  planetRef: React.RefObject<Mesh | null>;
 }
 
 export function usePlanetMovement({
@@ -46,7 +46,7 @@ export function usePlanetMovement({
 
   // Create elliptical orbit path with more accurate eccentricity
   const orbitCurve = useMemo(() => {
-    return new THREE.EllipseCurve(
+    return new EllipseCurve(
       0,
       0,
       scaledDistance,
@@ -107,7 +107,13 @@ export function usePlanetMovement({
       }
     }
 
-    // Update planet rotation around its axis
+    // Ensure axial tilt is applied once regardless of self-rotation state
+    if (planetRef?.current && !axialTiltSetRef.current) {
+      planetRef.current.rotation.x = MathUtils.degToRad(planet.axialTilt);
+      axialTiltSetRef.current = true;
+    }
+
+    // Optionally update planet rotation around its axis
     if (planetRef?.current) {
       // Calculate rotation speed based on real day length
       const dayLengthSeconds =
@@ -120,22 +126,7 @@ export function usePlanetMovement({
           : deltaTime * simulationSpeed * rotationSpeedRadiansPerSecond;
 
       // Determine rotation direction from the perspective of the Solar System's north pole
-      // When viewed from the Solar System's north pole (above the ecliptic):
-      // - Most planets rotate counterclockwise (prograde) - this is the standard direction
-      // - Venus and Uranus rotate clockwise (retrograde) - opposite to the standard
-      // In Three.js, positive Y rotation is counterclockwise when viewed from above
-      // Venus: -243.025 days (retrograde) - should rotate clockwise
-      // Uranus: -0.72 days (retrograde) - should rotate clockwise
-      // Earth, Mars, Jupiter, Saturn, Neptune: positive rotationSpeedByDays (prograde) - should rotate counterclockwise
       const rotationDirection = planet.rotationSpeedByDays < 0 ? -1 : 1;
-
-      // Apply axial tilt only once
-      if (!axialTiltSetRef.current) {
-        planetRef.current.rotation.x = THREE.MathUtils.degToRad(
-          planet.axialTilt
-        );
-        axialTiltSetRef.current = true;
-      }
 
       planetRef.current.rotation.y += rotationSpeed * rotationDirection;
     }
