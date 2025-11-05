@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description:
     "A true-to-scale 3D model of our solar system with accurate planetary sizes, distances, and scientific data",
   generator: "Next.js",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
