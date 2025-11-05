@@ -69,6 +69,7 @@ function SceneContent({
 // Inner component that uses the context
 function SolarSystemContent() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
+  const [controlModalVisible, setControlModalVisible] = useState(true);
   const { simulationSpeed, setSimulationSpeed } = useSimulationSpeed();
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
@@ -98,10 +99,15 @@ function SolarSystemContent() {
 
       <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
 
-      <ControlModal
-        simulationSpeed={simulationSpeed}
-        onSpeedChange={setSimulationSpeed}
-      />
+      {/* Show control modal when no planet is selected, with manual visibility control */}
+      {!selectedPlanet && (
+        <ControlModal
+          simulationSpeed={simulationSpeed}
+          onSpeedChange={setSimulationSpeed}
+          isVisible={controlModalVisible}
+          onToggleVisibility={setControlModalVisible}
+        />
+      )}
 
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">

@@ -7,13 +7,19 @@ import { Settings } from "lucide-react";
 interface SpeedControlProps {
   simulationSpeed: number;
   onSpeedChange: (speed: number) => void;
+  isVisible?: boolean;
+  onToggleVisibility?: (visible: boolean) => void;
 }
 
 export function ControlModal({
   simulationSpeed,
   onSpeedChange,
+  isVisible,
+  onToggleVisibility,
 }: SpeedControlProps) {
-  const [isPanelVisible, setIsPanelVisible] = useState(true);
+  const [internalPanelVisible, setInternalPanelVisible] = useState(isVisible ?? true);
+  const isControlled = onToggleVisibility !== undefined && isVisible !== undefined;
+  const isPanelVisible = isControlled ? isVisible : internalPanelVisible;
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -53,18 +59,38 @@ export function ControlModal({
 
   // Toggle the entire panel visibility
   const togglePanel = () => {
-    setIsPanelVisible(!isPanelVisible);
+    const newVisibility = !isPanelVisible;
+    if (isControlled) {
+      onToggleVisibility(newVisibility);
+    } else {
+      setInternalPanelVisible(newVisibility);
+    }
   };
 
   return (
     <>
+      {isPanelVisible && (
+        <div
+          className="fixed inset-0 bg-transparent z-[9998]"
+          role="button"
+          aria-label="Close panel"
+          tabIndex={0}
+          onClick={togglePanel}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              togglePanel();
+            }
+          }}
+        />
+      )}
       {isPanelVisible ? (
         <motion.div
-          className="absolute bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-96"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-96"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          onDoubleClick={togglePanel}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium">
@@ -109,7 +135,7 @@ export function ControlModal({
         </motion.div>
       ) : (
         <motion.button
-          className="absolute bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-[9999]"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-[9999]"
           onClick={togglePanel}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
