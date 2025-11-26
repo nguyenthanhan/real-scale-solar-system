@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import { PlanetData } from "@/data/planet-types";
 import { Planet3DModel } from "@/components/modal/planet-3d-model";
-import { useRotationSpeed } from "@/contexts/rotation-speed-context";
+import { useSimulationSpeed } from "@/contexts/rotation-speed-context";
 
 export function PlanetInfo({
   planet,
@@ -14,7 +14,7 @@ export function PlanetInfo({
   planet: PlanetData;
   onClose: () => void;
 }) {
-  const { rotationSpeedMinutes, setRotationSpeedMinutes } = useRotationSpeed();
+  const { simulationSpeed } = useSimulationSpeed();
   const [show3DModel, setShow3DModel] = useState(false);
 
   if (!planet) return null;
@@ -55,7 +55,7 @@ export function PlanetInfo({
               <Planet3DModel
                 planet={planet}
                 size={60}
-                rotationSpeedMinutes={rotationSpeedMinutes}
+                simulationSpeed={simulationSpeed}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -142,33 +142,6 @@ export function PlanetInfo({
               <p className="text-sm">
                 {planet.axialTilt?.toFixed(1) || "N/A"}°
               </p>
-            </div>
-            <div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <p className="text-xs opacity-70">Rotation Speed</p>
-                  <span className="text-sm">
-                    1s &lt;-&gt; {rotationSpeedMinutes}m
-                  </span>
-                </div>
-                <div className="col-span-2 space-y-2">
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="720"
-                    step="0.5"
-                    value={rotationSpeedMinutes}
-                    onChange={(e) =>
-                      setRotationSpeedMinutes(Number(e.target.value))
-                    }
-                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-400">
-                    <span>30s</span>
-                    <span>12 hours</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

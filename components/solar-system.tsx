@@ -22,11 +22,15 @@ function SceneContent({
   onSunClick,
   onPlanetClick,
   selectedPlanet,
+  showPlanetLabels,
+  showOrbitPath,
 }: {
   simulationSpeed: number;
   onSunClick: () => void;
   onPlanetClick: (planet: PlanetData) => void;
   selectedPlanet: PlanetData | null;
+  showPlanetLabels: boolean;
+  showOrbitPath: boolean;
 }) {
   return (
     <>
@@ -40,7 +44,8 @@ function SceneContent({
           planet={planet}
           simulationSpeed={simulationSpeed}
           onClick={onPlanetClick}
-          showLabels={!selectedPlanet}
+          showLabels={showPlanetLabels && !selectedPlanet}
+          showOrbitPath={showOrbitPath}
         />
       ))}
       <Stars
@@ -70,6 +75,8 @@ function SceneContent({
 function SolarSystemContent() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null);
   const [controlModalVisible, setControlModalVisible] = useState(true);
+  const [showPlanetLabels, setShowPlanetLabels] = useState(true);
+  const [showOrbitPath, setShowOrbitPath] = useState(true);
   const { simulationSpeed, setSimulationSpeed } = useSimulationSpeed();
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
@@ -94,20 +101,24 @@ function SolarSystemContent() {
           onSunClick={handleSunClick}
           onPlanetClick={handlePlanetClick}
           selectedPlanet={selectedPlanet}
+          showPlanetLabels={showPlanetLabels}
+          showOrbitPath={showOrbitPath}
         />
       </Canvas>
 
       <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
 
-      {/* Show control modal when no planet is selected, with manual visibility control */}
-      {!selectedPlanet && (
-        <ControlModal
-          simulationSpeed={simulationSpeed}
-          onSpeedChange={setSimulationSpeed}
-          isVisible={controlModalVisible}
-          onToggleVisibility={setControlModalVisible}
-        />
-      )}
+      {/* Control modal is always visible, with manual visibility control */}
+      <ControlModal
+        simulationSpeed={simulationSpeed}
+        onSpeedChange={setSimulationSpeed}
+        isVisible={controlModalVisible}
+        onToggleVisibility={setControlModalVisible}
+        showPlanetLabels={showPlanetLabels}
+        onTogglePlanetLabels={setShowPlanetLabels}
+        showOrbitPath={showOrbitPath}
+        onToggleOrbitPath={setShowOrbitPath}
+      />
 
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
         <div className="flex flex-col space-y-1">

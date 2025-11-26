@@ -2,13 +2,17 @@
 
 import { useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { Settings } from "lucide-react";
+import { Settings, X } from "lucide-react";
 
 interface SpeedControlProps {
   simulationSpeed: number;
   onSpeedChange: (speed: number) => void;
   isVisible?: boolean;
   onToggleVisibility?: (visible: boolean) => void;
+  showPlanetLabels?: boolean;
+  onTogglePlanetLabels?: (show: boolean) => void;
+  showOrbitPath?: boolean;
+  onToggleOrbitPath?: (show: boolean) => void;
 }
 
 export function ControlModal({
@@ -16,9 +20,16 @@ export function ControlModal({
   onSpeedChange,
   isVisible,
   onToggleVisibility,
+  showPlanetLabels = true,
+  onTogglePlanetLabels,
+  showOrbitPath = true,
+  onToggleOrbitPath,
 }: SpeedControlProps) {
-  const [internalPanelVisible, setInternalPanelVisible] = useState(isVisible ?? true);
-  const isControlled = onToggleVisibility !== undefined && isVisible !== undefined;
+  const [internalPanelVisible, setInternalPanelVisible] = useState(
+    isVisible ?? true
+  );
+  const isControlled =
+    onToggleVisibility !== undefined && isVisible !== undefined;
   const isPanelVisible = isControlled ? isVisible : internalPanelVisible;
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,68 +80,87 @@ export function ControlModal({
 
   return (
     <>
-      {isPanelVisible && (
-        <div
-          className="fixed inset-0 bg-transparent z-[9998]"
-          role="button"
-          aria-label="Close panel"
-          tabIndex={0}
-          onClick={togglePanel}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              togglePanel();
-            }
-          }}
-        />
-      )}
       {isPanelVisible ? (
         <motion.div
-          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-96"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-80"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium">
-              Simulation Speed (×{simulationSpeed.toLocaleString()})
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium">
+              Speed ×{simulationSpeed.toLocaleString()}
             </h3>
             <button
               onClick={togglePanel}
-              className="text-xs text-white/70 hover:text-white"
+              className="p-1 rounded-full hover:bg-gray-700 transition-colors"
+              aria-label="Hide controls"
             >
-              Hide
+              <X size={16} />
             </button>
           </div>
 
-          <div className="space-y-4">
-            {/* Slider with wider width */}
-            <div className="flex items-center space-x-3">
-              <input
-                type="range"
-                min="1"
-                max="10000000"
-                step="1"
-                value={simulationSpeed}
-                onChange={handleSpeedChange}
-                className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="text-sm min-w-[90px] text-right">
-                ×{simulationSpeed.toLocaleString()}
+          <div className="space-y-2">
+            {/* Slider */}
+            <input
+              type="range"
+              min="1"
+              max="10000000"
+              step="1"
+              value={simulationSpeed}
+              onChange={handleSpeedChange}
+              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            />
+
+            {/* Time conversion info - compact */}
+            <div className="text-[10px] text-gray-400 flex justify-between">
+              <span>{getTimeConversion(simulationSpeed)}</span>
+              <span>Earth: {getEarthOrbitTime(simulationSpeed)}</span>
+            </div>
+
+            {/* Toggles in one row */}
+            {(onTogglePlanetLabels || onToggleOrbitPath) && (
+              <div className="flex items-center gap-4 pt-2 border-t border-white/10">
+                {onTogglePlanetLabels && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Labels</span>
+                    <button
+                      onClick={() => onTogglePlanetLabels(!showPlanetLabels)}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showPlanetLabels ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle planet labels"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showPlanetLabels ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {onToggleOrbitPath && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Orbits</span>
+                    <button
+                      onClick={() => onToggleOrbitPath(!showOrbitPath)}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showOrbitPath ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle orbit path"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showOrbitPath ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-
-            {/* Time conversion info */}
-            <div className="text-xs text-gray-300 bg-gray-900/50 p-2 rounded space-y-1">
-              <div>Time Conversion: {getTimeConversion(simulationSpeed)}</div>
-              <div>Earth orbit: {getEarthOrbitTime(simulationSpeed)}</div>
-            </div>
-
-            <div className="flex justify-between text-xs text-gray-400">
-              <span>Real-time (×1)</span>
-              <span>Extreme (×10,000,000)</span>
-            </div>
+            )}
           </div>
         </motion.div>
       ) : (

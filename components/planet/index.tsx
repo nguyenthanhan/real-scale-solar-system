@@ -18,6 +18,7 @@ interface PlanetProps {
   simulationSpeed: number;
   onClick: (planet: PlanetData) => void;
   showLabels: boolean;
+  showOrbitPath?: boolean;
 }
 
 export function Planet({
@@ -25,6 +26,7 @@ export function Planet({
   simulationSpeed,
   onClick,
   showLabels,
+  showOrbitPath = true,
 }: PlanetProps) {
   const planetRef = useRef<Mesh | null>(null);
   const orbitRef = useRef<Group | null>(null);
@@ -65,7 +67,7 @@ export function Planet({
 
   return (
     <>
-      <OrbitPath orbitCurve={orbitCurve} />
+      {showOrbitPath && <OrbitPath orbitCurve={orbitCurve} />}
       <group ref={orbitRef}>
         <Sphere
           ref={planetRef}

@@ -17,27 +17,30 @@ import {
 interface Planet3DModelProps {
   planet: PlanetData;
   size?: number;
-  rotationSpeedMinutes?: number; // Minutes per second (5-1440 minutes)
+  simulationSpeed?: number;
 }
 
 // Component that goes inside the Canvas (can use useFrame)
 function PlanetMesh({
   planet,
   size,
-  rotationSpeedMinutes = 15,
+  simulationSpeed = 2_000_000,
 }: Planet3DModelProps) {
   const planetRef = useRef<Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
 
-  // Optimized rotation multiplier calculation using utility functions and caching
-  const rotationMultiplier = useMemo(
-    () =>
-      rotationCache.getRotationSpeed(
-        planet.rotationSpeedByDays,
-        rotationSpeedMinutes
-      ) * (planet.rotationSpeedByDays < 0 ? -1 : 1),
-    [planet.rotationSpeedByDays, rotationSpeedMinutes]
-  );
+  // Calculate rotation based on simulation speed
+  // Convert simulation speed to rotation multiplier
+  const rotationMultiplier = useMemo(() => {
+    const period = Math.abs(planet.rotationSpeedByDays);
+    if (period === 0) return 0;
+
+    // Use simulation speed directly for rotation
+    const baseRotation = (2 * Math.PI) / (period * 86400); // radians per second in real time
+    const speedMultiplier = simulationSpeed * baseRotation;
+
+    return speedMultiplier * (planet.rotationSpeedByDays < 0 ? -1 : 1);
+  }, [planet.rotationSpeedByDays, simulationSpeed]);
 
   // Optimized rotation animation using useFrame
   useFrame((_, delta) => {
@@ -92,7 +95,7 @@ function PlanetMesh({
 function Planet3DModel({
   planet,
   size = 80,
-  rotationSpeedMinutes = 15,
+  simulationSpeed = 2_000_000,
 }: Planet3DModelProps) {
   return (
     <div className="w-full h-full relative">
@@ -111,7 +114,7 @@ function Planet3DModel({
         <PlanetMesh
           planet={planet}
           size={size}
-          rotationSpeedMinutes={rotationSpeedMinutes}
+          simulationSpeed={simulationSpeed}
         />
       </Canvas>
     </div>
