@@ -16,7 +16,6 @@
   "dependencies": {
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
-    "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -42,5 +41,5 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.18.1"
 }
