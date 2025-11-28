@@ -50,7 +50,7 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 
 - **React Three Fiber 9.1.2**: React renderer for Three.js
 - **Three.js 0.176.0**: JavaScript 3D library
-- **Canvas API**: Procedural texture generation
+- **TextureLoader**: High-quality planet texture images for photorealistic rendering
 
 ### Styling & Animation
 
@@ -64,8 +64,8 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 - **Memoized Context Values**: Prevents unnecessary re-renders and improves performance
 - **Calculation Optimization**: Centralized rotation calculations with caching and Web Worker support
 - **Render Cycle Optimization**: Reduced complex calculations in render cycles with utility functions
-- **Texture Generation Optimization**: Web Worker-based texture generation with caching and debouncing
-- **UI Performance**: Prevents freezing during heavy texture generation operations
+- **Texture Loading Optimization**: Asynchronous texture loading with LRU caching for efficient memory usage
+- **UI Performance**: Smooth rendering with fallback materials during texture loading
 
 ## 🎮 How to Use
 
@@ -90,6 +90,25 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 - Hydration: Client-only guards to prevent SSR mismatches
 - Accuracy: Fixed cache usage percentage edge cases
 - See full details in [CHANGELOG.md](CHANGELOG.md)
+
+## 🎨 Planet Textures
+
+The solar system uses high-quality, photorealistic texture images for all celestial bodies:
+
+### Texture Assets
+
+- **Location**: `public/textures/` directory
+- **Resolution**: 2048x1024 pixels (2:1 aspect ratio for sphere mapping)
+- **Format**: JPG for planets (optimized file size), PNG for rings (with transparency)
+- **Sources**: NASA imagery and public domain astronomical textures
+
+### Texture Features
+
+- **Realistic Surface Details**: Earth shows continents and oceans, Mars displays red geological features, gas giants show atmospheric bands
+- **Efficient Loading**: Asynchronous texture loading with LRU caching prevents duplicate loads
+- **Error Handling**: Graceful fallback to base colors if textures fail to load
+- **Memory Management**: Automatic cache cleanup with configurable limits (max 20 textures)
+- **Special Materials**: Sun uses emissive material for self-illumination effect
 
 ## 🚀 Getting Started
 

@@ -1,144 +1,180 @@
-import { useMemo, useEffect, useRef } from "react";
-import { MeshStandardMaterial, CanvasTexture, RepeatWrapping } from "three";
+import { useState, useEffect, useRef } from "react";
+import {
+  MeshStandardMaterial,
+  MeshBasicMaterial,
+  TextureLoader,
+  Material,
+  Texture,
+} from "three";
 import { PlanetData } from "@/data/planet-types";
-import { createSunTexture } from "@/lib/planet-textures/sun-texture";
-import { createGasGiantTexture } from "@/lib/planet-textures/gas-giant-texture";
-import { createEarthTexture } from "@/lib/planet-textures/earth-texture";
-import { createMarsTexture } from "@/lib/planet-textures/mars-texture";
-import { createRockyPlanetTexture } from "@/lib/planet-textures/rocky-planet-texture";
-import { createIceGiantTexture } from "@/lib/planet-textures/ice-giant-texture";
+import { PLANET_TEXTURES } from "@/lib/planet-textures/texture-config";
 import { textureCache, TextureCacheKey } from "@/utils/texture-cache";
 
-export type TextureQuality = "detailed" | "simple";
+/**
+ * Custom hook for loading and managing planet materials with realistic texture images.
+ * Replaces Canvas-based procedural texture generation with TextureLoader for photorealistic planets.
+ *
+ * Features:
+ * - Asynchronous texture loading with loading states
+ * - Texture caching to prevent duplicate loads
+ * - Error handling with fallback to base colors
+ * - Proper cleanup of materials without disposing shared cached textures
+ * - Special handling for Sun (emissive MeshBasicMaterial)
+ */
+export function usePlanetMaterial(planet: PlanetData): Material {
+  const [material, setMaterial] = useState<Material | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const materialRef = useRef<Material | null>(null);
+  const loaderRef = useRef<TextureLoader | null>(null);
+  const isMountedRef = useRef(true);
 
-export function usePlanetMaterial(planet: PlanetData) {
-  const materialRef = useRef<MeshStandardMaterial | null>(null);
-  const textureRef = useRef<CanvasTexture | null>(null);
-  const textureFromCacheRef = useRef<boolean>(false);
+  useEffect(() => {
+    isMountedRef.current = true;
 
-  // Texture generation constants
-  const TEX_WIDTH = 512;
-  const TEX_HEIGHT = 256;
+    // Get texture configuration for this planet
+    const config = PLANET_TEXTURES[planet.name];
 
-  const resolveTextureKey = (p: PlanetData): TextureCacheKey => {
-    // Map planet names to cache texture types
-    if (p.name === "Sun") return { type: "sun", width: TEX_WIDTH, height: TEX_HEIGHT };
-    if (p.name === "Jupiter" || p.name === "Saturn")
-      return { type: "gas-giant", width: TEX_WIDTH, height: TEX_HEIGHT, color: p.color };
-    if (p.name === "Earth") return { type: "earth", width: TEX_WIDTH, height: TEX_HEIGHT };
-    if (p.name === "Mars") return { type: "mars", width: TEX_WIDTH, height: TEX_HEIGHT };
-    if (p.name === "Mercury" || p.name === "Venus")
-      return { type: "rocky-planet", width: TEX_WIDTH, height: TEX_HEIGHT, color: p.color };
-    if (p.name === "Uranus" || p.name === "Neptune")
-      return { type: "ice-giant", width: TEX_WIDTH, height: TEX_HEIGHT, color: p.color };
-    // Default to rocky-planet keyed by color
-    return { type: "rocky-planet", width: TEX_WIDTH, height: TEX_HEIGHT, color: p.color };
-  };
-
-  const material = useMemo(() => {
-    // Dispose of previous material and texture
-    if (materialRef.current) {
-      if (materialRef.current.map && !textureFromCacheRef.current) {
-        // Only dispose owned textures, not cache-shared ones
-        materialRef.current.map.dispose();
-      }
-      materialRef.current.dispose();
-    }
-    if (textureRef.current && !textureFromCacheRef.current) {
-      textureRef.current.dispose();
-    }
-    textureFromCacheRef.current = false;
-
-    // Try cache first
-    const key = resolveTextureKey(planet);
-    const cached = textureCache.get(key);
-    if (cached) {
-      const mat = new MeshStandardMaterial({
-        map: cached,
-        metalness: 0.1,
-        roughness: 0.6,
-      });
-      materialRef.current = mat;
-      // Track that this texture is shared from cache; don't dispose on cleanup
-      textureFromCacheRef.current = true;
-      // We still keep a ref for symmetry, but do not dispose it
-      textureRef.current = cached as CanvasTexture;
-      return mat;
-    }
-
-    // Create a canvas for the texture (will be cached after generation)
-    const canvas = document.createElement("canvas");
-    canvas.width = TEX_WIDTH;
-    canvas.height = TEX_HEIGHT;
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      console.warn("Failed to create canvas context");
-      // Fallback to basic material if canvas context is unavailable
+    if (!config) {
+      // No texture configuration found - fallback to color-based material
+      console.warn(`No texture configuration found for planet: ${planet.name}`);
       const fallbackMaterial = new MeshStandardMaterial({
         color: planet.color,
         metalness: 0.1,
         roughness: 0.6,
       });
       materialRef.current = fallbackMaterial;
-      return fallbackMaterial;
+      setMaterial(fallbackMaterial);
+      setIsLoading(false);
+      return;
     }
 
-    // Fill with base color
-    ctx.fillStyle = planet.color;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Create cache key for this texture
+    const cacheKey: TextureCacheKey = {
+      type: planet.name,
+      path: config.texturePath,
+    };
 
-    // Generate specific texture based on planet type
-    if (planet.name === "Sun") {
-      createSunTexture(ctx, canvas);
-    } else if (planet.name === "Jupiter" || planet.name === "Saturn") {
-      createGasGiantTexture(ctx, canvas, planet.color);
-    } else if (planet.name === "Earth") {
-      createEarthTexture(ctx, canvas);
-    } else if (planet.name === "Mars") {
-      createMarsTexture(ctx, canvas);
-    } else if (planet.name === "Mercury" || planet.name === "Venus") {
-      createRockyPlanetTexture(ctx, canvas, planet.color);
-    } else if (planet.name === "Uranus" || planet.name === "Neptune") {
-      createIceGiantTexture(ctx, canvas, planet.color);
+    // Check if texture is already cached
+    const cachedTexture = textureCache.get(cacheKey);
+
+    if (cachedTexture) {
+      // Use cached texture to create material
+      const mat = createMaterialWithTexture(
+        cachedTexture,
+        config.materialType,
+        planet.color
+      );
+      materialRef.current = mat;
+      setMaterial(mat);
+      setIsLoading(false);
+      return;
     }
 
-    // Create texture from canvas
-    const texture = new CanvasTexture(canvas);
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    textureRef.current = texture;
+    // Load texture asynchronously
+    const loader = new TextureLoader();
+    loaderRef.current = loader;
 
-    // Store in cache for reuse elsewhere
-    textureCache.set(key, texture);
+    loader.load(
+      config.texturePath,
+      // onLoad callback
+      (texture) => {
+        if (!isMountedRef.current) return;
 
-    const material = new MeshStandardMaterial({
-      map: texture,
-      metalness: 0.1,
-      roughness: 0.6,
-    });
-    materialRef.current = material;
+        // Store texture in cache for reuse
+        textureCache.set(cacheKey, texture);
 
-    return material;
-  }, [planet.name, planet.color]);
+        // Create material with loaded texture
+        const mat = createMaterialWithTexture(
+          texture,
+          config.materialType,
+          planet.color
+        );
+        materialRef.current = mat;
+        setMaterial(mat);
+        setIsLoading(false);
+      },
+      // onProgress callback (optional)
+      undefined,
+      // onError callback
+      (error) => {
+        if (!isMountedRef.current) return;
 
-  // Cleanup effect to dispose materials and textures on unmount
-  useEffect(() => {
+        console.error(
+          `Failed to load texture for ${planet.name} from ${config.texturePath}:`,
+          error
+        );
+
+        // Fallback to color-based material on error
+        const fallbackMaterial = new MeshStandardMaterial({
+          color: planet.color,
+          metalness: 0.1,
+          roughness: 0.6,
+        });
+        materialRef.current = fallbackMaterial;
+        setMaterial(fallbackMaterial);
+        setIsLoading(false);
+      }
+    );
+
+    // Cleanup function
     return () => {
+      isMountedRef.current = false;
+
+      // Dispose material but NOT cached textures (they're shared resources)
       if (materialRef.current) {
-        if (materialRef.current.map && !textureFromCacheRef.current) {
-          materialRef.current.map.dispose();
+        // Only dispose the material's map if it's NOT in the cache
+        const mat = materialRef.current as
+          | MeshStandardMaterial
+          | MeshBasicMaterial;
+        if (mat.map && !textureCache.has(cacheKey)) {
+          mat.map.dispose();
         }
         materialRef.current.dispose();
         materialRef.current = null;
       }
-      if (textureRef.current && !textureFromCacheRef.current) {
-        textureRef.current.dispose();
-        textureRef.current = null;
-      }
-      textureFromCacheRef.current = false;
+
+      // Clear loader reference
+      loaderRef.current = null;
     };
-  }, []);
+  }, [planet.name, planet.color]);
+
+  // Return temporary color-based material while loading
+  if (isLoading || !material) {
+    return new MeshStandardMaterial({
+      color: planet.color,
+      metalness: 0.1,
+      roughness: 0.6,
+    });
+  }
 
   return material;
+}
+
+/**
+ * Helper function to create the appropriate material type with a loaded texture.
+ *
+ * @param texture - The loaded Three.js Texture
+ * @param materialType - "basic" for Sun (emissive), "standard" for planets
+ * @param baseColor - Fallback color for the material
+ * @returns Material instance (MeshBasicMaterial or MeshStandardMaterial)
+ */
+function createMaterialWithTexture(
+  texture: Texture,
+  materialType: "standard" | "basic",
+  baseColor: string
+): Material {
+  if (materialType === "basic") {
+    // Sun uses MeshBasicMaterial for emissive, self-illuminated effect
+    return new MeshBasicMaterial({
+      map: texture,
+      color: baseColor,
+    });
+  } else {
+    // Planets use MeshStandardMaterial for realistic lighting
+    return new MeshStandardMaterial({
+      map: texture,
+      metalness: 0.1,
+      roughness: 0.6,
+    });
+  }
 }

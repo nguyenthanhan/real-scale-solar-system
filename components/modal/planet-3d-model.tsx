@@ -24,7 +24,7 @@ interface Planet3DModelProps {
 function PlanetMesh({
   planet,
   size,
-  simulationSpeed = 2_000_000,
+  simulationSpeed = 1_000_000,
 }: Planet3DModelProps) {
   const planetRef = useRef<Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
@@ -95,7 +95,7 @@ function PlanetMesh({
 function Planet3DModel({
   planet,
   size = 80,
-  simulationSpeed = 2_000_000,
+  simulationSpeed = 1_000_000,
 }: Planet3DModelProps) {
   return (
     <div className="w-full h-full relative">

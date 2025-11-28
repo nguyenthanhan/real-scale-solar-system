@@ -25,7 +25,7 @@ const MIN_SPEED = 1;
 
 export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
   const [simulationSpeed, setSimulationSpeedState] =
-    useState<number>(2_000_000);
+    useState<number>(1_000_000);
   const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState<number>(15);
 
   const setSimulationSpeed = useCallback((speed: number) => {
