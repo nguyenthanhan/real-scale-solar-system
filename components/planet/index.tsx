@@ -67,7 +67,9 @@ export function Planet({
 
   return (
     <>
-      {showOrbitPath && <OrbitPath orbitCurve={orbitCurve} />}
+      {showOrbitPath && (
+        <OrbitPath planet={planet} scaledDistance={scaledDistance} />
+      )}
       <group ref={orbitRef}>
         <Sphere
           ref={planetRef}

@@ -13,6 +13,7 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 ## ✨ Features
 
 - **True-to-scale 3D model** with realistic sizes, distances, and orbital mechanics
+- **Orbital path visualization**: Toggleable 3D orbit traces with accurate inclinations
 - **Interactive controls**: orbit/zoom/pan, click-to-explore, rotation controls
 - **Performance**: Web Workers, texture caching, real memory monitor, optimized renders
 - **Visual fidelity**: 10k+ star field, atmospheric glow, ring systems, detailed sun
@@ -80,6 +81,7 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 ### Features
 
 - **Real-Time Conversion**: See how much real time corresponds to simulation time
+- **Orbit Visualization**: Toggle orbital paths on/off to see planetary trajectories with accurate 3D inclinations
 - **3D Planet Models**: Interactive rotating models in modal with accurate axial tilts
 - **Smart UI**: Planet labels automatically hide when viewing detailed information
 - **Responsive Design**: Optimized for all screen sizes and devices
@@ -90,6 +92,29 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 - Hydration: Client-only guards to prevent SSR mismatches
 - Accuracy: Fixed cache usage percentage edge cases
 - See full details in [CHANGELOG.md](CHANGELOG.md)
+
+## 🛸 Orbit Visualization
+
+The application features accurate 3D orbital path visualization:
+
+### Orbit Features
+
+- **Toggleable Display**: Show or hide orbital paths with a single click
+- **Accurate Inclinations**: Each orbit is tilted according to real orbital inclination angles relative to Earth's ecliptic plane
+- **Color Differentiation**: Inner planets (Mercury, Venus, Earth, Mars) use lighter gray orbits, outer planets (Jupiter, Saturn, Uranus, Neptune) use darker gray
+- **3D Rendering**: Orbits are visible from all camera angles with double-sided materials
+- **Performance Optimized**: Efficient torus geometry with proper memory management and render ordering
+
+### Orbital Inclinations
+
+- Mercury: 7.005°
+- Venus: 3.395°
+- Earth: 0.0° (reference plane)
+- Mars: 1.85°
+- Jupiter: 1.303°
+- Saturn: 2.485°
+- Uranus: 0.773°
+- Neptune: 1.77°
 
 ## 🎨 Planet Textures
 

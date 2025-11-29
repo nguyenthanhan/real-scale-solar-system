@@ -2,15 +2,48 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { EllipseCurve, Group, Mesh, MathUtils } from "three";
 import { PlanetData } from "@/data/planet-types";
+import { applyInclinationToPosition } from "@/utils/orbital-inclination";
 
+/**
+ * Props for the usePlanetMovement hook.
+ */
 interface PlanetMovementProps {
+  /** Planet data containing orbital parameters */
   planet: PlanetData;
+  /** Simulation speed multiplier (1 = real-time, 1000 = 1000x faster) */
   simulationSpeed: number;
+  /** Scaled distance from the Sun for visualization */
   scaledDistance: number;
+  /** Reference to the planet's orbit group for position updates */
   orbitRef: React.RefObject<Group | null>;
+  /** Reference to the planet mesh for rotation updates */
   planetRef: React.RefObject<Mesh | null>;
 }
 
+/**
+ * Hook that handles planet movement along its orbital path.
+ *
+ * This hook calculates and updates the planet's position on its elliptical orbit,
+ * applying orbital inclination to create accurate 3D orbital mechanics.
+ *
+ * Key features:
+ * - Elliptical orbit based on planet's eccentricity
+ * - Orbital inclination applied for 3D positioning (planets move above/below ecliptic plane)
+ * - Real-time based simulation with configurable speed multiplier
+ * - Axial tilt and rotation around planet's axis
+ *
+ * @param props - Planet movement configuration
+ * @returns Object containing the orbit curve for reference
+ *
+ * @example
+ * const { orbitCurve } = usePlanetMovement({
+ *   planet: earthData,
+ *   simulationSpeed: 1000,
+ *   scaledDistance: 100,
+ *   orbitRef,
+ *   planetRef,
+ * });
+ */
 export function usePlanetMovement({
   planet,
   simulationSpeed,
@@ -96,14 +129,24 @@ export function usePlanetMovement({
           }
         }
 
-        // Get position on the elliptical curve
-        const position = orbitCurve.getPoint(
+        // Get position on the elliptical curve (2D)
+        const position2D = orbitCurve.getPoint(
           currentAngleRef.current / (2 * Math.PI)
         );
 
-        // Update planet position directly
-        orbitRef.current.position.x = position.x;
-        orbitRef.current.position.z = position.y; // y from curve maps to z in 3D
+        // Apply orbital inclination to get 3D position
+        // position2D.y from curve maps to z in 3D space before inclination
+        const inclination = planet.orbitalInclination ?? 0;
+        const position3D = applyInclinationToPosition(
+          position2D.x,
+          position2D.y,
+          inclination
+        );
+
+        // Update planet position with inclination applied
+        orbitRef.current.position.x = position3D.x;
+        orbitRef.current.position.y = position3D.y; // Now has inclination component
+        orbitRef.current.position.z = position3D.z;
       }
     }
 

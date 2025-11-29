@@ -26,6 +26,7 @@ export const sunData: PlanetData = {
   yearDiscovered: "Prehistoric",
   eccentricity: 0,
   axialTilt: 7.25,
+  orbitalInclination: 0,
 };
 
 export const planetData: PlanetData[] = [
@@ -55,6 +56,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.205,
     axialTilt: 0.034,
+    orbitalInclination: 7.005,
   },
   {
     name: "Venus",
@@ -82,6 +84,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.007,
     axialTilt: 177.4,
+    orbitalInclination: 3.395,
   },
   {
     name: "Earth",
@@ -110,6 +113,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.017,
     axialTilt: 23.5,
+    orbitalInclination: 0.0,
   },
   {
     name: "Mars",
@@ -138,6 +142,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.093,
     axialTilt: 25.2,
+    orbitalInclination: 1.85,
   },
   {
     name: "Jupiter",
@@ -166,6 +171,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.049,
     axialTilt: 3.13,
+    orbitalInclination: 1.303,
   },
   {
     name: "Saturn",
@@ -193,6 +199,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "Prehistoric",
     eccentricity: 0.056,
     axialTilt: 26.7,
+    orbitalInclination: 2.485,
   },
   {
     name: "Uranus",
@@ -220,6 +227,7 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "1781",
     eccentricity: 0.046,
     axialTilt: 97.8,
+    orbitalInclination: 0.773,
   },
   {
     name: "Neptune",
@@ -247,5 +255,6 @@ export const planetData: PlanetData[] = [
     yearDiscovered: "1846",
     eccentricity: 0.01,
     axialTilt: 28.3,
+    orbitalInclination: 1.77,
   },
 ];

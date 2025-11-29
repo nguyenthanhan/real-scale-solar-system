@@ -127,10 +127,18 @@ export function ControlModal({
                     <span className="text-xs">Labels</span>
                     <button
                       onClick={() => onTogglePlanetLabels(!showPlanetLabels)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onTogglePlanetLabels(!showPlanetLabels);
+                        }
+                      }}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                         showPlanetLabels ? "bg-blue-600" : "bg-gray-600"
                       }`}
                       aria-label="Toggle planet labels"
+                      aria-pressed={showPlanetLabels}
+                      role="switch"
                     >
                       <span
                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
@@ -146,10 +154,18 @@ export function ControlModal({
                     <span className="text-xs">Orbits</span>
                     <button
                       onClick={() => onToggleOrbitPath(!showOrbitPath)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleOrbitPath(!showOrbitPath);
+                        }
+                      }}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                         showOrbitPath ? "bg-blue-600" : "bg-gray-600"
                       }`}
                       aria-label="Toggle orbit path"
+                      aria-pressed={showOrbitPath}
+                      role="switch"
                     >
                       <span
                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${

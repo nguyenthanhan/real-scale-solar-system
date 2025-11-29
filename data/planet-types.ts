@@ -20,6 +20,9 @@ export interface PlanetData {
   /** The axial tilt of the planet in degrees (0 = no tilt, 90 = perpendicular to orbit). */
   axialTilt: number;
 
+  /** The orbital inclination of the planet in degrees relative to the ecliptic plane (Earth's orbital plane = 0). */
+  orbitalInclination: number;
+
   /** The color used to represent the planet in the visualization. */
   color: string;
 
