@@ -31,6 +31,7 @@ export function PlanetLabel({
     <Html
       position={[0, labelDistance, 0]}
       center
+      zIndexRange={[10, 0]}
       style={{
         pointerEvents: "auto",
       }}

@@ -6,18 +6,31 @@ import { Sphere } from "@react-three/drei";
 import type { Mesh } from "three";
 import { sunData } from "@/data/planet-data";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
+import type { SimulationMode } from "@/contexts/simulation-mode-context";
 
 interface SunProps {
   onClick?: () => void;
   simulationSpeed: number;
+  /** Simulation mode: 'speed' for animation, 'date' for static */
+  simulationMode?: SimulationMode;
 }
 
-export function Sun({ onClick, simulationSpeed }: SunProps) {
+export function Sun({
+  onClick,
+  simulationSpeed,
+  simulationMode = "speed",
+}: SunProps) {
   const sunRef = useRef<Mesh | null>(null);
   const glowRef = useRef<Mesh | null>(null);
   const sunMaterial = usePlanetMaterial(sunData);
 
+  // Check if we're in Date Mode
+  const isDateMode = simulationMode === "date";
+
   useFrame(({ clock }) => {
+    // Skip rotation in Date Mode
+    if (isDateMode) return;
+
     if (sunRef.current) {
       // Sun rotates once every 25.38 Earth days
       // Use elapsed time for smoother rotation

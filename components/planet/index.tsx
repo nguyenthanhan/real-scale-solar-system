@@ -12,6 +12,8 @@ import { PlanetRings } from "@/components/planet/planet-rings";
 import { OrbitPath } from "@/components/planet/orbit-path";
 import { PlanetAtmosphericGlow } from "@/components/planet/planet-atmospheric-glow";
 
+import type { SimulationMode } from "@/contexts/simulation-mode-context";
+
 // Define the planet props
 interface PlanetProps {
   planet: PlanetData;
@@ -19,6 +21,10 @@ interface PlanetProps {
   onClick: (planet: PlanetData) => void;
   showLabels: boolean;
   showOrbitPath?: boolean;
+  /** Simulation mode: 'speed' for animation, 'date' for static positions */
+  simulationMode?: SimulationMode;
+  /** Selected date for Date Mode */
+  selectedDate?: Date;
 }
 
 export function Planet({
@@ -27,6 +33,8 @@ export function Planet({
   onClick,
   showLabels,
   showOrbitPath = true,
+  simulationMode = "speed",
+  selectedDate,
 }: PlanetProps) {
   const planetRef = useRef<Mesh | null>(null);
   const orbitRef = useRef<Group | null>(null);
@@ -57,6 +65,8 @@ export function Planet({
     scaledDistance,
     orbitRef,
     planetRef,
+    simulationMode,
+    selectedDate,
   });
 
   // Handle planet click with proper event propagation

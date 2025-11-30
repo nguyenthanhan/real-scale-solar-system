@@ -13,6 +13,8 @@ interface SpeedControlProps {
   onTogglePlanetLabels?: (show: boolean) => void;
   showOrbitPath?: boolean;
   onToggleOrbitPath?: (show: boolean) => void;
+  /** Disable speed control (e.g., when in Date Mode) */
+  disabled?: boolean;
 }
 
 export function ControlModal({
@@ -24,6 +26,7 @@ export function ControlModal({
   onTogglePlanetLabels,
   showOrbitPath = true,
   onToggleOrbitPath,
+  disabled = false,
 }: SpeedControlProps) {
   const [internalPanelVisible, setInternalPanelVisible] = useState(
     isVisible ?? true
@@ -91,6 +94,9 @@ export function ControlModal({
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs font-medium">
               Speed ×{simulationSpeed.toLocaleString()}
+              {disabled && (
+                <span className="ml-2 text-yellow-400">(Date Mode)</span>
+              )}
             </h3>
             <button
               onClick={togglePanel}
@@ -110,7 +116,10 @@ export function ControlModal({
               step="1"
               value={simulationSpeed}
               onChange={handleSpeedChange}
-              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+              disabled={disabled}
+              className={`w-full h-2 bg-gray-700 rounded-lg appearance-none ${
+                disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+              }`}
             />
 
             {/* Time conversion info - compact */}

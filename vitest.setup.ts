@@ -3,6 +3,8 @@
  * Provides polyfills and global setup for tests
  */
 
+import "@testing-library/jest-dom/vitest";
+
 // Polyfill for ResizeObserver (required by @react-three/fiber)
 global.ResizeObserver = class ResizeObserver {
   observe() {}

@@ -14,11 +14,21 @@ import {
   SimulationSpeedProvider,
   useSimulationSpeed,
 } from "@/contexts/rotation-speed-context";
+import {
+  SimulationModeProvider,
+  useSimulationMode,
+} from "@/contexts/simulation-mode-context";
+import { ModeToggleButton } from "@/components/button/mode-toggle-button";
+import { DatePicker } from "@/components/date-picker/date-picker";
 import { MemoryMonitor } from "@/components/debug/memory-monitor";
+
+import type { SimulationMode } from "@/contexts/simulation-mode-context";
 
 // Component that runs inside the Canvas (has access to Three.js context)
 function SceneContent({
   simulationSpeed,
+  simulationMode,
+  selectedDate,
   onSunClick,
   onPlanetClick,
   selectedPlanet,
@@ -26,6 +36,8 @@ function SceneContent({
   showOrbitPath,
 }: {
   simulationSpeed: number;
+  simulationMode: SimulationMode;
+  selectedDate: Date;
   onSunClick: () => void;
   onPlanetClick: (planet: PlanetData) => void;
   selectedPlanet: PlanetData | null;
@@ -37,12 +49,18 @@ function SceneContent({
       <ambientLight intensity={1.2} />
       <directionalLight position={[0, 10, 5]} intensity={1.5} />
       <directionalLight position={[0, -10, -5]} intensity={0.8} />
-      <Sun onClick={onSunClick} simulationSpeed={simulationSpeed} />
+      <Sun
+        onClick={onSunClick}
+        simulationSpeed={simulationSpeed}
+        simulationMode={simulationMode}
+      />
       {planetData.map((planet) => (
         <Planet
           key={planet.name}
           planet={planet}
           simulationSpeed={simulationSpeed}
+          simulationMode={simulationMode}
+          selectedDate={selectedDate}
           onClick={onPlanetClick}
           showLabels={showPlanetLabels && !selectedPlanet}
           showOrbitPath={showOrbitPath}
@@ -78,6 +96,11 @@ function SolarSystemContent() {
   const [showPlanetLabels, setShowPlanetLabels] = useState(true);
   const [showOrbitPath, setShowOrbitPath] = useState(true);
   const { simulationSpeed, setSimulationSpeed } = useSimulationSpeed();
+  const { mode, toggleMode, selectedDate, setSelectedDate } =
+    useSimulationMode();
+
+  // Check if in Date Mode
+  const isDateMode = mode === "date";
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
     setSelectedPlanet(planet);
@@ -91,6 +114,11 @@ function SolarSystemContent() {
     setSelectedPlanet(null);
   };
 
+  // Handle mode toggle - preserve speed when switching modes
+  const handleModeToggle = useCallback(() => {
+    toggleMode();
+  }, [toggleMode]);
+
   return (
     <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       <Canvas
@@ -98,6 +126,8 @@ function SolarSystemContent() {
       >
         <SceneContent
           simulationSpeed={simulationSpeed}
+          simulationMode={mode}
+          selectedDate={selectedDate}
           onSunClick={handleSunClick}
           onPlanetClick={handlePlanetClick}
           selectedPlanet={selectedPlanet}
@@ -107,6 +137,24 @@ function SolarSystemContent() {
       </Canvas>
 
       <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
+
+      {/* Mode toggle button */}
+      <div className="absolute top-4 left-4 z-50">
+        <ModeToggleButton mode={mode} onToggle={handleModeToggle} />
+      </div>
+
+      {/* Date picker - only visible in Date Mode with fade animation */}
+      {isDateMode && (
+        <div
+          className="absolute top-16 left-4 z-50 animate-in fade-in duration-500"
+          style={{ animation: "fadeIn 500ms ease-in-out" }}
+        >
+          <DatePicker
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+          />
+        </div>
+      )}
 
       {/* Control modal is always visible, with manual visibility control */}
       <ControlModal
@@ -118,6 +166,7 @@ function SolarSystemContent() {
         onTogglePlanetLabels={setShowPlanetLabels}
         showOrbitPath={showOrbitPath}
         onToggleOrbitPath={setShowOrbitPath}
+        disabled={isDateMode}
       />
 
       <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
@@ -138,7 +187,9 @@ function SolarSystemContent() {
 export default function SolarSystem() {
   return (
     <SimulationSpeedProvider>
-      <SolarSystemContent />
+      <SimulationModeProvider>
+        <SolarSystemContent />
+      </SimulationModeProvider>
     </SimulationSpeedProvider>
   );
 }

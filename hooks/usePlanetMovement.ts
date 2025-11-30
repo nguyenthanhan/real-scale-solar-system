@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { EllipseCurve, Group, Mesh, MathUtils } from "three";
 import { PlanetData } from "@/data/planet-types";
@@ -8,6 +8,8 @@ import {
   FULL_CIRCLE_RADIANS,
   EARTH_ORBITAL_PERIOD_DAYS,
 } from "@/utils/physics-constants";
+import { getPlanetPosition } from "@/utils/astronomy-calculations";
+import type { SimulationMode } from "@/contexts/simulation-mode-context";
 
 /**
  * Props for the usePlanetMovement hook.
@@ -23,6 +25,10 @@ interface PlanetMovementProps {
   orbitRef: React.RefObject<Group | null>;
   /** Reference to the planet mesh for rotation updates */
   planetRef: React.RefObject<Mesh | null>;
+  /** Simulation mode: 'speed' for animation, 'date' for static positions */
+  simulationMode?: SimulationMode;
+  /** Selected date for Date Mode */
+  selectedDate?: Date;
 }
 
 /**
@@ -55,13 +61,18 @@ export function usePlanetMovement({
   scaledDistance,
   orbitRef,
   planetRef,
+  simulationMode = "speed",
+  selectedDate,
 }: PlanetMovementProps) {
+  // Check if we're in Date Mode
+  const isDateMode = simulationMode === "date";
   // Refs to store current position and angle
   const currentAngleRef = useRef(0);
   const lastTimeRef = useRef(0);
   const totalTimeRef = useRef(0);
   const lastLoggedDayRef = useRef(-1);
   const axialTiltSetRef = useRef(false);
+  const initialPositionSetRef = useRef(false);
 
   // Calculate orbital period in seconds from planet data
   // Fallback to Earth's period if missing (with error log)
@@ -94,8 +105,91 @@ export function usePlanetMovement({
     );
   }, [scaledDistance, planet.eccentricity]);
 
-  // Calculate the position based on time and simulation speed
+  // Calculate initial position based on current date (for accurate starting position)
+  const initialPosition = useMemo(() => {
+    return getPlanetPosition(planet.name, new Date());
+  }, [planet.name]);
+
+  // Set initial position on mount (Speed Mode starts at today's actual position)
+  useEffect(() => {
+    if (
+      !initialPositionSetRef.current &&
+      orbitRef?.current &&
+      initialPosition
+    ) {
+      // Set the initial angle based on today's position
+      currentAngleRef.current = initialPosition.rotationRadians;
+
+      // Get position on the elliptical curve
+      const normalizedAngle =
+        initialPosition.rotationRadians / FULL_CIRCLE_RADIANS;
+      const position2D = orbitCurve.getPoint(normalizedAngle);
+
+      // Apply orbital inclination to get 3D position
+      const inclination = planet.orbitalInclination ?? 0;
+      const position3D = applyInclinationToPosition(
+        position2D.x,
+        position2D.y,
+        inclination
+      );
+
+      // Update planet position
+      orbitRef.current.position.x = position3D.x;
+      orbitRef.current.position.y = position3D.y;
+      orbitRef.current.position.z = position3D.z;
+
+      initialPositionSetRef.current = true;
+    }
+  }, [initialPosition, orbitRef, orbitCurve, planet.orbitalInclination]);
+
+  // Calculate position for Date Mode using Astronomy Engine
+  const datePosition = useMemo(() => {
+    if (isDateMode && selectedDate) {
+      return getPlanetPosition(planet.name, selectedDate);
+    }
+    return null;
+  }, [isDateMode, selectedDate, planet.name]);
+
+  // Apply date position when in Date Mode
+  useEffect(() => {
+    if (isDateMode && datePosition && orbitRef?.current) {
+      // Get position on the elliptical curve using the calculated longitude
+      const normalizedAngle =
+        datePosition.rotationRadians / FULL_CIRCLE_RADIANS;
+      const position2D = orbitCurve.getPoint(normalizedAngle);
+
+      // Apply orbital inclination to get 3D position
+      const inclination = planet.orbitalInclination ?? 0;
+      const position3D = applyInclinationToPosition(
+        position2D.x,
+        position2D.y,
+        inclination
+      );
+
+      // Update planet position
+      orbitRef.current.position.x = position3D.x;
+      orbitRef.current.position.y = position3D.y;
+      orbitRef.current.position.z = position3D.z;
+    }
+  }, [
+    isDateMode,
+    datePosition,
+    orbitRef,
+    orbitCurve,
+    planet.orbitalInclination,
+  ]);
+
+  // Calculate the position based on time and simulation speed (Speed Mode only)
   useFrame(({ clock }) => {
+    // Skip animation in Date Mode
+    if (isDateMode) {
+      // Still apply axial tilt once
+      if (planetRef?.current && !axialTiltSetRef.current) {
+        planetRef.current.rotation.x = MathUtils.degToRad(planet.axialTilt);
+        axialTiltSetRef.current = true;
+      }
+      return;
+    }
     const elapsedTime = clock.getElapsedTime();
     const deltaTime = Math.max(elapsedTime - lastTimeRef.current, 0.001); // Minimum 1ms
     lastTimeRef.current = elapsedTime;
