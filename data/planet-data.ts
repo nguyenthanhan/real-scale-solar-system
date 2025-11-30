@@ -1,4 +1,8 @@
 import { PlanetData } from "@/data/planet-types";
+import { validateAllPlanets } from "@/utils/validate-planet-data";
+
+// NASA JPL Horizons System data source
+// https://ssd.jpl.nasa.gov/planets/phys_par.html
 
 export const sunData: PlanetData = {
   name: "Sun",
@@ -14,6 +18,7 @@ export const sunData: PlanetData = {
   atmosphere: "Hot plasma of hydrogen (73%) and helium (25%)",
   orbitSpeedByEarth: 0,
   orbitSpeedByKmH: 0,
+  orbitalPeriodDays: 0, // Sun doesn't orbit (in heliocentric model)
   rotationSpeedByDays: 25.38,
   rotationSpeedByKmH: 1.997,
   hasRings: false,
@@ -39,6 +44,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 0.39,
     orbitSpeedByEarth: 47.87,
     orbitSpeedByKmH: 172_332,
+    orbitalPeriodDays: 87.969, // NASA JPL
     rotationSpeedByDays: 58.646,
     rotationSpeedByKmH: 10.892,
     hasRings: false,
@@ -54,7 +60,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "Very thin, mostly oxygen, sodium, hydrogen",
     moons: "0",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.205,
+    eccentricity: 0.2056, // NASA JPL (4 decimal places)
     axialTilt: 0.034,
     orbitalInclination: 7.005,
   },
@@ -67,7 +73,8 @@ export const planetData: PlanetData[] = [
     distanceInAU: 0.72,
     orbitSpeedByEarth: 35.02,
     orbitSpeedByKmH: 126_074,
-    rotationSpeedByDays: -243.025,
+    orbitalPeriodDays: 224.701, // NASA JPL
+    rotationSpeedByDays: -243.025, // Negative = retrograde
     rotationSpeedByKmH: 6.52,
     hasRings: false,
     ringColor: "",
@@ -82,7 +89,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "96.5% CO2, 3.5% N2",
     moons: "0",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.007,
+    eccentricity: 0.0068, // NASA JPL (4 decimal places)
     axialTilt: 177.4,
     orbitalInclination: 3.395,
   },
@@ -95,6 +102,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 1.0,
     orbitSpeedByEarth: 29.78,
     orbitSpeedByKmH: 107_226,
+    orbitalPeriodDays: 365.256, // NASA JPL (sidereal year)
     rotationSpeedByDays: 1,
     rotationSpeedByKmH: 1_674,
     hasRings: false,
@@ -111,7 +119,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "78% N2, 21% O2, 1% Ar",
     moons: "1",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.017,
+    eccentricity: 0.0167, // NASA JPL (4 decimal places)
     axialTilt: 23.5,
     orbitalInclination: 0.0,
   },
@@ -124,6 +132,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 1.52,
     orbitSpeedByEarth: 24.077,
     orbitSpeedByKmH: 86_868,
+    orbitalPeriodDays: 686.98, // NASA JPL
     rotationSpeedByDays: 1.03,
     rotationSpeedByKmH: 868,
     hasRings: false,
@@ -140,7 +149,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "95.3% CO2, 2.7% N2, 1.6% Ar",
     moons: "2",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.093,
+    eccentricity: 0.0934, // NASA JPL (4 decimal places)
     axialTilt: 25.2,
     orbitalInclination: 1.85,
   },
@@ -153,6 +162,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 5.2,
     orbitSpeedByEarth: 13.07,
     orbitSpeedByKmH: 47_052,
+    orbitalPeriodDays: 4332.59, // NASA JPL (11.86 years)
     rotationSpeedByDays: 0.41,
     rotationSpeedByKmH: 45_000,
     hasRings: true,
@@ -169,7 +179,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "89.8% H2, 10.2% He",
     moons: "79",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.049,
+    eccentricity: 0.0484, // NASA JPL (4 decimal places)
     axialTilt: 3.13,
     orbitalInclination: 1.303,
   },
@@ -182,6 +192,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 9.55,
     orbitSpeedByEarth: 9.69,
     orbitSpeedByKmH: 34_884,
+    orbitalPeriodDays: 10759.22, // NASA JPL (29.46 years)
     rotationSpeedByDays: 0.44,
     rotationSpeedByKmH: 36_000,
     hasRings: true,
@@ -197,7 +208,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "96.3% H2, 3.25% He",
     moons: "83",
     yearDiscovered: "Prehistoric",
-    eccentricity: 0.056,
+    eccentricity: 0.0539, // NASA JPL (4 decimal places)
     axialTilt: 26.7,
     orbitalInclination: 2.485,
   },
@@ -210,7 +221,8 @@ export const planetData: PlanetData[] = [
     distanceInAU: 19.19,
     orbitSpeedByEarth: 6.81,
     orbitSpeedByKmH: 24_516,
-    rotationSpeedByDays: -0.72,
+    orbitalPeriodDays: 30688.5, // NASA JPL (84.01 years)
+    rotationSpeedByDays: -0.72, // Negative = retrograde
     rotationSpeedByKmH: 9_000,
     hasRings: true,
     ringColor: "#2F2F2F",
@@ -225,7 +237,7 @@ export const planetData: PlanetData[] = [
     atmosphere: "82.5% H2, 15.2% He, 2.3% CH4",
     moons: "27",
     yearDiscovered: "1781",
-    eccentricity: 0.046,
+    eccentricity: 0.0463, // NASA JPL (4 decimal places)
     axialTilt: 97.8,
     orbitalInclination: 0.773,
   },
@@ -238,6 +250,7 @@ export const planetData: PlanetData[] = [
     distanceInAU: 30.07,
     orbitSpeedByEarth: 5.43,
     orbitSpeedByKmH: 19_548,
+    orbitalPeriodDays: 60182, // NASA JPL (164.79 years)
     rotationSpeedByDays: 0.67,
     rotationSpeedByKmH: 9_000,
     hasRings: true,
@@ -253,8 +266,21 @@ export const planetData: PlanetData[] = [
     atmosphere: "80% H2, 19% He, 1% CH4",
     moons: "14",
     yearDiscovered: "1846",
-    eccentricity: 0.01,
+    eccentricity: 0.0086, // NASA JPL (4 decimal places)
     axialTilt: 28.3,
     orbitalInclination: 1.77,
   },
 ];
+
+// Validate planet data on module load (client-side only)
+if (typeof window !== "undefined") {
+  try {
+    validateAllPlanets(planetData);
+  } catch (error) {
+    console.error("Failed to load planet data:", error);
+    // Only throw in development mode
+    if (process.env.NODE_ENV === "development") {
+      throw error;
+    }
+  }
+}

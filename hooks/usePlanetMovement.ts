@@ -3,6 +3,11 @@ import { useFrame } from "@react-three/fiber";
 import { EllipseCurve, Group, Mesh, MathUtils } from "three";
 import { PlanetData } from "@/data/planet-types";
 import { applyInclinationToPosition } from "@/utils/orbital-inclination";
+import {
+  SECONDS_PER_DAY,
+  FULL_CIRCLE_RADIANS,
+  EARTH_ORBITAL_PERIOD_DAYS,
+} from "@/utils/physics-constants";
 
 /**
  * Props for the usePlanetMovement hook.
@@ -58,24 +63,22 @@ export function usePlanetMovement({
   const lastLoggedDayRef = useRef(-1);
   const axialTiltSetRef = useRef(false);
 
-  // Calculate orbital period in seconds for each planet
-  const getOrbitalPeriodInSeconds = (planetName: string): number => {
-    const periods: { [key: string]: number } = {
-      Mercury: 88 * 24 * 60 * 60, // 88 days
-      Venus: 225 * 24 * 60 * 60, // 225 days
-      Earth: 365.25 * 24 * 60 * 60, // 365.25 days
-      Mars: 687 * 24 * 60 * 60, // 687 days
-      Jupiter: 4333 * 24 * 60 * 60, // 4333 days
-      Saturn: 10759 * 24 * 60 * 60, // 10759 days
-      Uranus: 30687 * 24 * 60 * 60, // 30687 days
-      Neptune: 60190 * 24 * 60 * 60, // 60190 days
-    };
-    return periods[planetName] || periods.Earth;
-  };
+  // Calculate orbital period in seconds from planet data
+  // Fallback to Earth's period if missing (with error log)
+  const orbitalPeriodDays =
+    planet.orbitalPeriodDays ?? EARTH_ORBITAL_PERIOD_DAYS;
 
-  // Calculate base speed for real-time simulation
-  const orbitalPeriodSeconds = getOrbitalPeriodInSeconds(planet.name);
-  const baseSpeed = (2 * Math.PI) / orbitalPeriodSeconds; // radians per second for real-time
+  if (!planet.orbitalPeriodDays) {
+    console.error(
+      `Planet ${planet.name} missing orbitalPeriodDays, using Earth's period`
+    );
+  }
+
+  // Convert orbital period from days to seconds
+  const orbitalPeriodSeconds = orbitalPeriodDays * SECONDS_PER_DAY;
+
+  // Calculate base speed for real-time simulation (radians per second)
+  const baseSpeed = FULL_CIRCLE_RADIANS / orbitalPeriodSeconds;
 
   // Create elliptical orbit path with more accurate eccentricity
   const orbitCurve = useMemo(() => {
@@ -156,17 +159,16 @@ export function usePlanetMovement({
       axialTiltSetRef.current = true;
     }
 
-    // Optionally update planet rotation around its axis
-    if (planetRef?.current) {
+    // Update planet rotation around its axis
+    if (planetRef?.current && simulationSpeed !== 0) {
       // Calculate rotation speed based on real day length
       const dayLengthSeconds =
-        Math.abs(planet.rotationSpeedByDays) * 24 * 60 * 60;
-      const rotationSpeedRadiansPerSecond = (2 * Math.PI) / dayLengthSeconds;
+        Math.abs(planet.rotationSpeedByDays) * SECONDS_PER_DAY;
+      const rotationSpeedRadiansPerSecond =
+        FULL_CIRCLE_RADIANS / dayLengthSeconds;
 
       const rotationSpeed =
-        simulationSpeed === 0
-          ? 0
-          : deltaTime * simulationSpeed * rotationSpeedRadiansPerSecond;
+        deltaTime * simulationSpeed * rotationSpeedRadiansPerSecond;
 
       // Determine rotation direction from the perspective of the Solar System's north pole
       const rotationDirection = planet.rotationSpeedByDays < 0 ? -1 : 1;

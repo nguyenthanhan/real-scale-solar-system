@@ -35,7 +35,18 @@ export interface PlanetData {
   /** The orbital speed of the planet in kilometers per hour (km/h). */
   orbitSpeedByKmH: number;
 
-  /** The time it takes for the planet to complete one orbit around the Sun. */
+  /**
+   * The time it takes for the planet to complete one orbit around the Sun (numeric value for calculations).
+   * Source: NASA JPL Horizons System
+   * @example Mercury: 87.969, Earth: 365.256
+   */
+  orbitalPeriodDays: number;
+
+  /**
+   * The time it takes for the planet to complete one orbit around the Sun (display string for UI).
+   * @deprecated Use orbitalPeriodDays for calculations
+   * @example "88 Earth days", "365.25 days"
+   */
   orbitalPeriod: string;
 
   /** The time it takes for the planet to complete one rotation on its axis, in Earth days. */
