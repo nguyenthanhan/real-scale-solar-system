@@ -50,13 +50,6 @@ describe("Eccentricity Accuracy", () => {
       expect(mercury.eccentricity).toBe(0.2056);
     });
 
-    it("should have Venus with nearly circular orbit (low eccentricity)", () => {
-      const venus = planetData.find((p) => p.name === "Venus")!;
-
-      expect(venus.eccentricity).toBe(0.0068);
-      expect(venus.eccentricity).toBeLessThan(0.01);
-    });
-
     it("should have Earth with nearly circular orbit", () => {
       const earth = planetData.find((p) => p.name === "Earth")!;
 

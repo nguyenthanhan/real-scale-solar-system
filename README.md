@@ -13,6 +13,7 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 ## ✨ Features
 
 - **True-to-scale 3D model** with realistic sizes, distances, and orbital mechanics
+- **Real-time planetary data**: Integration with Solar System OpenData API for accurate scientific information
 - **Orbital path visualization**: Toggleable 3D orbit traces with accurate inclinations
 - **Interactive controls**: orbit/zoom/pan, click-to-explore, rotation controls
 - **Performance**: Web Workers, texture caching, real memory monitor, optimized renders
@@ -145,12 +146,19 @@ The solar system uses high-quality, photorealistic texture images for all celest
 ### Installation
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 pnpm install
 
-# Start development server
+# 2. Set up API key (optional but recommended)
+# Get your free API key at: https://api.le-systeme-solaire.net/generatekey.html
+cp .env.local.example .env.local
+# Edit .env.local and add your API key
+
+# 3. Start development server
 pnpm dev
 ```
+
+> **Note**: Without an API key, the app will use local fallback data. See [API Setup Guide](docs/API_SETUP.md) for detailed instructions.
 
 ### Available Scripts
 
