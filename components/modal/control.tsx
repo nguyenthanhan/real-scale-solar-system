@@ -15,6 +15,11 @@ interface SpeedControlProps {
   onToggleOrbitPath?: (show: boolean) => void;
   /** Disable speed control (e.g., when in Date Mode) */
   disabled?: boolean;
+  /** Whether auto-rotation is enabled for planet modal */
+  modalAutoRotate?: boolean;
+  onToggleModalAutoRotate?: (enabled: boolean) => void;
+  /** Whether planet modal is currently open */
+  isPlanetModalOpen?: boolean;
 }
 
 export function ControlModal({
@@ -27,9 +32,12 @@ export function ControlModal({
   showOrbitPath = true,
   onToggleOrbitPath,
   disabled = false,
+  modalAutoRotate = true,
+  onToggleModalAutoRotate,
+  isPlanetModalOpen = false,
 }: SpeedControlProps) {
   const [internalPanelVisible, setInternalPanelVisible] = useState(
-    isVisible ?? true
+    isVisible ?? true,
   );
   const isControlled =
     onToggleVisibility !== undefined && isVisible !== undefined;
@@ -85,7 +93,7 @@ export function ControlModal({
     <>
       {isPanelVisible ? (
         <motion.div
-          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-[9999] w-96"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-controls w-[540px]"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -129,8 +137,10 @@ export function ControlModal({
             </div>
 
             {/* Toggles in one row */}
-            {(onTogglePlanetLabels || onToggleOrbitPath) && (
-              <div className="flex items-center gap-4 pt-2 border-t border-white/10">
+            {(onTogglePlanetLabels ||
+              onToggleOrbitPath ||
+              onToggleModalAutoRotate) && (
+              <div className="flex items-center gap-4 pt-2 border-t border-white/10 flex-wrap">
                 {onTogglePlanetLabels && (
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs">Labels</span>
@@ -184,13 +194,45 @@ export function ControlModal({
                     </button>
                   </div>
                 )}
+
+                {onToggleModalAutoRotate && isPlanetModalOpen && (
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="text-xs"
+                      title="Auto-rotate planet in modal"
+                    >
+                      Modal Spin
+                    </span>
+                    <button
+                      onClick={() => onToggleModalAutoRotate(!modalAutoRotate)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleModalAutoRotate(!modalAutoRotate);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        modalAutoRotate ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle auto-rotation in planet modal"
+                      aria-pressed={modalAutoRotate}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          modalAutoRotate ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </motion.div>
       ) : (
         <motion.button
-          className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-[9999]"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-controls"
           onClick={togglePanel}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

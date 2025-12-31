@@ -32,6 +32,13 @@ export const sunData: PlanetData = {
   eccentricity: 0,
   axialTilt: 7.25,
   orbitalInclination: 0,
+  notableFeatures: [
+    "Contains 99.86% of the Solar System's mass",
+    "Core temperature reaches 15 million°C",
+    "Light takes 8 minutes to reach Earth",
+    "About 4.6 billion years old (middle-aged star)",
+    "Will become a red giant in about 5 billion years",
+  ],
 };
 
 export const planetData: PlanetData[] = [
@@ -63,6 +70,17 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.2056, // NASA JPL (4 decimal places)
     axialTilt: 0.034,
     orbitalInclination: 7.005,
+    notableFeatures: [
+      "Smallest planet in the Solar System",
+      "Has ice in permanently shadowed craters despite extreme heat",
+      "Most cratered planet due to lack of atmosphere",
+      "Has a massive iron core (about 85% of its radius)",
+    ],
+    explorationHistory: {
+      firstFlyby: "Mariner 10 (1974)",
+      firstOrbiter: "MESSENGER (2011)",
+      notableMissions: ["Mariner 10", "MESSENGER", "BepiColombo (ongoing)"],
+    },
   },
   {
     name: "Venus",
@@ -92,6 +110,24 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0068, // NASA JPL (4 decimal places)
     axialTilt: 177.4,
     orbitalInclination: 3.395,
+    notableFeatures: [
+      "Rotates backwards (retrograde rotation)",
+      "Hottest planet despite not being closest to Sun",
+      "Surface pressure is 92 times Earth's",
+      "A day on Venus is longer than its year",
+      "Covered by thick sulfuric acid clouds",
+    ],
+    explorationHistory: {
+      firstFlyby: "Mariner 2 (1962)",
+      firstOrbiter: "Venera 9 (1975)",
+      firstLander: "Venera 7 (1970)",
+      notableMissions: [
+        "Venera program",
+        "Magellan",
+        "Venus Express",
+        "Akatsuki",
+      ],
+    },
   },
   {
     name: "Earth",
@@ -122,6 +158,16 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0167, // NASA JPL (4 decimal places)
     axialTilt: 23.5,
     orbitalInclination: 0.0,
+    notableFeatures: [
+      "Only known planet with liquid water on its surface",
+      "Has a protective magnetic field",
+      "Only planet known to harbor life",
+      "70% of surface covered by oceans",
+      "Has plate tectonics actively reshaping its surface",
+    ],
+    explorationHistory: {
+      notableMissions: ["Apollo program", "ISS", "Countless satellites"],
+    },
   },
   {
     name: "Mars",
@@ -152,6 +198,25 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0934, // NASA JPL (4 decimal places)
     axialTilt: 25.2,
     orbitalInclination: 1.85,
+    notableFeatures: [
+      "Home to Olympus Mons - largest volcano in Solar System",
+      "Has the largest canyon system (Valles Marineris)",
+      "Evidence of ancient water flows on surface",
+      "Has two small moons: Phobos and Deimos",
+      "Most explored planet after Earth",
+    ],
+    explorationHistory: {
+      firstFlyby: "Mariner 4 (1965)",
+      firstOrbiter: "Mariner 9 (1971)",
+      firstLander: "Viking 1 (1976)",
+      notableMissions: [
+        "Viking",
+        "Spirit & Opportunity",
+        "Curiosity",
+        "Perseverance",
+        "Ingenuity helicopter",
+      ],
+    },
   },
   {
     name: "Jupiter",
@@ -182,6 +247,23 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0484, // NASA JPL (4 decimal places)
     axialTilt: 3.13,
     orbitalInclination: 1.303,
+    notableFeatures: [
+      "Largest planet in the Solar System",
+      "Great Red Spot - storm larger than Earth lasting 400+ years",
+      "Has at least 95 moons including the four Galilean moons",
+      "Strong magnetic field - 20,000 times stronger than Earth's",
+      "Acts as a cosmic vacuum cleaner protecting inner planets",
+    ],
+    explorationHistory: {
+      firstFlyby: "Pioneer 10 (1973)",
+      firstOrbiter: "Galileo (1995)",
+      notableMissions: [
+        "Pioneer 10 & 11",
+        "Voyager 1 & 2",
+        "Galileo",
+        "Juno (ongoing)",
+      ],
+    },
   },
   {
     name: "Saturn",
@@ -211,6 +293,18 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0539, // NASA JPL (4 decimal places)
     axialTilt: 26.7,
     orbitalInclination: 2.485,
+    notableFeatures: [
+      "Most spectacular ring system in the Solar System",
+      "Least dense planet - would float on water",
+      "Has 146 known moons including Titan with thick atmosphere",
+      "Hexagonal storm pattern at its north pole",
+      "Rings are mostly water ice with some rocky debris",
+    ],
+    explorationHistory: {
+      firstFlyby: "Pioneer 11 (1979)",
+      firstOrbiter: "Cassini (2004)",
+      notableMissions: ["Pioneer 11", "Voyager 1 & 2", "Cassini-Huygens"],
+    },
   },
   {
     name: "Uranus",
@@ -240,6 +334,17 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0463, // NASA JPL (4 decimal places)
     axialTilt: 97.8,
     orbitalInclination: 0.773,
+    notableFeatures: [
+      "Rotates on its side with 98° axial tilt",
+      "Coldest planetary atmosphere in Solar System (-224°C)",
+      "Has faint ring system discovered in 1977",
+      "27 known moons named after Shakespeare characters",
+      "Rotates backwards (retrograde) like Venus",
+    ],
+    explorationHistory: {
+      firstFlyby: "Voyager 2 (1986)",
+      notableMissions: ["Voyager 2 (only spacecraft to visit)"],
+    },
   },
   {
     name: "Neptune",
@@ -269,6 +374,17 @@ export const planetData: PlanetData[] = [
     eccentricity: 0.0086, // NASA JPL (4 decimal places)
     axialTilt: 28.3,
     orbitalInclination: 1.77,
+    notableFeatures: [
+      "Strongest winds in Solar System (2,100 km/h)",
+      "Has a Great Dark Spot similar to Jupiter's storm",
+      "Farthest planet from the Sun",
+      "Has 16 known moons including Triton (captured dwarf planet)",
+      "Emits more heat than it receives from the Sun",
+    ],
+    explorationHistory: {
+      firstFlyby: "Voyager 2 (1989)",
+      notableMissions: ["Voyager 2 (only spacecraft to visit)"],
+    },
   },
 ];
 

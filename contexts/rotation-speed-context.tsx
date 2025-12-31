@@ -14,6 +14,9 @@ interface SimulationSpeedContextType {
   setSimulationSpeed: (speed: number) => void;
   rotationSpeedMinutes: number;
   setRotationSpeedMinutes: Dispatch<SetStateAction<number>>;
+  /** Whether auto-rotation is enabled for planet modal 3D model */
+  modalAutoRotate: boolean;
+  setModalAutoRotate: (enabled: boolean) => void;
 }
 
 const SimulationSpeedContext = createContext<
@@ -27,6 +30,7 @@ export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
   const [simulationSpeed, setSimulationSpeedState] =
     useState<number>(1_000_000);
   const [rotationSpeedMinutes, setRotationSpeedMinutes] = useState<number>(15);
+  const [modalAutoRotate, setModalAutoRotateState] = useState<boolean>(true);
 
   const setSimulationSpeed = useCallback((speed: number) => {
     let validSpeed = Number.isFinite(speed) ? speed : MIN_SPEED;
@@ -42,19 +46,27 @@ export function SimulationSpeedProvider({ children }: { children: ReactNode }) {
     setSimulationSpeedState(validSpeed);
   }, []);
 
+  const setModalAutoRotate = useCallback((enabled: boolean) => {
+    setModalAutoRotateState(enabled);
+  }, []);
+
   const contextValue = useMemo<SimulationSpeedContextType>(
     () => ({
       simulationSpeed,
       setSimulationSpeed,
       rotationSpeedMinutes,
       setRotationSpeedMinutes,
+      modalAutoRotate,
+      setModalAutoRotate,
     }),
     [
       simulationSpeed,
       setSimulationSpeed,
       rotationSpeedMinutes,
       setRotationSpeedMinutes,
-    ]
+      modalAutoRotate,
+      setModalAutoRotate,
+    ],
   );
 
   return (
@@ -68,7 +80,7 @@ export function useSimulationSpeed() {
   const context = useContext(SimulationSpeedContext);
   if (context === undefined) {
     throw new Error(
-      "useSimulationSpeed must be used within a SimulationSpeedProvider"
+      "useSimulationSpeed must be used within a SimulationSpeedProvider",
     );
   }
   return context;
@@ -78,7 +90,7 @@ export function useRotationSpeed() {
   const context = useContext(SimulationSpeedContext);
   if (context === undefined) {
     throw new Error(
-      "useRotationSpeed must be used within a SimulationSpeedProvider"
+      "useRotationSpeed must be used within a SimulationSpeedProvider",
     );
   }
   return {

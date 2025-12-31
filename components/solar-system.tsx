@@ -95,7 +95,12 @@ function SolarSystemContent() {
   const [controlModalVisible, setControlModalVisible] = useState(true);
   const [showPlanetLabels, setShowPlanetLabels] = useState(true);
   const [showOrbitPath, setShowOrbitPath] = useState(true);
-  const { simulationSpeed, setSimulationSpeed } = useSimulationSpeed();
+  const {
+    simulationSpeed,
+    setSimulationSpeed,
+    modalAutoRotate,
+    setModalAutoRotate,
+  } = useSimulationSpeed();
   const { mode, toggleMode, selectedDate, setSelectedDate } =
     useSimulationMode();
 
@@ -138,15 +143,17 @@ function SolarSystemContent() {
 
       <ModalOverlay planet={selectedPlanet} onClose={handleCloseInfo} />
 
-      {/* Mode toggle button */}
-      <div className="absolute top-4 left-4 z-50">
-        <ModeToggleButton mode={mode} onToggle={handleModeToggle} />
-      </div>
+      {/* Mode toggle button - hide when planet modal is open */}
+      {!selectedPlanet && (
+        <div className="absolute top-4 left-4 z-buttons">
+          <ModeToggleButton mode={mode} onToggle={handleModeToggle} />
+        </div>
+      )}
 
-      {/* Date picker - only visible in Date Mode with fade animation */}
-      {isDateMode && (
+      {/* Date picker - only visible in Date Mode and when modal is closed */}
+      {isDateMode && !selectedPlanet && (
         <div
-          className="absolute top-16 left-4 z-50 animate-in fade-in duration-500"
+          className="absolute top-16 left-4 z-controls animate-in fade-in duration-500"
           style={{ animation: "fadeIn 500ms ease-in-out" }}
         >
           <DatePicker
@@ -167,15 +174,22 @@ function SolarSystemContent() {
         showOrbitPath={showOrbitPath}
         onToggleOrbitPath={setShowOrbitPath}
         disabled={isDateMode}
+        modalAutoRotate={modalAutoRotate}
+        onToggleModalAutoRotate={setModalAutoRotate}
+        isPlanetModalOpen={selectedPlanet !== null}
       />
 
-      <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
-        <div className="flex flex-col space-y-1">
-          <p>• Click objects for info</p>
+      {/* Hint text - hide when planet modal is open */}
+      {!selectedPlanet && (
+        <div className="absolute bottom-4 left-4 text-white bg-black/80 p-2 rounded-md text-xs max-w-[180px]">
+          <div className="flex flex-col space-y-1">
+            <p>• Click objects for info</p>
+          </div>
         </div>
-      </div>
+      )}
 
-      <GitHubButton />
+      {/* GitHub button - hide when planet modal is open */}
+      {!selectedPlanet && <GitHubButton />}
 
       {/* Debug components - only show in development */}
       {process.env.NODE_ENV === "development" && <MemoryMonitor />}

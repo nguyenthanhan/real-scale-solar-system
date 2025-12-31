@@ -5,8 +5,9 @@
 
 import { APIResponse, isValidAPIResponse } from "./planet-api-types";
 
-const API_BASE_URL = "https://api.le-systeme-solaire.net/rest/bodies";
-const API_TIMEOUT = 5000; // 5 seconds
+// Use internal API route to avoid CORS issues
+const API_BASE_URL = "/api/planets";
+const API_TIMEOUT = 15000; // 15 seconds (includes server-side fetch time)
 
 /**
  * Error thrown when API request fails
@@ -15,7 +16,7 @@ export class PlanetAPIError extends Error {
   constructor(
     message: string,
     public readonly planetName: string,
-    public readonly cause?: Error
+    public readonly cause?: Error,
   ) {
     super(message);
     this.name = "PlanetAPIError";
@@ -29,7 +30,6 @@ export class PlanetAPIError extends Error {
 export class PlanetDataService {
   private baseUrl: string;
   private timeout: number;
-  private static hasWarnedAboutApiKey = false;
 
   constructor(baseUrl = API_BASE_URL, timeout = API_TIMEOUT) {
     this.baseUrl = baseUrl;
@@ -55,34 +55,13 @@ export class PlanetDataService {
 
     const url = this.buildUrl(planetName);
 
-    // Get API key from environment variable
-    const apiKey = process.env.NEXT_PUBLIC_SOLAR_SYSTEM_API_KEY;
-
-    // Warn if API key is missing (only once)
-    if (!apiKey && !PlanetDataService.hasWarnedAboutApiKey) {
-      console.warn(
-        "⚠️ Solar System API key not found. Get your free key at: https://api.le-systeme-solaire.net/generatekey.html"
-      );
-      console.warn(
-        "Add it to .env.local as: NEXT_PUBLIC_SOLAR_SYSTEM_API_KEY=your-key"
-      );
-      console.warn("The app will use local fallback data instead.");
-      PlanetDataService.hasWarnedAboutApiKey = true;
-    }
-
     try {
-      const headers: HeadersInit = {
-        Accept: "application/json",
-      };
-
-      // Add Authorization header if API key is available
-      if (apiKey) {
-        headers.Authorization = `Bearer ${apiKey}`;
-      }
-
+      // Use internal API route - API key is handled server-side
       const response = await fetch(url, {
         signal: controller.signal,
-        headers,
+        headers: {
+          Accept: "application/json",
+        },
       });
 
       clearTimeout(timeoutId);
@@ -90,7 +69,7 @@ export class PlanetDataService {
       if (!response.ok) {
         throw new PlanetAPIError(
           `API returned status ${response.status}`,
-          planetName
+          planetName,
         );
       }
 
@@ -119,7 +98,7 @@ export class PlanetDataService {
         throw new PlanetAPIError(
           `Network error: ${error.message}`,
           planetName,
-          error
+          error,
         );
       }
 

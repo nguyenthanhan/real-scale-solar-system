@@ -1,3 +1,15 @@
+/** Exploration history - missions sent to the planet */
+export interface ExplorationHistory {
+  /** First flyby mission (e.g., "Mariner 4 (1965)") */
+  firstFlyby?: string;
+  /** First orbiter mission */
+  firstOrbiter?: string;
+  /** First lander mission */
+  firstLander?: string;
+  /** List of notable missions */
+  notableMissions: string[];
+}
+
 export interface PlanetData {
   /** The name of the planet (e.g., "Earth"). */
   name: string;
@@ -87,4 +99,10 @@ export interface PlanetData {
 
   /** The year the planet was discovered. */
   yearDiscovered: string;
+
+  /** Notable features or unique characteristics of the planet */
+  notableFeatures: string[];
+
+  /** Exploration history - missions sent to the planet (optional as some planets have limited exploration) */
+  explorationHistory?: ExplorationHistory;
 }

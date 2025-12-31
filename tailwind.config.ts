@@ -89,7 +89,9 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       zIndex: {
-        modal: "999",
+        modal: "1000",
+        controls: "1001",
+        buttons: "50",
       },
     },
   },

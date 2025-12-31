@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere } from "@react-three/drei";
+import { Sphere, OrbitControls } from "@react-three/drei";
 import { Mesh } from "three";
 import { PlanetData } from "@/data/planet-types";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
@@ -18,6 +18,7 @@ interface Planet3DModelProps {
   planet: PlanetData;
   size?: number;
   simulationSpeed?: number;
+  autoRotate?: boolean;
 }
 
 // Component that goes inside the Canvas (can use useFrame)
@@ -25,6 +26,7 @@ function PlanetMesh({
   planet,
   size,
   simulationSpeed = 1_000_000,
+  autoRotate = true,
 }: Planet3DModelProps) {
   const planetRef = useRef<Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
@@ -32,6 +34,8 @@ function PlanetMesh({
   // Calculate rotation based on simulation speed
   // Convert simulation speed to rotation multiplier
   const rotationMultiplier = useMemo(() => {
+    if (!autoRotate) return 0; // Disable auto-rotation when user wants manual control
+
     const period = Math.abs(planet.rotationSpeedByDays);
     if (period === 0) return 0;
 
@@ -40,7 +44,7 @@ function PlanetMesh({
     const speedMultiplier = simulationSpeed * baseRotation;
 
     return speedMultiplier * (planet.rotationSpeedByDays < 0 ? -1 : 1);
-  }, [planet.rotationSpeedByDays, simulationSpeed]);
+  }, [planet.rotationSpeedByDays, simulationSpeed, autoRotate]);
 
   // Optimized rotation animation using useFrame
   useFrame((_, delta) => {
@@ -93,6 +97,7 @@ function Planet3DModel({
   planet,
   size = 80,
   simulationSpeed = 1_000_000,
+  autoRotate = true,
 }: Planet3DModelProps) {
   return (
     <div className="w-full h-full relative">
@@ -112,7 +117,19 @@ function Planet3DModel({
           planet={planet}
           size={size}
           simulationSpeed={simulationSpeed}
+          autoRotate={autoRotate}
         />
+
+        {/* Enable OrbitControls when auto-rotate is disabled for manual rotation */}
+        {!autoRotate && (
+          <OrbitControls
+            enableZoom={true}
+            enablePan={false}
+            minDistance={150}
+            maxDistance={500}
+            rotateSpeed={0.5}
+          />
+        )}
       </Canvas>
     </div>
   );

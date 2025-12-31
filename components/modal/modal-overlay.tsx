@@ -13,10 +13,7 @@ export function ModalOverlay({
   if (!planet) return null;
 
   return (
-    <div
-      className="fixed top-4 right-20 z-modal"
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className="fixed inset-0 z-modal" onClick={(e) => e.stopPropagation()}>
       <PlanetInfo planet={planet} onClose={onClose} />
     </div>
   );

@@ -25,7 +25,9 @@ vi.mock("../components/modal/planet-3d-model", () => ({
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
   },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 const mockUsePlanetAPIData = vi.mocked(usePlanetAPIDataModule.usePlanetAPIData);
@@ -59,6 +61,7 @@ describe("PlanetInfo Modal", () => {
     atmosphere: "Nitrogen, Oxygen",
     moons: "1 (Moon)",
     yearDiscovered: "Ancient",
+    notableFeatures: ["Only planet known to support life"],
   };
 
   const mockOnClose = vi.fn();

@@ -6,7 +6,7 @@ export function GitHubButton() {
       href="https://github.com/nguyenthanhan/real-scale-solar-system"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed top-4 right-4 z-50 bg-black/80 text-white p-2 rounded-md"
+      className="fixed top-4 right-4 z-buttons bg-black/80 text-white p-2 rounded-md hover:bg-black/90 transition-colors"
       aria-label="View on GitHub"
     >
       <svg
