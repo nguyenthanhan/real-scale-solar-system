@@ -62,7 +62,7 @@ function PlanetMesh({
   // Optimized planet size calculation using utility function
   const planetSize = useMemo(
     () => calculateAdjustedPlanetSize(planet.name, size ?? 0),
-    [planet.name, size]
+    [planet.name, size],
   );
 
   return (
@@ -84,9 +84,6 @@ function PlanetMesh({
           axialTilt={planet.axialTilt}
         />
       )}
-
-      {/* Rotation axis line */}
-      <RotationAxis planetSize={planetSize} axialTilt={planet.axialTilt} />
     </group>
   );
 }
