@@ -13,6 +13,9 @@ interface SpeedControlProps {
   onTogglePlanetLabels?: (show: boolean) => void;
   showOrbitPath?: boolean;
   onToggleOrbitPath?: (show: boolean) => void;
+  /** Whether belt regions are visible */
+  showBeltRegions?: boolean;
+  onToggleBeltRegions?: (show: boolean) => void;
   /** Disable speed control (e.g., when in Date Mode) */
   disabled?: boolean;
   /** Whether auto-rotation is enabled for planet modal */
@@ -31,6 +34,8 @@ export function ControlModal({
   onTogglePlanetLabels,
   showOrbitPath = true,
   onToggleOrbitPath,
+  showBeltRegions = true,
+  onToggleBeltRegions,
   disabled = false,
   modalAutoRotate = true,
   onToggleModalAutoRotate,
@@ -139,6 +144,7 @@ export function ControlModal({
             {/* Toggles in one row */}
             {(onTogglePlanetLabels ||
               onToggleOrbitPath ||
+              onToggleBeltRegions ||
               onToggleModalAutoRotate) && (
               <div className="flex items-center gap-4 pt-2 border-t border-white/10 flex-wrap">
                 {onTogglePlanetLabels && (
@@ -189,6 +195,33 @@ export function ControlModal({
                       <span
                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
                           showOrbitPath ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {onToggleBeltRegions && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Belts</span>
+                    <button
+                      onClick={() => onToggleBeltRegions(!showBeltRegions)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleBeltRegions(!showBeltRegions);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showBeltRegions ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle belt regions"
+                      aria-pressed={showBeltRegions}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showBeltRegions ? "translate-x-5" : "translate-x-1"
                         }`}
                       />
                     </button>

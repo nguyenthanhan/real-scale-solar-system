@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { Sun } from "@/components/planet/sun";
 import { Planet } from "@/components/planet";
+import { BeltRegions } from "@/components/belt";
 import { ControlModal } from "@/components/modal/control";
 import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";
@@ -34,6 +35,7 @@ function SceneContent({
   selectedPlanet,
   showPlanetLabels,
   showOrbitPath,
+  showBeltRegions,
 }: {
   simulationSpeed: number;
   simulationMode: SimulationMode;
@@ -43,6 +45,7 @@ function SceneContent({
   selectedPlanet: PlanetData | null;
   showPlanetLabels: boolean;
   showOrbitPath: boolean;
+  showBeltRegions: boolean;
 }) {
   return (
     <>
@@ -66,6 +69,7 @@ function SceneContent({
           showOrbitPath={showOrbitPath}
         />
       ))}
+      <BeltRegions visible={showBeltRegions} />
       <Stars
         radius={15000}
         depth={2000}
@@ -80,7 +84,7 @@ function SceneContent({
         enableZoom
         enableRotate
         minDistance={100}
-        maxDistance={38000}
+        maxDistance={60000}
         zoomSpeed={1.2}
         enableDamping
         dampingFactor={0.05}
@@ -95,6 +99,7 @@ function SolarSystemContent() {
   const [controlModalVisible, setControlModalVisible] = useState(true);
   const [showPlanetLabels, setShowPlanetLabels] = useState(true);
   const [showOrbitPath, setShowOrbitPath] = useState(true);
+  const [showBeltRegions, setShowBeltRegions] = useState(true);
   const {
     simulationSpeed,
     setSimulationSpeed,
@@ -127,7 +132,7 @@ function SolarSystemContent() {
   return (
     <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       <Canvas
-        camera={{ position: [0, 2000, 4000], fov: 60, near: 0.1, far: 70000 }}
+        camera={{ position: [0, 2000, 4000], fov: 60, near: 0.1, far: 120000 }}
       >
         <SceneContent
           simulationSpeed={simulationSpeed}
@@ -138,6 +143,7 @@ function SolarSystemContent() {
           selectedPlanet={selectedPlanet}
           showPlanetLabels={showPlanetLabels}
           showOrbitPath={showOrbitPath}
+          showBeltRegions={showBeltRegions}
         />
       </Canvas>
 
@@ -173,6 +179,8 @@ function SolarSystemContent() {
         onTogglePlanetLabels={setShowPlanetLabels}
         showOrbitPath={showOrbitPath}
         onToggleOrbitPath={setShowOrbitPath}
+        showBeltRegions={showBeltRegions}
+        onToggleBeltRegions={setShowBeltRegions}
         disabled={isDateMode}
         modalAutoRotate={modalAutoRotate}
         onToggleModalAutoRotate={setModalAutoRotate}
