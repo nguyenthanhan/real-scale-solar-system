@@ -8,6 +8,9 @@ import {
 import { useDateTransition } from "@/hooks/useDateTransition";
 import { AnimationSpeedControl } from "./animation-speed-control";
 import { TransitionProgress } from "./transition-progress";
+import { HistoricalEventsPanel } from "@/components/historical-events";
+import { HistoricalEvent } from "@/data/historical-events-types";
+import { History } from "lucide-react";
 
 // Local storage key for animation speed preference
 const ANIMATION_SPEED_KEY = "date-picker-animation-speed";
@@ -81,6 +84,7 @@ export function DatePicker({
 }: DatePickerProps) {
   const [error, setError] = useState<string | null>(null);
   const [showHistorical, setShowHistorical] = useState(false);
+  const [showHistoricalPanel, setShowHistoricalPanel] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Load saved animation speed from localStorage
@@ -154,6 +158,15 @@ export function DatePicker({
     (date: Date) => {
       handleDateChange(date);
       setShowHistorical(false);
+    },
+    [handleDateChange],
+  );
+
+  // Handle historical event selection from panel
+  const handleHistoricalEventSelect = useCallback(
+    (event: HistoricalEvent) => {
+      handleDateChange(event.date);
+      setShowHistoricalPanel(false);
     },
     [handleDateChange],
   );
@@ -271,7 +284,7 @@ export function DatePicker({
   return (
     <div
       ref={containerRef}
-      className={`bg-black/80 rounded-lg p-3 text-white w-fit min-w-[220px] ${className}`}
+      className={`relative bg-black/80 rounded-lg p-3 text-white w-fit min-w-[220px] ${className}`}
       onKeyDown={handleKeyDown}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -350,7 +363,7 @@ export function DatePicker({
         className="w-full px-2 py-2 text-xs bg-blue-500/20 hover:bg-blue-500/30 rounded transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={transitionState.isAnimating}
       >
-        <span>Historical Events</span>
+        <span>Quick Presets</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -384,6 +397,26 @@ export function DatePicker({
           ))}
         </div>
       )}
+
+      {/* Historical Events Panel Button */}
+      <button
+        onClick={() => setShowHistoricalPanel(!showHistoricalPanel)}
+        className="w-full mt-2 px-2 py-2 text-xs bg-purple-500/20 hover:bg-purple-500/30 rounded transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={transitionState.isAnimating}
+        aria-expanded={showHistoricalPanel}
+        aria-haspopup="dialog"
+      >
+        <History className="w-3.5 h-3.5" />
+        <span>Browse All Events</span>
+      </button>
+
+      {/* Historical Events Panel */}
+      <HistoricalEventsPanel
+        isOpen={showHistoricalPanel}
+        onClose={() => setShowHistoricalPanel(false)}
+        onSelectEvent={handleHistoricalEventSelect}
+        currentDate={selectedDate}
+      />
     </div>
   );
 }
