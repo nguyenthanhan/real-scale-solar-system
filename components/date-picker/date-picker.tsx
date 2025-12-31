@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   validateDate,
   isDateInAccurateRange,
 } from "@/utils/astronomy-calculations";
+import { useDateTransition } from "@/hooks/useDateTransition";
+import { AnimationSpeedControl } from "./animation-speed-control";
+import { TransitionProgress } from "./transition-progress";
+
+// Local storage key for animation speed preference
+const ANIMATION_SPEED_KEY = "date-picker-animation-speed";
 
 // Date picker configuration
 const DATE_PICKER_CONFIG = {
@@ -77,6 +83,36 @@ export function DatePicker({
   const [showHistorical, setShowHistorical] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Load saved animation speed from localStorage
+  const [initialSpeed] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(ANIMATION_SPEED_KEY);
+      return saved ? parseFloat(saved) : 0.5;
+    }
+    return 0.5;
+  });
+
+  // Use date transition hook for animated date changes
+  const {
+    state: transitionState,
+    startTransition,
+    cancelTransition,
+    setAnimationSpeed,
+    animationSpeed,
+  } = useDateTransition(selectedDate, onDateChange);
+
+  // Save animation speed to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(ANIMATION_SPEED_KEY, animationSpeed.toString());
+    }
+  }, [animationSpeed]);
+
+  // Set initial speed on mount
+  useEffect(() => {
+    setAnimationSpeed(initialSpeed);
+  }, [initialSpeed, setAnimationSpeed]);
+
   const handleDateChange = useCallback(
     (newDate: Date) => {
       const validation = validateDate(newDate);
@@ -91,9 +127,10 @@ export function DatePicker({
       }
 
       setError(null);
-      onDateChange(newDate);
+      // Use animated transition instead of direct change
+      startTransition(newDate);
     },
-    [onDateChange]
+    [startTransition],
   );
 
   const handleInputChange = useCallback(
@@ -103,14 +140,14 @@ export function DatePicker({
         handleDateChange(newDate);
       }
     },
-    [handleDateChange]
+    [handleDateChange],
   );
 
   const handlePresetClick = useCallback(
     (getDate: () => Date) => {
       handleDateChange(getDate());
     },
-    [handleDateChange]
+    [handleDateChange],
   );
 
   const handleHistoricalClick = useCallback(
@@ -118,12 +155,12 @@ export function DatePicker({
       handleDateChange(date);
       setShowHistorical(false);
     },
-    [handleDateChange]
+    [handleDateChange],
   );
 
   // Touch gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const SWIPE_THRESHOLD = 50; // pixels
 
@@ -180,7 +217,7 @@ export function DatePicker({
 
       setTouchStart(null);
     },
-    [touchStart, selectedDate, handleDateChange]
+    [touchStart, selectedDate, handleDateChange],
   );
 
   // Keyboard navigation handler
@@ -228,7 +265,7 @@ export function DatePicker({
           break;
       }
     },
-    [selectedDate, handleDateChange, showHistorical]
+    [selectedDate, handleDateChange, showHistorical],
   );
 
   return (
@@ -267,11 +304,31 @@ export function DatePicker({
         onChange={handleInputChange}
         min={toInputValue(DATE_PICKER_CONFIG.MIN_DATE)}
         max={toInputValue(DATE_PICKER_CONFIG.MAX_DATE)}
-        className="w-full px-2 py-2 bg-white/10 rounded border border-white/20 text-white text-sm mb-3"
+        className="w-full px-2 py-2 bg-white/10 rounded border border-white/20 text-white text-sm mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={transitionState.isAnimating}
+      />
+
+      {/* Transition progress indicator */}
+      <TransitionProgress
+        isAnimating={transitionState.isAnimating}
+        progress={transitionState.progress}
+        currentDate={transitionState.currentDate}
+        targetDate={transitionState.targetDate}
+        direction={transitionState.direction}
+        onCancel={cancelTransition}
+        className="mb-3"
       />
 
       {/* Error message */}
       {error && <div className="text-red-400 text-sm mb-3">{error}</div>}
+
+      {/* Animation speed control */}
+      <AnimationSpeedControl
+        speed={animationSpeed}
+        onSpeedChange={setAnimationSpeed}
+        disabled={transitionState.isAnimating}
+        className="mb-3"
+      />
 
       {/* Quick presets */}
       <div className="flex gap-1.5 mb-3">
@@ -279,7 +336,8 @@ export function DatePicker({
           <button
             key={preset.id}
             onClick={() => handlePresetClick(preset.getDate)}
-            className="flex-1 px-1.5 py-1.5 text-xs bg-white/10 hover:bg-white/20 rounded transition-colors"
+            className="flex-1 px-1.5 py-1.5 text-xs bg-white/10 hover:bg-white/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={transitionState.isAnimating}
           >
             {preset.label}
           </button>
@@ -289,7 +347,8 @@ export function DatePicker({
       {/* Historical events toggle */}
       <button
         onClick={() => setShowHistorical(!showHistorical)}
-        className="w-full px-2 py-2 text-xs bg-blue-500/20 hover:bg-blue-500/30 rounded transition-colors flex items-center justify-center gap-1"
+        className="w-full px-2 py-2 text-xs bg-blue-500/20 hover:bg-blue-500/30 rounded transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={transitionState.isAnimating}
       >
         <span>Historical Events</span>
         <svg

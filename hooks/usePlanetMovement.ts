@@ -8,7 +8,7 @@ import {
   FULL_CIRCLE_RADIANS,
   EARTH_ORBITAL_PERIOD_DAYS,
 } from "@/utils/physics-constants";
-import { getPlanetPosition } from "@/utils/astronomy-calculations";
+import { getCachedPlanetPosition } from "@/utils/astronomy-calculations";
 import type { SimulationMode } from "@/contexts/simulation-mode-context";
 
 /**
@@ -81,7 +81,7 @@ export function usePlanetMovement({
 
   if (!planet.orbitalPeriodDays) {
     console.error(
-      `Planet ${planet.name} missing orbitalPeriodDays, using Earth's period`
+      `Planet ${planet.name} missing orbitalPeriodDays, using Earth's period`,
     );
   }
 
@@ -101,13 +101,13 @@ export function usePlanetMovement({
       0,
       2 * Math.PI,
       false,
-      0
+      0,
     );
   }, [scaledDistance, planet.eccentricity]);
 
   // Calculate initial position based on current date (for accurate starting position)
   const initialPosition = useMemo(() => {
-    return getPlanetPosition(planet.name, new Date());
+    return getCachedPlanetPosition(planet.name, new Date());
   }, [planet.name]);
 
   // Set initial position on mount (Speed Mode starts at today's actual position)
@@ -130,7 +130,7 @@ export function usePlanetMovement({
       const position3D = applyInclinationToPosition(
         position2D.x,
         position2D.y,
-        inclination
+        inclination,
       );
 
       // Update planet position
@@ -142,10 +142,10 @@ export function usePlanetMovement({
     }
   }, [initialPosition, orbitRef, orbitCurve, planet.orbitalInclination]);
 
-  // Calculate position for Date Mode using Astronomy Engine
+  // Calculate position for Date Mode using Astronomy Engine (cached for performance)
   const datePosition = useMemo(() => {
     if (isDateMode && selectedDate) {
-      return getPlanetPosition(planet.name, selectedDate);
+      return getCachedPlanetPosition(planet.name, selectedDate);
     }
     return null;
   }, [isDateMode, selectedDate, planet.name]);
@@ -163,7 +163,7 @@ export function usePlanetMovement({
       const position3D = applyInclinationToPosition(
         position2D.x,
         position2D.y,
-        inclination
+        inclination,
       );
 
       // Update planet position
@@ -220,7 +220,7 @@ export function usePlanetMovement({
             ) {
               lastLoggedDayRef.current = currentDay;
               console.log(
-                `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`
+                `Earth orbital time: ${currentOrbitalTime.toFixed(1)} days`,
               );
             }
           }
@@ -228,7 +228,7 @@ export function usePlanetMovement({
 
         // Get position on the elliptical curve (2D)
         const position2D = orbitCurve.getPoint(
-          currentAngleRef.current / (2 * Math.PI)
+          currentAngleRef.current / (2 * Math.PI),
         );
 
         // Apply orbital inclination to get 3D position
@@ -237,7 +237,7 @@ export function usePlanetMovement({
         const position3D = applyInclinationToPosition(
           position2D.x,
           position2D.y,
-          inclination
+          inclination,
         );
 
         // Update planet position with inclination applied
