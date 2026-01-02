@@ -71,7 +71,7 @@ function SceneContent({
       ))}
       <BeltRegions visible={showBeltRegions} />
       <Stars
-        radius={15000}
+        radius={60000}
         depth={2000}
         count={3000}
         factor={4}
