@@ -5,6 +5,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 const API_BASE_URL = "https://api.le-systeme-solaire.net/rest/bodies";
 const API_TIMEOUT = 10000; // 10 seconds
 
