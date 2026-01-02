@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import { Settings, X } from "lucide-react";
 
@@ -44,14 +44,65 @@ export function ControlModal({
   const [internalPanelVisible, setInternalPanelVisible] = useState(
     isVisible ?? true,
   );
+  const [inputValue, setInputValue] = useState<string>(
+    simulationSpeed.toLocaleString(),
+  );
   const isControlled =
     onToggleVisibility !== undefined && isVisible !== undefined;
   const isPanelVisible = isControlled ? isVisible : internalPanelVisible;
+
+  // Format number with commas
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString();
+  };
+
+  // Parse number from string (remove commas)
+  const parseNumber = (str: string): number => {
+    return Number.parseInt(str.replace(/,/g, "")) || 0;
+  };
+
+  // Update input value when simulationSpeed changes externally
+  useEffect(() => {
+    setInputValue(formatNumber(simulationSpeed));
+  }, [simulationSpeed]);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const parsedValue = Number.parseInt(rawValue);
     onSpeedChange(parsedValue);
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow empty string for better UX while typing
+    if (value === "") {
+      setInputValue("");
+      return;
+    }
+    // Allow numbers and commas
+    if (/^[\d,]+$/.test(value)) {
+      setInputValue(value);
+    }
+  };
+
+  const handleInputBlur = () => {
+    const numValue = parseNumber(inputValue);
+    if (Number.isNaN(numValue) || numValue < 1) {
+      setInputValue(formatNumber(1));
+      onSpeedChange(1);
+    } else if (numValue > 10000000) {
+      setInputValue(formatNumber(10000000));
+      onSpeedChange(10000000);
+    } else {
+      setInputValue(formatNumber(numValue));
+      onSpeedChange(numValue);
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
   };
 
   // Calculate time conversion
@@ -98,7 +149,7 @@ export function ControlModal({
     <>
       {isPanelVisible ? (
         <motion.div
-          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-controls w-[540px]"
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-controls w-[380px]"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -121,19 +172,38 @@ export function ControlModal({
           </div>
 
           <div className="space-y-2">
-            {/* Slider */}
-            <input
-              type="range"
-              min="1"
-              max="10000000"
-              step="1"
-              value={simulationSpeed}
-              onChange={handleSpeedChange}
-              disabled={disabled}
-              className={`w-full h-2 bg-gray-700 rounded-lg appearance-none ${
-                disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-              }`}
-            />
+            {/* Slider and Input */}
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="1"
+                max="10000000"
+                step="1"
+                value={simulationSpeed}
+                onChange={handleSpeedChange}
+                disabled={disabled}
+                className={`flex-1 h-2 bg-gray-700 rounded-lg appearance-none ${
+                  disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
+              />
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                onKeyDown={handleInputKeyDown}
+                disabled={disabled}
+                min="1"
+                max="10000000"
+                className={`w-20 px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-white text-right ${
+                  disabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "focus:outline-none focus:border-blue-500"
+                }`}
+                placeholder="Speed"
+                aria-label="Speed input"
+              />
+            </div>
 
             {/* Time conversion info - compact */}
             <div className="text-[10px] text-gray-400 flex justify-between">
