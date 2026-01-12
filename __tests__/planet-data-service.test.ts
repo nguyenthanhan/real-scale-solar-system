@@ -5,10 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fc from "fast-check";
-import {
-  PlanetDataService,
-  PlanetAPIError,
-} from "../services/planet-data-service";
+import { PlanetDataService } from "../services/planet-data-service";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -42,7 +39,7 @@ describe("PlanetDataService", () => {
             "Jupiter",
             "Saturn",
             "Uranus",
-            "Neptune"
+            "Neptune",
           ),
           async (planetName) => {
             // Clear mocks before each iteration
@@ -68,18 +65,18 @@ describe("PlanetDataService", () => {
             // Verify the URL contains the planet name (lowercase)
             expect(mockFetch).toHaveBeenCalledWith(
               expect.stringContaining(planetName.toLowerCase()),
-              expect.any(Object)
+              expect.any(Object),
             );
 
             const callUrl = mockFetch.mock.calls[0][0] as string;
             expect(callUrl).toBe(
-              `https://api.le-systeme-solaire.net/rest/bodies/${planetName.toLowerCase()}`
+              `https://api.le-systeme-solaire.net/rest/bodies/${planetName.toLowerCase()}`,
             );
 
             return true;
-          }
+          },
         ),
-        { numRuns: 8 } // Test all 8 planets
+        { numRuns: 8 }, // Test all 8 planets
       );
     });
   });
@@ -107,8 +104,8 @@ describe("PlanetDataService", () => {
                 fc.record({
                   moon: fc.string(),
                   rel: fc.string(),
-                })
-              )
+                }),
+              ),
             ),
           }),
           async (mockData) => {
@@ -131,9 +128,9 @@ describe("PlanetDataService", () => {
             expect(result.moons).toEqual(mockData.moons);
 
             return true;
-          }
+          },
         ),
-        { numRuns: 50 }
+        { numRuns: 50 },
       );
     });
   });
@@ -166,7 +163,7 @@ describe("PlanetDataService", () => {
           headers: expect.objectContaining({
             Accept: "application/json",
           }),
-        })
+        }),
       );
     });
 
@@ -185,17 +182,17 @@ describe("PlanetDataService", () => {
             }
             // Never resolve - wait for abort
           });
-        }
+        },
       );
 
       // Create a service with a very short timeout
       const shortTimeoutService = new PlanetDataService(
         "https://api.le-systeme-solaire.net/rest/bodies",
-        50 // 50ms timeout
+        50, // 50ms timeout
       );
 
       await expect(
-        shortTimeoutService.fetchPlanetData("Earth")
+        shortTimeoutService.fetchPlanetData("Earth"),
       ).rejects.toThrow("API request timed out");
     });
 
@@ -203,7 +200,7 @@ describe("PlanetDataService", () => {
       mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
       await expect(service.fetchPlanetData("Earth")).rejects.toThrow(
-        "Network error"
+        "Network error",
       );
 
       expect(console.error).toHaveBeenCalled();
@@ -217,7 +214,7 @@ describe("PlanetDataService", () => {
       });
 
       await expect(service.fetchPlanetData("Earth")).rejects.toThrow(
-        "API returned status 404"
+        "API returned status 404",
       );
     });
 
@@ -228,19 +225,19 @@ describe("PlanetDataService", () => {
       });
 
       await expect(service.fetchPlanetData("Earth")).rejects.toThrow(
-        "Invalid API response structure"
+        "Invalid API response structure",
       );
     });
 
     it("should build correct URL for planet name", () => {
       expect(service.buildUrl("Earth")).toBe(
-        "https://api.le-systeme-solaire.net/rest/bodies/earth"
+        "https://api.le-systeme-solaire.net/rest/bodies/earth",
       );
       expect(service.buildUrl("MARS")).toBe(
-        "https://api.le-systeme-solaire.net/rest/bodies/mars"
+        "https://api.le-systeme-solaire.net/rest/bodies/mars",
       );
       expect(service.buildUrl("Jupiter")).toBe(
-        "https://api.le-systeme-solaire.net/rest/bodies/jupiter"
+        "https://api.le-systeme-solaire.net/rest/bodies/jupiter",
       );
     });
   });

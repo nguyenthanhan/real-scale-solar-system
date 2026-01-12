@@ -1,12 +1,13 @@
 {
   "name": "real-scale-solar-system",
   "version": "1.0.9",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
@@ -29,6 +30,7 @@
     "three": "^0.176.0"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.1.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -36,10 +38,12 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.176.0",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.16",
     "eslint": "^9.39.2",
-    "eslint-config-next": "15.3.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "fast-check": "^4.5.2",
     "jsdom": "^27.3.0",
     "postcss": "^8.5.6",

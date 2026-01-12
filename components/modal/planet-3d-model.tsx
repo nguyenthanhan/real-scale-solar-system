@@ -8,11 +8,7 @@ import { PlanetData } from "@/data/planet-types";
 import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
 import { PlanetRings } from "@/components/planet/planet-rings";
 import { AtmosphericGlow } from "@/components/modal/atmospheric-glow";
-import { RotationAxis } from "@/components/modal/rotation-axis";
-import {
-  calculateAdjustedPlanetSize,
-  rotationCache,
-} from "@/utils/rotation-calculations";
+import { calculateAdjustedPlanetSize } from "@/utils/rotation-calculations";
 
 interface Planet3DModelProps {
   planet: PlanetData;

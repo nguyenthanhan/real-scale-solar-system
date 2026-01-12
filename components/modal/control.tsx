@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, type ChangeEvent } from "react";
+import { flushSync } from "react-dom";
 import { motion } from "framer-motion";
 import { Settings, X } from "lucide-react";
 
@@ -63,7 +64,7 @@ export function ControlModal({
 
   // Update input value when simulationSpeed changes externally
   useEffect(() => {
-    setInputValue(formatNumber(simulationSpeed));
+    flushSync(() => setInputValue(formatNumber(simulationSpeed)));
   }, [simulationSpeed]);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {

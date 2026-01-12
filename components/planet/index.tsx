@@ -59,7 +59,7 @@ export function Planet({
   const scaledSize = planet.diameterRelativeEarth * EARTH_DIAMETER_UNITS;
 
   // Initialize and update planet movement
-  const { orbitCurve } = usePlanetMovement({
+  usePlanetMovement({
     planet,
     simulationSpeed,
     scaledDistance,

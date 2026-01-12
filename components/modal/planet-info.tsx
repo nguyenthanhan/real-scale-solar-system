@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { flushSync } from "react-dom";
 import { X, Loader2, Info, Star, Rocket, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import { PlanetData } from "@/data/planet-types";
@@ -23,16 +24,17 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
   // Fetch API data using the hook
   const { mergedData, isLoading } = usePlanetAPIData(planet?.name, planet);
 
-  if (!planet) return null;
-
   useEffect(() => {
+    if (!planet) return;
     // Delay 3D model render for smooth animation
-    setShow3DModel(false);
+    flushSync(() => setShow3DModel(false));
     const timer = setTimeout(() => {
       setShow3DModel(true);
     }, 100);
     return () => clearTimeout(timer);
-  }, [planet?.name]);
+  }, [planet]);
+
+  if (!planet) return null;
 
   // Helper to display API data with fallback to local data
   const displayValue = (

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { planetData } from "@/data/planet-data";
+import { PlanetData } from "@/data/planet-types";
 import {
   validatePlanetData,
   validateAllPlanets,
@@ -54,10 +55,10 @@ describe("Planet Data Validation", () => {
    */
   describe("validatePlanetData function", () => {
     it("should detect missing orbitalPeriodDays", () => {
-      const invalidPlanet = {
+      const invalidPlanet: Partial<PlanetData> = {
         ...planetData[0],
-        orbitalPeriodDays: undefined as any,
       };
+      delete (invalidPlanet as Partial<PlanetData>).orbitalPeriodDays;
 
       const errors = validatePlanetData(invalidPlanet);
 
@@ -117,7 +118,7 @@ describe("Planet Data Validation", () => {
     it("should detect non-numeric rotationSpeedByDays", () => {
       const invalidPlanet = {
         ...planetData[0],
-        rotationSpeedByDays: "not a number" as any,
+        rotationSpeedByDays: "not a number" as never,
       };
 
       const errors = validatePlanetData(invalidPlanet);
@@ -139,7 +140,7 @@ describe("Planet Data Validation", () => {
         ...planetData[0],
         orbitalPeriodDays: -1,
         eccentricity: 2.0,
-        rotationSpeedByDays: "invalid" as any,
+        rotationSpeedByDays: "invalid" as never,
       };
 
       const errors = validatePlanetData(invalidPlanet);
@@ -168,7 +169,7 @@ describe("Planet Data Validation", () => {
       ];
 
       expect(() => validateAllPlanets(invalidData)).toThrow(
-        /Planet data validation failed/
+        /Planet data validation failed/,
       );
     });
 
@@ -184,7 +185,7 @@ describe("Planet Data Validation", () => {
       try {
         validateAllPlanets(invalidData);
         expect.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         expect(error.message).toContain("Planet data validation failed");
       }
     });

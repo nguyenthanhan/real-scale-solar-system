@@ -24,7 +24,7 @@ export const ORBIT_DEFAULTS = {
  */
 export function createOrbitGeometry(
   distance: number,
-  segments: number = ORBIT_DEFAULTS.SEGMENTS
+  segments: number = ORBIT_DEFAULTS.SEGMENTS,
 ): THREE.TorusGeometry {
   // Validate distance parameter
   if (distance <= 0 || !Number.isFinite(distance)) {
@@ -45,7 +45,7 @@ export function createOrbitGeometry(
     distance, // Orbit radius
     tubeRadius, // Thickness of the line
     16, // Radial segments (tube cross-section)
-    segments // Tubular segments (circle smoothness)
+    segments, // Tubular segments (circle smoothness)
   );
 }
 
@@ -57,7 +57,7 @@ export function createOrbitGeometry(
  */
 export function createOrbitMaterial(
   color: string,
-  opacity: number = ORBIT_DEFAULTS.OPACITY
+  opacity: number = ORBIT_DEFAULTS.OPACITY,
 ): THREE.MeshBasicMaterial {
   // Validate opacity range
   if (opacity < 0 || opacity > 1 || !Number.isFinite(opacity)) {
@@ -69,7 +69,7 @@ export function createOrbitMaterial(
   let validColor = color;
   try {
     new THREE.Color(color);
-  } catch (error) {
+  } catch {
     console.error(`Invalid color: ${color}, using default`);
     validColor = ORBIT_DEFAULTS.INNER_PLANET_COLOR;
   }
@@ -102,7 +102,7 @@ export function getOrbitColor(planetName: string): string {
  */
 export function applyOrbitalInclination(
   mesh: THREE.Mesh,
-  inclinationDegrees: number
+  inclinationDegrees: number,
 ): void {
   if (!mesh) {
     console.error("Cannot apply inclination to null mesh");

@@ -24,10 +24,16 @@ vi.mock("../components/modal/planet-3d-model", () => ({
 
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    div: ({ children, ...props }: { children?: React.ReactNode }) => (
+      <div {...props}>{children}</div>
+    ),
+    p: ({ children, ...props }: { children?: React.ReactNode }) => (
+      <p {...props}>{children}</p>
+    ),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 const mockUsePlanetAPIData = vi.mocked(usePlanetAPIDataModule.usePlanetAPIData);

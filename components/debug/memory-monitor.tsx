@@ -4,6 +4,7 @@
  * Debug component for monitoring actual memory usage and performance.
  */
 import { useState, useEffect, useRef, useCallback } from "react";
+import { flushSync } from "react-dom";
 import { textureCache } from "@/utils/texture-cache";
 
 export function MemoryMonitor() {
@@ -27,25 +28,37 @@ export function MemoryMonitor() {
   const [cacheMaxSize, setCacheMaxSize] = useState<number | null>(null);
 
   const supportsPerformanceMemory =
-    isClient && typeof performance !== "undefined" && (performance as any).memory;
+    isClient &&
+    typeof performance !== "undefined" &&
+    (performance as unknown as { memory: unknown }).memory;
 
   // Client-side hydration effect
   useEffect(() => {
-    setIsClient(true);
+    flushSync(() => setIsClient(true));
   }, []);
 
   const updateHeapStats = useCallback(() => {
     try {
-      const mem = (performance as any).memory;
+      const mem = (
+        performance as unknown as {
+          memory:
+            | {
+                usedJSHeapSize?: number;
+                totalJSHeapSize?: number;
+                jsHeapSizeLimit?: number;
+              }
+            | undefined;
+        }
+      ).memory;
       if (mem) {
         setHeapUsed(
-          typeof mem.usedJSHeapSize === "number" ? mem.usedJSHeapSize : null
+          typeof mem.usedJSHeapSize === "number" ? mem.usedJSHeapSize : null,
         );
         setHeapTotal(
-          typeof mem.totalJSHeapSize === "number" ? mem.totalJSHeapSize : null
+          typeof mem.totalJSHeapSize === "number" ? mem.totalJSHeapSize : null,
         );
         setHeapLimit(
-          typeof mem.jsHeapSizeLimit === "number" ? mem.jsHeapSizeLimit : null
+          typeof mem.jsHeapSizeLimit === "number" ? mem.jsHeapSizeLimit : null,
         );
       } else {
         setHeapUsed(null);
@@ -79,7 +92,12 @@ export function MemoryMonitor() {
 
     const measure = (now: number) => {
       // Guard: early return if visibility changed mid-frame
-      if (!isClient || !isVisible || typeof document === 'undefined' || document.visibilityState !== 'visible') {
+      if (
+        !isClient ||
+        !isVisible ||
+        typeof document === "undefined" ||
+        document.visibilityState !== "visible"
+      ) {
         return;
       }
 
@@ -93,22 +111,32 @@ export function MemoryMonitor() {
         setFps(Math.round(avg));
       }
       lastTimeRef.current = now;
-      
+
       // Only schedule next frame if panel is visible and document is visible
-      if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+      if (
+        isClient &&
+        isVisible &&
+        typeof document !== "undefined" &&
+        document.visibilityState === "visible"
+      ) {
         rafId = requestAnimationFrame(measure);
       }
     };
 
     // Only start measuring if panel is visible and document is visible
-    if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+    if (
+      isClient &&
+      isVisible &&
+      typeof document !== "undefined" &&
+      document.visibilityState === "visible"
+    ) {
       // Clear stale data before starting/restarting measurement
       fpsSamplesRef.current = [];
       lastTimeRef.current = 0;
-      
+
       rafId = requestAnimationFrame(measure);
     }
-    
+
     return () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
@@ -118,33 +146,52 @@ export function MemoryMonitor() {
 
   // Listen for document visibility changes to resume/pause FPS tracking
   useEffect(() => {
-    if (!isClient || typeof document === 'undefined') return;
-    
+    if (!isClient || typeof document === "undefined") return;
+
     const handleVisibilityChange = () => {
       // Trigger the FPS effect to re-run by updating the visibility trigger
-      setVisibilityTrigger(prev => prev + 1);
+      setVisibilityTrigger((prev) => prev + 1);
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [isClient]);
 
   // Periodic stats refresh
   useEffect(() => {
     // Only set up polling if panel is visible and document is visible
-    if (isClient && isVisible && typeof document !== 'undefined' && document.visibilityState === 'visible') {
-      updateHeapStats();
-      updateCacheStats();
+    if (
+      isClient &&
+      isVisible &&
+      typeof document !== "undefined" &&
+      document.visibilityState === "visible"
+    ) {
+      flushSync(() => {
+        updateHeapStats();
+        updateCacheStats();
+      });
       const id = setInterval(() => {
         // Double-check visibility state before each update
-        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-          updateHeapStats();
-          updateCacheStats();
+        if (
+          typeof document !== "undefined" &&
+          document.visibilityState === "visible"
+        ) {
+          flushSync(() => {
+            updateHeapStats();
+            updateCacheStats();
+          });
         }
       }, 1000);
       return () => clearInterval(id);
     }
-  }, [updateHeapStats, updateCacheStats, isClient, isVisible, visibilityTrigger]);
+  }, [
+    updateHeapStats,
+    updateCacheStats,
+    isClient,
+    isVisible,
+    visibilityTrigger,
+  ]);
 
   const formatBytes = (bytes: number | null): string => {
     if (bytes == null || isNaN(bytes)) return "n/a";
@@ -153,7 +200,7 @@ export function MemoryMonitor() {
     const sizes = ["B", "KB", "MB", "GB"] as const;
     const i = Math.min(
       Math.floor(Math.log(bytes) / Math.log(k)),
-      sizes.length - 1
+      sizes.length - 1,
     );
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
@@ -179,7 +226,8 @@ export function MemoryMonitor() {
     }
   }, [updateCacheStats]);
 
-  const cacheUsagePct = cacheMaxSize && cacheMaxSize > 0 ? (cacheSize / cacheMaxSize) * 100 : null;
+  const cacheUsagePct =
+    cacheMaxSize && cacheMaxSize > 0 ? (cacheSize / cacheMaxSize) * 100 : null;
 
   if (!isVisible) {
     return (
@@ -234,7 +282,7 @@ export function MemoryMonitor() {
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${getMemoryBarColor(
-                    cacheUsagePct
+                    cacheUsagePct,
                   )}`}
                   style={{ width: `${Math.min(cacheUsagePct, 100)}%` }}
                 />
