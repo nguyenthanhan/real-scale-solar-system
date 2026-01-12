@@ -421,5 +421,17 @@ describe("Caching functionality", () => {
       getCachedPlanetPosition("Earth", date);
       expect(getCacheSize()).toBe(1); // Still cached
     });
+
+    it("should return default position for invalid date", () => {
+      const invalidDate = new Date("invalid");
+      const position = getCachedPlanetPosition("Earth", invalidDate);
+
+      expect(position.planetName).toBe("Earth");
+      expect(position.longitudeDegrees).toBe(0);
+      expect(position.rotationRadians).toBe(0);
+      expect(position.date).toBeDefined();
+      // Should not add invalid date to cache
+      expect(getCacheSize()).toBe(0);
+    });
   });
 });

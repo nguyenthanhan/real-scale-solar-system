@@ -55,7 +55,7 @@ const mock2DContext = {
   clip: () => {},
 } as unknown as CanvasRenderingContext2D;
 
-HTMLCanvasElement.prototype.getContext = function (contextId: string) {
+HTMLCanvasElement.prototype.getContext = function (contextId: string): CanvasRenderingContext2D | WebGLRenderingContext | null {
   if (contextId === "2d") {
     return mock2DContext;
   }
@@ -101,4 +101,4 @@ HTMLCanvasElement.prototype.getContext = function (contextId: string) {
     } as unknown as WebGLRenderingContext;
   }
   return null;
-} as unknown;
+} as typeof HTMLCanvasElement.prototype.getContext;

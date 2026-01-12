@@ -49,14 +49,10 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const materialRef = useRef<Material | null>(null);
   const loaderRef = useRef<TextureLoader | null>(null);
   const isMountedRef = useRef(true);
-  const loadingMaterialRef = useRef<MeshStandardMaterial | null>(null);
   // Initialize fallback material from cache synchronously to avoid creating materials during render
   const fallbackMaterialRef = useRef<MeshStandardMaterial | null>(
     getOrCreateFallbackMaterial(planet.color),
   );
-
-  const [loadingMaterial, setLoadingMaterial] =
-    useState<MeshStandardMaterial | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -155,16 +151,23 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       cancelled = true;
       isMountedRef.current = false;
 
-      // Dispose material but NOT cached textures (they're shared resources)
+      // Dispose material but NOT cached textures or cached fallback materials (they're shared resources)
       if (materialRef.current) {
-        // Only dispose the material's map if it's NOT in the cache
         const mat = materialRef.current as
           | MeshStandardMaterial
           | MeshBasicMaterial;
-        if (mat.map && !textureCache.has(cacheKey)) {
-          mat.map.dispose();
+        
+        // Check if this is a cached fallback material - don't dispose shared cached materials
+        const cachedFallback = fallbackMaterialCache.get(planet.color);
+        const isCachedFallback = mat === cachedFallback;
+        
+        if (!isCachedFallback) {
+          // Only dispose the material's map if it's NOT in the cache
+          if (mat.map && !textureCache.has(cacheKey)) {
+            mat.map.dispose();
+          }
+          materialRef.current.dispose();
         }
-        materialRef.current.dispose();
         materialRef.current = null;
       }
 
@@ -173,69 +176,22 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     };
   }, [planet.name, planet.color]);
 
-  // Initialize and update loading material when planet color changes
+  // Update cached fallback material reference when planet color changes
   useEffect(() => {
-    let cancelled = false;
-
-    // Capture previous material but don't dispose it yet
-    const previousMaterial = loadingMaterialRef.current;
-
-    // Create new loading material for current planet color
-    const newMaterial = new MeshStandardMaterial({
-      color: planet.color,
-      metalness: 0.1,
-      roughness: 0.6,
-    });
-    // Assign new material to ref immediately to avoid race conditions
-    loadingMaterialRef.current = newMaterial;
-    
-    // Use setTimeout to defer state updates and avoid cascading renders
-    // Dispose previous material AFTER state update to prevent render-window race
-    setTimeout(() => {
-      if (!cancelled && isMountedRef.current) {
-        setLoadingMaterial(newMaterial);
-        // Dispose previous material after state update completes
-        if (previousMaterial) {
-          previousMaterial.dispose();
-        }
-      } else {
-        // If cancelled, dispose the new material we just created
-        newMaterial.dispose();
-      }
-    }, 0);
-
-    // Initialize or update cached fallback material for the current color
+    // Update fallback material reference to use cached material for current color
+    // This reuses the existing cached fallback material instead of creating a new one
     fallbackMaterialRef.current = getOrCreateFallbackMaterial(planet.color);
-
-    // Cleanup: dispose materials on unmount or when planet.color changes
-    return () => {
-      cancelled = true;
-      // Dispose current material in ref (the new material we just created)
-      if (loadingMaterialRef.current) {
-        loadingMaterialRef.current.dispose();
-        loadingMaterialRef.current = null;
-      }
-      // Also dispose previous material as safety net (setTimeout might not have run yet)
-      // Disposing twice is safe in Three.js (it's a no-op)
-      if (previousMaterial) {
-        previousMaterial.dispose();
-      }
-      // Clear fallback ref (but don't dispose cached material - it's shared)
-      fallbackMaterialRef.current = null;
-    };
+    
+    // No cleanup needed - cached materials are shared and should not be disposed
+    // The ref is just a pointer to the cached material, not ownership
   }, [planet.color]);
 
-  // Return loading material while the actual material is being prepared
-  // Use state value (not ref) to avoid accessing refs during render
+  // Return cached fallback material while the actual material is being prepared
+  // Use cached fallback material to avoid creating new materials during render
   if (isLoading || !material) {
-    // Always return the persisted loading material from state
-    // loadingMaterial is initialized with a value, so it should never be null
-    if (!loadingMaterial) {
-      // Fallback: use cached fallback material (can happen on initial render before useEffect's setTimeout runs)
-      // Access cache directly during render (cache is module-level, not a ref)
-      return getOrCreateFallbackMaterial(planet.color);
-    }
-    return loadingMaterial;
+    // Access cache directly during render (cache is module-level, safe to call)
+    // getOrCreateFallbackMaterial uses the cache, so it's safe to call during render
+    return getOrCreateFallbackMaterial(planet.color);
   }
 
   return material;
