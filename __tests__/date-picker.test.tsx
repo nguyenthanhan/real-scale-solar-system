@@ -194,9 +194,9 @@ describe("DatePicker", () => {
         changedTouches: [{ clientX: 70, clientY: 50 }],
       });
 
-      await waitFor(() => {
-        expect(mockOnDateChange).not.toHaveBeenCalled();
-      });
+      // Wait for async handlers to run before asserting
+      await new Promise((res) => setTimeout(res, 50));
+      expect(mockOnDateChange).not.toHaveBeenCalled();
     });
   });
 
