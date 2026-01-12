@@ -14,6 +14,25 @@ import { textureCache, TextureCacheKey } from "@/utils/texture-cache";
 const fallbackMaterialCache = new Map<string, MeshStandardMaterial>();
 
 /**
+ * Gets or creates a cached fallback material for the given color.
+ * Reuses cached materials to prevent memory leaks.
+ */
+function getOrCreateFallbackMaterial(
+  color: string,
+): MeshStandardMaterial {
+  let cachedFallback = fallbackMaterialCache.get(color);
+  if (!cachedFallback) {
+    cachedFallback = new MeshStandardMaterial({
+      color,
+      metalness: 0.1,
+      roughness: 0.6,
+    });
+    fallbackMaterialCache.set(color, cachedFallback);
+  }
+  return cachedFallback;
+}
+
+/**
  * Custom hook for loading and managing planet materials with realistic texture images.
  * Replaces Canvas-based procedural texture generation with TextureLoader for photorealistic planets.
  *
@@ -31,15 +50,13 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const loaderRef = useRef<TextureLoader | null>(null);
   const isMountedRef = useRef(true);
   const loadingMaterialRef = useRef<MeshStandardMaterial | null>(null);
+  // Initialize fallback material from cache synchronously to avoid creating materials during render
+  const fallbackMaterialRef = useRef<MeshStandardMaterial | null>(
+    getOrCreateFallbackMaterial(planet.color),
+  );
+
   const [loadingMaterial, setLoadingMaterial] =
-    useState<MeshStandardMaterial | null>(() => {
-      // Initialize loading material synchronously on first mount
-      return new MeshStandardMaterial({
-        color: planet.color,
-        metalness: 0.1,
-        roughness: 0.6,
-      });
-    });
+    useState<MeshStandardMaterial | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -51,15 +68,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       // No texture configuration found - fallback to color-based material
       console.warn(`No texture configuration found for planet: ${planet.name}`);
       // Create or reuse fallback material
-      let fallbackMaterial = fallbackMaterialCache.get(planet.color);
-      if (!fallbackMaterial) {
-        fallbackMaterial = new MeshStandardMaterial({
-          color: planet.color,
-          metalness: 0.1,
-          roughness: 0.6,
-        });
-        fallbackMaterialCache.set(planet.color, fallbackMaterial);
-      }
+      const fallbackMaterial = getOrCreateFallbackMaterial(planet.color);
       materialRef.current = fallbackMaterial;
       // Use setTimeout to defer state updates and avoid cascading renders
       setTimeout(() => {
@@ -133,15 +142,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         );
 
         // Create or reuse fallback material
-        let fallbackMaterial = fallbackMaterialCache.get(planet.color);
-        if (!fallbackMaterial) {
-          fallbackMaterial = new MeshStandardMaterial({
-            color: planet.color,
-            metalness: 0.1,
-            roughness: 0.6,
-          });
-          fallbackMaterialCache.set(planet.color, fallbackMaterial);
-        }
+        const fallbackMaterial = getOrCreateFallbackMaterial(planet.color);
         materialRef.current = fallbackMaterial;
         setMaterial(fallbackMaterial);
         setIsLoading(false);
@@ -192,12 +193,17 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       }
     }, 0);
 
-    // Cleanup: dispose material on unmount or when planet.color changes
+    // Initialize or update cached fallback material for the current color
+    fallbackMaterialRef.current = getOrCreateFallbackMaterial(planet.color);
+
+    // Cleanup: dispose materials on unmount or when planet.color changes
     return () => {
       if (loadingMaterialRef.current) {
         loadingMaterialRef.current.dispose();
         loadingMaterialRef.current = null;
       }
+      // Clear fallback ref (but don't dispose cached material - it's shared)
+      fallbackMaterialRef.current = null;
     };
   }, [planet.color]);
 
@@ -207,12 +213,9 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     // Always return the persisted loading material from state
     // loadingMaterial is initialized with a value, so it should never be null
     if (!loadingMaterial) {
-      // Fallback (shouldn't happen, but satisfies TypeScript)
-      return new MeshStandardMaterial({
-        color: planet.color,
-        metalness: 0.1,
-        roughness: 0.6,
-      });
+      // Fallback: use cached fallback material (shouldn't happen, but satisfies TypeScript)
+      // Access cache directly during render (cache is module-level, not a ref)
+      return getOrCreateFallbackMaterial(planet.color);
     }
     return loadingMaterial;
   }
