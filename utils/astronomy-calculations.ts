@@ -292,7 +292,7 @@ export function getCachedPlanetPosition(planetName: string, date: Date): PlanetP
       planetName,
       longitudeDegrees: 0,
       rotationRadians: 0,
-      date: new Date().toISOString(),
+      date: J2000_EPOCH.toISOString(), // Use epoch as deterministic fallback
     };
   }
 
