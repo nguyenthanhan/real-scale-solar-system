@@ -1,5 +1,3 @@
-"use client";
-
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DatePicker } from "@/components/date-picker/date-picker";
@@ -194,9 +192,13 @@ describe("DatePicker", () => {
         changedTouches: [{ clientX: 70, clientY: 50 }],
       });
 
-      // Wait for async handlers to run before asserting
-      await new Promise((res) => setTimeout(res, 50));
-      expect(mockOnDateChange).not.toHaveBeenCalled();
+      // Give async handlers time to run, then verify no call was made
+      await waitFor(
+        () => {
+          expect(mockOnDateChange).not.toHaveBeenCalled();
+        },
+        { timeout: 100 }
+      );
     });
   });
 

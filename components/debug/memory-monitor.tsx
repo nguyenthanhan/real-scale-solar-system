@@ -189,11 +189,11 @@ export function MemoryMonitor() {
       typeof document !== "undefined" &&
       document.visibilityState === "visible"
     ) {
-      // Defer state updates to avoid synchronous setState in effect
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
         updateHeapStats();
         updateCacheStats();
       }, 0);
+      return () => clearTimeout(timerId);
     }
   }, [
     isClient,
