@@ -177,11 +177,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   useEffect(() => {
     let cancelled = false;
 
-    // Dispose previous material if it exists
+    // Capture previous material but don't dispose it yet
     const previousMaterial = loadingMaterialRef.current;
-    if (previousMaterial) {
-      previousMaterial.dispose();
-    }
 
     // Create new loading material for current planet color
     const newMaterial = new MeshStandardMaterial({
@@ -189,11 +186,21 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       metalness: 0.1,
       roughness: 0.6,
     });
+    // Assign new material to ref immediately to avoid race conditions
     loadingMaterialRef.current = newMaterial;
+    
     // Use setTimeout to defer state updates and avoid cascading renders
+    // Dispose previous material AFTER state update to prevent render-window race
     setTimeout(() => {
       if (!cancelled && isMountedRef.current) {
         setLoadingMaterial(newMaterial);
+        // Dispose previous material after state update completes
+        if (previousMaterial) {
+          previousMaterial.dispose();
+        }
+      } else {
+        // If cancelled, dispose the new material we just created
+        newMaterial.dispose();
       }
     }, 0);
 
@@ -203,9 +210,15 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     // Cleanup: dispose materials on unmount or when planet.color changes
     return () => {
       cancelled = true;
+      // Dispose current material in ref (the new material we just created)
       if (loadingMaterialRef.current) {
         loadingMaterialRef.current.dispose();
         loadingMaterialRef.current = null;
+      }
+      // Also dispose previous material as safety net (setTimeout might not have run yet)
+      // Disposing twice is safe in Three.js (it's a no-op)
+      if (previousMaterial) {
+        previousMaterial.dispose();
       }
       // Clear fallback ref (but don't dispose cached material - it's shared)
       fallbackMaterialRef.current = null;
