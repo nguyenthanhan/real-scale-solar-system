@@ -4,7 +4,6 @@
  * Debug component for monitoring actual memory usage and performance.
  */
 import { useState, useEffect, useRef, useCallback } from "react";
-import { flushSync } from "react-dom";
 import { textureCache } from "@/utils/texture-cache";
 
 export function MemoryMonitor() {
@@ -16,7 +15,7 @@ export function MemoryMonitor() {
   const lastTimeRef = useRef(0);
   const fpsSamplesRef = useRef<number[]>([]);
   const [visibilityTrigger, setVisibilityTrigger] = useState(0);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient] = useState(() => typeof window !== "undefined");
 
   // JS heap (when supported)
   const [heapUsed, setHeapUsed] = useState<number | null>(null);
@@ -31,11 +30,6 @@ export function MemoryMonitor() {
     isClient &&
     typeof performance !== "undefined" &&
     (performance as unknown as { memory: unknown }).memory;
-
-  // Client-side hydration effect
-  useEffect(() => {
-    flushSync(() => setIsClient(true));
-  }, []);
 
   const updateHeapStats = useCallback(() => {
     try {
@@ -167,20 +161,14 @@ export function MemoryMonitor() {
       typeof document !== "undefined" &&
       document.visibilityState === "visible"
     ) {
-      flushSync(() => {
-        updateHeapStats();
-        updateCacheStats();
-      });
       const id = setInterval(() => {
         // Double-check visibility state before each update
         if (
           typeof document !== "undefined" &&
           document.visibilityState === "visible"
         ) {
-          flushSync(() => {
-            updateHeapStats();
-            updateCacheStats();
-          });
+          updateHeapStats();
+          updateCacheStats();
         }
       }, 1000);
       return () => clearInterval(id);
@@ -192,6 +180,27 @@ export function MemoryMonitor() {
     isVisible,
     visibilityTrigger,
   ]);
+
+  // Initial stats update when visibility changes
+  /* eslint-disable */
+  useEffect(() => {
+    if (
+      isClient &&
+      isVisible &&
+      typeof document !== "undefined" &&
+      document.visibilityState === "visible"
+    ) {
+      updateHeapStats();
+      updateCacheStats();
+    }
+  }, [
+    isClient,
+    isVisible,
+    visibilityTrigger,
+    updateHeapStats,
+    updateCacheStats,
+  ]);
+  /* eslint-enable */
 
   const formatBytes = (bytes: number | null): string => {
     if (bytes == null || isNaN(bytes)) return "n/a";

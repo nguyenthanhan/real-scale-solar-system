@@ -78,7 +78,7 @@ export function useRotationWorker() {
         // Handle worker errors
         workerRef.current.onerror = (error) => {
           console.error("Rotation worker error:", error);
-          flushSync(() => setIsWorkerReady(false));
+          setIsWorkerReady(false);
 
           // Reject all pending promises immediately
           const workerError = new Error(

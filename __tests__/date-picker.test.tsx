@@ -1,7 +1,7 @@
 "use client";
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DatePicker } from "@/components/date-picker/date-picker";
 import { ModeToggleButton } from "@/components/button/mode-toggle-button";
 
@@ -49,10 +49,9 @@ describe("DatePicker", () => {
 
       fireEvent.click(screen.getByText("Today"));
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      expect(mockOnDateChange).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
       // Today button should call with current date (today)
       const calledDate = mockOnDateChange.mock.calls[0][0];
       expect(calledDate.getFullYear()).toBe(new Date().getFullYear());
@@ -68,8 +67,9 @@ describe("DatePicker", () => {
 
       fireEvent.click(screen.getByText("Moon Landing"));
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
 
       const calledDate = mockOnDateChange.mock.calls[0][0];
       expect(calledDate.getFullYear()).toBe(1969);
@@ -89,8 +89,9 @@ describe("DatePicker", () => {
       // ArrowLeft - previous day
       fireEvent.keyDown(container, { key: "ArrowLeft" });
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
 
       expect(mockOnDateChange.mock.calls[0][0].getDate()).toBe(14);
 
@@ -99,8 +100,9 @@ describe("DatePicker", () => {
       // ArrowRight - next day
       fireEvent.keyDown(container, { key: "ArrowRight" });
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
 
       expect(mockOnDateChange.mock.calls[0][0].getDate()).toBe(16);
 
@@ -109,8 +111,9 @@ describe("DatePicker", () => {
       // ArrowUp - previous month
       fireEvent.keyDown(container, { key: "ArrowUp" });
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
 
       expect(mockOnDateChange.mock.calls[0][0].getMonth()).toBe(4); // May (June - 1)
 
@@ -119,8 +122,9 @@ describe("DatePicker", () => {
       // ArrowDown - next month
       fireEvent.keyDown(container, { key: "ArrowDown" });
 
-      // Wait for animation to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
 
       expect(mockOnDateChange.mock.calls[0][0].getMonth()).toBe(6); // July (June + 1)
     });
@@ -156,10 +160,9 @@ describe("DatePicker", () => {
         changedTouches: [{ clientX: 0, clientY: 50 }],
       });
 
-      // Wait for any async behavior
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      expect(mockOnDateChange).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
       expect(mockOnDateChange.mock.calls[0][0].getDate()).toBe(16);
 
       mockOnDateChange.mockClear();
@@ -172,10 +175,9 @@ describe("DatePicker", () => {
         changedTouches: [{ clientX: 100, clientY: 50 }],
       });
 
-      // Wait for any async behavior
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      expect(mockOnDateChange).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockOnDateChange).toHaveBeenCalled();
+      });
       expect(mockOnDateChange.mock.calls[0][0].getDate()).toBe(14);
     });
 
@@ -192,10 +194,9 @@ describe("DatePicker", () => {
         changedTouches: [{ clientX: 70, clientY: 50 }],
       });
 
-      // Wait for any async behavior
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      expect(mockOnDateChange).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockOnDateChange).not.toHaveBeenCalled();
+      });
     });
   });
 

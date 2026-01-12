@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import { Mesh, Group } from "three";
@@ -70,10 +70,13 @@ export function Planet({
   });
 
   // Handle planet click with proper event propagation
-  const handlePlanetClick = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    onClick(planet);
-  };
+  const handlePlanetClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      onClick(planet);
+    },
+    [onClick, planet],
+  );
 
   return (
     <>

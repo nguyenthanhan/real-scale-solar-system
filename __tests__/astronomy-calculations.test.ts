@@ -28,13 +28,10 @@ describe("Astronomy Calculations", () => {
     it("should calculate days since J2000 correctly for any valid date", () => {
       fc.assert(
         fc.property(
-          fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
+          fc
+            .date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") })
+            .filter((d) => !isNaN(d.getTime())),
           (date) => {
-            // Skip invalid dates
-            if (isNaN(date.getTime())) {
-              return true; // Skip this test case
-            }
-
             const calculated = calculateDaysSinceJ2000(date);
 
             // Manual calculation

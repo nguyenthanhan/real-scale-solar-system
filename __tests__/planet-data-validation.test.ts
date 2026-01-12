@@ -118,7 +118,7 @@ describe("Planet Data Validation", () => {
     it("should detect non-numeric rotationSpeedByDays", () => {
       const invalidPlanet = {
         ...planetData[0],
-        rotationSpeedByDays: "not a number" as never,
+        rotationSpeedByDays: "not a number" as unknown as number,
       };
 
       const errors = validatePlanetData(invalidPlanet);
@@ -140,7 +140,7 @@ describe("Planet Data Validation", () => {
         ...planetData[0],
         orbitalPeriodDays: -1,
         eccentricity: 2.0,
-        rotationSpeedByDays: "invalid" as never,
+        rotationSpeedByDays: "invalid" as unknown as number,
       };
 
       const errors = validatePlanetData(invalidPlanet);
@@ -184,9 +184,13 @@ describe("Planet Data Validation", () => {
 
       try {
         validateAllPlanets(invalidData);
-        expect.fail("Should have thrown an error");
+        expect.unreachable("Should have thrown an error");
       } catch (error) {
-        expect(error.message).toContain("Planet data validation failed");
+        if (error instanceof Error) {
+          expect(error.message).toContain("Planet data validation failed");
+        } else {
+          throw new Error("Unexpected non-Error thrown");
+        }
       }
     });
 
