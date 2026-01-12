@@ -100,7 +100,11 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           setIsLoading(false);
         }
       }, 0);
-      return;
+      return () => {
+        cancelled = true;
+        isMountedRef.current = false;
+        // Don't dispose mat here - it uses cached texture
+      };
     }
 
     // Load texture asynchronously
@@ -111,7 +115,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       config.texturePath,
       // onLoad callback
       (texture) => {
-        if (!isMountedRef.current) return;
+        if (cancelled || !isMountedRef.current) return;
 
         // Store texture in cache for reuse
         textureCache.set(cacheKey, texture);
@@ -130,7 +134,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       undefined,
       // onError callback
       (error) => {
-        if (!isMountedRef.current) return;
+        if (cancelled || !isMountedRef.current) return;
 
         console.error(
           `Failed to load texture for ${planet.name} from ${config.texturePath}:`,
@@ -175,15 +179,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     };
   }, [planet.name, planet.color]);
 
-  // Update cached fallback material reference when planet color changes
-  useEffect(() => {
-    // Update fallback material reference to use cached material for current color
-    // This reuses the existing cached fallback material instead of creating a new one
-    fallbackMaterialRef.current = getOrCreateFallbackMaterial(planet.color);
-    
-    // No cleanup needed - cached materials are shared and should not be disposed
-    // The ref is just a pointer to the cached material, not ownership
-  }, [planet.color]);
+
 
   // Return cached fallback material while the actual material is being prepared
   // Use cached fallback material to avoid creating new materials during render
