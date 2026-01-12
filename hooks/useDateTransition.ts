@@ -108,6 +108,9 @@ export function useDateTransition(
         animationRef.current = null;
       }
 
+      // Get the actual current date - use the latest date from state or prop
+      const startDate = state.currentDate || currentDate;
+
       // Instant mode: skip animation
       if (animationSpeed >= 1) {
         onDateChange(targetDate);
@@ -121,8 +124,6 @@ export function useDateTransition(
         }));
         return;
       }
-
-      const startDate = currentDate;
 
       // No-op if same date
       if (isSameDate(startDate, targetDate)) {
@@ -203,6 +204,7 @@ export function useDateTransition(
     },
     [
       currentDate,
+      state.currentDate,
       onDateChange,
       animationSpeed,
       mergedConfig,
