@@ -15,7 +15,9 @@ describe("PlanetDataService", () => {
   let service: PlanetDataService;
 
   beforeEach(() => {
-    service = new PlanetDataService();
+    service = new PlanetDataService(
+      "https://api.le-systeme-solaire.net/rest/bodies",
+    );
     vi.clearAllMocks();
     vi.spyOn(console, "log").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});

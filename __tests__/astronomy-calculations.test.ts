@@ -30,6 +30,11 @@ describe("Astronomy Calculations", () => {
         fc.property(
           fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
           (date) => {
+            // Skip invalid dates
+            if (isNaN(date.getTime())) {
+              return true; // Skip this test case
+            }
+
             const calculated = calculateDaysSinceJ2000(date);
 
             // Manual calculation
@@ -39,9 +44,9 @@ describe("Astronomy Calculations", () => {
 
             // Should match within floating point precision
             return Math.abs(calculated - expected) < 0.0001;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -83,9 +88,9 @@ describe("Astronomy Calculations", () => {
             // Should match within 1 second (millisecond precision)
             const diffMs = Math.abs(date.getTime() - roundTripped.getTime());
             return diffMs < 1000;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
   });
@@ -105,9 +110,9 @@ describe("Astronomy Calculations", () => {
             const expected = (longitude / 360) * FULL_CIRCLE_RADIANS;
 
             return Math.abs(rotation - expected) < 0.0001;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -141,9 +146,9 @@ describe("Astronomy Calculations", () => {
             const result1 = calculateDaysSinceJ2000(date);
             const result2 = calculateDaysSinceJ2000(date);
             return result1 === result2;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -155,9 +160,9 @@ describe("Astronomy Calculations", () => {
             const result1 = convertLongitudeToRotation(longitude);
             const result2 = convertLongitudeToRotation(longitude);
             return result1 === result2;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -173,15 +178,15 @@ describe("Astronomy Calculations", () => {
             "Jupiter",
             "Saturn",
             "Uranus",
-            "Neptune"
+            "Neptune",
           ),
           (date, planetName) => {
             const result1 = calculateEclipticLongitude(planetName, date);
             const result2 = calculateEclipticLongitude(planetName, date);
             return result1 === result2;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
   });
@@ -210,7 +215,7 @@ describe("Astronomy Calculations", () => {
       it("should return 0 for invalid date", () => {
         const longitude = calculateEclipticLongitude(
           "Earth",
-          new Date("invalid")
+          new Date("invalid"),
         );
         expect(longitude).toBe(0);
       });
