@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   MeshStandardMaterial,
   MeshBasicMaterial,
@@ -39,9 +39,16 @@ function getOrCreateFallbackMaterial(
  * Features:
  * - Asynchronous texture loading with loading states
  * - Texture caching to prevent duplicate loads
- * - Error handling with fallback to base colors
+ * - Error handling with fallback to base colors (planet.color) when textures fail to load
  * - Proper cleanup of materials without disposing shared cached textures
  * - Special handling for Sun (emissive MeshBasicMaterial)
+ *
+ * IMPORTANT: When textures are successfully loaded, the material color property is NOT set.
+ * This prevents tinting of realistic planetary textures. The planet.color from PlanetData
+ * is ONLY used as a fallback when:
+ * 1. No texture configuration exists for the planet (PLANET_TEXTURES[planet.name] is undefined)
+ * 2. Texture loading fails (onError callback)
+ * 3. Material is still loading (temporary fallback during async load)
  */
 export function usePlanetMaterial(planet: PlanetData): Material {
   const [material, setMaterial] = useState<Material | null>(null);
@@ -49,6 +56,12 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const materialRef = useRef<Material | null>(null);
   const loaderRef = useRef<TextureLoader | null>(null);
   const isMountedRef = useRef(true);
+  // Initialize fallback material using useMemo to avoid render-time side effects
+  // This memoizes the fallback material and recomputes only when planet.color changes
+  const fallbackMaterial = useMemo(
+    () => getOrCreateFallbackMaterial(planet.color),
+    [planet.color]
+  );
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -60,8 +73,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     if (!config) {
       // No texture configuration found - fallback to color-based material
       console.warn(`No texture configuration found for planet: ${planet.name}`);
-      // Create or reuse fallback material
-      const fallbackMaterial = getOrCreateFallbackMaterial(planet.color);
+      // Use the pre-initialized fallback material
       materialRef.current = fallbackMaterial;
       // Use setTimeout to defer state updates and avoid cascading renders
       setTimeout(() => {
@@ -90,7 +102,6 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       const mat = createMaterialWithTexture(
         cachedTexture,
         config.materialType,
-        planet.color,
       );
       materialRef.current = mat;
       // Use setTimeout to defer state updates and avoid cascading renders
@@ -124,7 +135,6 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         const mat = createMaterialWithTexture(
           texture,
           config.materialType,
-          planet.color,
         );
         materialRef.current = mat;
         setMaterial(mat);
@@ -141,8 +151,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           error,
         );
 
-        // Create or reuse fallback material
-        const fallbackMaterial = getOrCreateFallbackMaterial(planet.color);
+        // Use the pre-initialized fallback material
         materialRef.current = fallbackMaterial;
         setMaterial(fallbackMaterial);
         setIsLoading(false);
@@ -177,16 +186,14 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       // Clear loader reference
       loaderRef.current = null;
     };
-  }, [planet.name, planet.color]);
+  }, [planet.name, planet.color, fallbackMaterial]);
 
 
 
   // Return cached fallback material while the actual material is being prepared
-  // Use cached fallback material to avoid creating new materials during render
+  // Fallback material is initialized using useState lazy initializer to avoid render-time side effects
   if (isLoading || !material) {
-    // Access cache directly during render (cache is module-level, safe to call)
-    // getOrCreateFallbackMaterial uses the cache, so it's safe to call during render
-    return getOrCreateFallbackMaterial(planet.color);
+    return fallbackMaterial;
   }
 
   return material;
@@ -195,29 +202,37 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 /**
  * Helper function to create the appropriate material type with a loaded texture.
  *
+ * IMPORTANT: The color property is intentionally omitted when textures are present.
+ * In Three.js, setting a material's color multiplies it with the texture, causing
+ * unwanted tinting (e.g., Earth texture would be tinted blue, Mars reddish, etc.).
+ * The planet.color from PlanetData is only used as a fallback when no texture
+ * configuration exists (see getOrCreateFallbackMaterial).
+ *
  * @param texture - The loaded Three.js Texture
  * @param materialType - "basic" for Sun (emissive), "standard" for planets
- * @param baseColor - Fallback color for the material
- * @returns Material instance (MeshBasicMaterial or MeshStandardMaterial)
+ * @returns Material instance (MeshBasicMaterial or MeshStandardMaterial) without color property
  */
 function createMaterialWithTexture(
   texture: Texture,
   materialType: "standard" | "basic",
-  baseColor: string,
 ): Material {
   if (materialType === "basic") {
     // Sun uses MeshBasicMaterial for emissive, self-illuminated effect
+    // Color is intentionally omitted to prevent tinting the texture
+    // planet.color is only used as a fallback when textures aren't available
     return new MeshBasicMaterial({
       map: texture,
-      color: baseColor,
+      // No color property - texture provides all color information
     });
   } else {
     // Planets use MeshStandardMaterial for realistic lighting
+    // Color is intentionally omitted to prevent tinting the texture
+    // planet.color is only used as a fallback when textures aren't available
     return new MeshStandardMaterial({
       map: texture,
-      color: baseColor,
       metalness: 0.1,
       roughness: 0.6,
+      // No color property - texture provides all color information
     });
   }
 }

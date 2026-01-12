@@ -18,6 +18,29 @@ const MIN_ACCURATE_YEAR = 1700;
 const MAX_ACCURATE_YEAR = 2300;
 
 /**
+ * Validate that a date is a valid Date object
+ * @param date - Date to validate
+ * @returns True if date is a valid Date instance
+ */
+function isValidDate(date: Date): boolean {
+  return date instanceof Date && !isNaN(date.getTime());
+}
+
+/**
+ * Create a default position object for error fallback cases
+ * @param planetName - Name of the planet
+ * @returns Default PlanetPosition with zero values and J2000 epoch date
+ */
+function createDefaultPosition(planetName: string): PlanetPosition {
+  return {
+    planetName,
+    longitudeDegrees: 0,
+    rotationRadians: 0,
+    date: J2000_EPOCH.toISOString(),
+  };
+}
+
+/**
  * Map planet names to Astronomy Engine Body enum
  */
 export const PLANET_BODY_MAP: Record<string, AE.Body> = {
@@ -37,7 +60,7 @@ export const PLANET_BODY_MAP: Record<string, AE.Body> = {
  * @returns Number of days since J2000 epoch (can be negative for dates before J2000)
  */
 export function calculateDaysSinceJ2000(date: Date): number {
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     console.error("Invalid date provided to calculateDaysSinceJ2000");
     return 0;
   }
@@ -73,7 +96,7 @@ export function calculateEclipticLongitude(
     return 0;
   }
 
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     console.error(`Invalid date provided for ${planetName}`);
     return 0;
   }
@@ -129,14 +152,9 @@ export interface PlanetPosition {
  */
 export function getPlanetPosition(planetName: string, date: Date): PlanetPosition {
   // Validate date before using it
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     console.error(`Invalid date provided to getPlanetPosition for ${planetName}`);
-    return {
-      planetName,
-      longitudeDegrees: 0,
-      rotationRadians: 0,
-      date: J2000_EPOCH.toISOString(), // Use epoch as deterministic fallback
-    };
+    return createDefaultPosition(planetName);
   }
 
   const longitude = calculateEclipticLongitude(planetName, date);
@@ -166,7 +184,7 @@ export function getAllPlanetPositions(date: Date): PlanetPosition[] {
  * @returns True if date is within 1700-2300 range
  */
 export function isDateInAccurateRange(date: Date): boolean {
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     return false;
   }
 
@@ -180,7 +198,7 @@ export function isDateInAccurateRange(date: Date): boolean {
  * @returns Object with valid flag and optional error message
  */
 export function validateDate(date: Date): { valid: boolean; error?: string } {
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     return { valid: false, error: "Invalid date format" };
   }
 
@@ -243,6 +261,11 @@ export function getCachedEclipticLongitude(
   planetName: string,
   date: Date
 ): number {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    console.error(`Invalid date provided to getCachedEclipticLongitude for ${planetName}`);
+    return 0;
+  }
+
   const key = getCacheKey(planetName, date);
 
   if (longitudeCache.has(key)) {
@@ -286,14 +309,9 @@ export function getCacheSize(): number {
  */
 export function getCachedPlanetPosition(planetName: string, date: Date): PlanetPosition {
   // Validate date before using it
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
+  if (!isValidDate(date)) {
     console.error(`Invalid date provided to getCachedPlanetPosition for ${planetName}`);
-    return {
-      planetName,
-      longitudeDegrees: 0,
-      rotationRadians: 0,
-      date: J2000_EPOCH.toISOString(), // Use epoch as deterministic fallback
-    };
+    return createDefaultPosition(planetName);
   }
 
   const longitude = getCachedEclipticLongitude(planetName, date);

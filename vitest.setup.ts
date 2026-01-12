@@ -36,7 +36,7 @@ const mock2DContext = {
     colorSpace: "srgb" as PredefinedColorSpace,
   }),
   putImageData: () => {},
-  createImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+  createImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1, colorSpace: "srgb" as PredefinedColorSpace }),
   setTransform: () => {},
   drawImage: () => {},
   save: () => {},
