@@ -33,7 +33,7 @@ const mock2DContext = {
     data: new Array(4),
   }),
   putImageData: () => {},
-  createImageData: () => [],
+  createImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
   setTransform: () => {},
   drawImage: () => {},
   save: () => {},

@@ -49,10 +49,6 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const materialRef = useRef<Material | null>(null);
   const loaderRef = useRef<TextureLoader | null>(null);
   const isMountedRef = useRef(true);
-  // Initialize fallback material from cache synchronously to avoid creating materials during render
-  const fallbackMaterialRef = useRef<MeshStandardMaterial | null>(
-    getOrCreateFallbackMaterial(planet.color),
-  );
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -74,7 +70,10 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           setIsLoading(false);
         }
       }, 0);
-      return;
+      return () => {
+        cancelled = true;
+        isMountedRef.current = false;
+      };
     }
 
     // Create cache key for this texture

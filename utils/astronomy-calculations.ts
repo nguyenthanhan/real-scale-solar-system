@@ -131,12 +131,11 @@ export function getPlanetPosition(planetName: string, date: Date): PlanetPositio
   // Validate date before using it
   if (!(date instanceof Date) || isNaN(date.getTime())) {
     console.error(`Invalid date provided to getPlanetPosition for ${planetName}`);
-    // Return a default position with a fallback date string
     return {
       planetName,
       longitudeDegrees: 0,
       rotationRadians: 0,
-      date: new Date().toISOString(),
+      date: J2000_EPOCH.toISOString(), // Use epoch as deterministic fallback
     };
   }
 
