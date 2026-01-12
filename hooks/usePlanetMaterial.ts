@@ -60,6 +60,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 
   useEffect(() => {
     isMountedRef.current = true;
+    let cancelled = false;
 
     // Get texture configuration for this planet
     const config = PLANET_TEXTURES[planet.name];
@@ -72,7 +73,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       materialRef.current = fallbackMaterial;
       // Use setTimeout to defer state updates and avoid cascading renders
       setTimeout(() => {
-        if (isMountedRef.current) {
+        if (!cancelled && isMountedRef.current) {
           setMaterial(fallbackMaterial);
           setIsLoading(false);
         }
@@ -99,7 +100,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       materialRef.current = mat;
       // Use setTimeout to defer state updates and avoid cascading renders
       setTimeout(() => {
-        if (isMountedRef.current) {
+        if (!cancelled && isMountedRef.current) {
           setMaterial(mat);
           setIsLoading(false);
         }
@@ -151,6 +152,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 
     // Cleanup function
     return () => {
+      cancelled = true;
       isMountedRef.current = false;
 
       // Dispose material but NOT cached textures (they're shared resources)
@@ -173,6 +175,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 
   // Initialize and update loading material when planet color changes
   useEffect(() => {
+    let cancelled = false;
+
     // Dispose previous material if it exists
     const previousMaterial = loadingMaterialRef.current;
     if (previousMaterial) {
@@ -188,7 +192,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     loadingMaterialRef.current = newMaterial;
     // Use setTimeout to defer state updates and avoid cascading renders
     setTimeout(() => {
-      if (isMountedRef.current) {
+      if (!cancelled && isMountedRef.current) {
         setLoadingMaterial(newMaterial);
       }
     }, 0);
@@ -198,6 +202,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 
     // Cleanup: dispose materials on unmount or when planet.color changes
     return () => {
+      cancelled = true;
       if (loadingMaterialRef.current) {
         loadingMaterialRef.current.dispose();
         loadingMaterialRef.current = null;
