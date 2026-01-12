@@ -5,6 +5,19 @@
 
 import "@testing-library/jest-dom/vitest";
 
+// Suppress Three.js multiple instances warning in tests
+// This is a known issue with React Three Fiber in test environments
+const originalWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("Multiple instances of Three.js")
+  ) {
+    return; // Suppress this specific warning
+  }
+  originalWarn(...args);
+};
+
 // Polyfill for ResizeObserver (required by @react-three/fiber)
 global.ResizeObserver = class ResizeObserver {
   observe() {}
