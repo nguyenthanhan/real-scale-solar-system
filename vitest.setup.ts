@@ -13,39 +13,39 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 // Mock HTMLCanvasElement.getContext for Three.js
-HTMLCanvasElement.prototype.getContext = function () {
-  return {
-    fillRect: () => {},
-    clearRect: () => {},
-    getImageData: () => ({
-      data: new Array(4),
-    }),
-    putImageData: () => {},
-    createImageData: () => [],
-    setTransform: () => {},
-    drawImage: () => {},
-    save: () => {},
-    fillText: () => {},
-    restore: () => {},
-    beginPath: () => {},
-    moveTo: () => {},
-    lineTo: () => {},
-    closePath: () => {},
-    stroke: () => {},
-    translate: () => {},
-    scale: () => {},
-    rotate: () => {},
-    arc: () => {},
-    fill: () => {},
-    measureText: () => ({ width: 0 }),
-    transform: () => {},
-    rect: () => {},
-    clip: () => {},
-  } as any;
-};
+const mock2DContext = {
+  fillRect: () => {},
+  clearRect: () => {},
+  getImageData: () => ({
+    data: new Array(4),
+  }),
+  putImageData: () => {},
+  createImageData: () => [],
+  setTransform: () => {},
+  drawImage: () => {},
+  save: () => {},
+  fillText: () => {},
+  restore: () => {},
+  beginPath: () => {},
+  moveTo: () => {},
+  lineTo: () => {},
+  closePath: () => {},
+  stroke: () => {},
+  translate: () => {},
+  scale: () => {},
+  rotate: () => {},
+  arc: () => {},
+  fill: () => {},
+  measureText: () => ({ width: 0 }),
+  transform: () => {},
+  rect: () => {},
+  clip: () => {},
+} as unknown as CanvasRenderingContext2D;
 
-// Mock WebGL context
 HTMLCanvasElement.prototype.getContext = function (contextId: string) {
+  if (contextId === "2d") {
+    return mock2DContext;
+  }
   if (contextId === "webgl" || contextId === "webgl2") {
     return {
       getExtension: () => null,
@@ -85,7 +85,7 @@ HTMLCanvasElement.prototype.getContext = function (contextId: string) {
       vertexAttribPointer: () => {},
       enableVertexAttribArray: () => {},
       canvas: {},
-    } as any;
+    } as unknown as WebGLRenderingContext;
   }
   return null;
-};
+} as unknown;

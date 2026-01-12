@@ -1,6 +1,5 @@
 "use client";
 
-import { Html } from "@react-three/drei";
 import { PlanetData } from "@/data/planet-types";
 import { useThree, useFrame } from "@react-three/fiber";
 import { useState, useRef } from "react";

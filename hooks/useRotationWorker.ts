@@ -4,6 +4,7 @@
  */
 
 import { useRef, useCallback, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { calculateRotationMultiplier } from "@/utils/rotation-calculations";
 import type {
   RotationCalculationRequest,
@@ -29,13 +30,16 @@ export function useRotationWorker() {
   useEffect(() => {
     if (typeof window !== "undefined" && "Worker" in window) {
       try {
+        // Capture ref values at effect start for cleanup function
+        const pendingRequestsRef = pendingRequests;
+
         // Create worker instance
         workerRef.current = new Worker(
           new URL(
             "../workers/rotation-calculations.worker.ts",
-            import.meta.url
+            import.meta.url,
           ),
-          { type: "module" }
+          { type: "module" },
         );
 
         // Handle worker messages
@@ -44,7 +48,7 @@ export function useRotationWorker() {
             | RotationCalculationResponse
             | RotationCalculationErrorResponse
             | WorkerMessage
-          >
+          >,
         ) => {
           const { type } = event.data;
 
@@ -74,13 +78,13 @@ export function useRotationWorker() {
         // Handle worker errors
         workerRef.current.onerror = (error) => {
           console.error("Rotation worker error:", error);
-          setIsWorkerReady(false);
+          flushSync(() => setIsWorkerReady(false));
 
           // Reject all pending promises immediately
           const workerError = new Error(
-            `Worker error: ${error.message || "Unknown worker error"}`
+            `Worker error: ${error.message || "Unknown worker error"}`,
           );
-          for (const [id, request] of pendingRequests.current.entries()) {
+          for (const [, request] of pendingRequests.current.entries()) {
             request.reject(workerError);
           }
           pendingRequests.current.clear();
@@ -91,21 +95,25 @@ export function useRotationWorker() {
 
         // Cleanup on unmount
         return () => {
-          if (workerRef.current) {
-            workerRef.current.terminate();
+          // Copy ref to local variable to avoid stale reference
+          const currentPendingRequests = pendingRequestsRef.current;
+          const currentWorker = workerRef.current;
+
+          if (currentWorker) {
+            currentWorker.terminate();
             workerRef.current = null;
           }
 
           // Reject all pending promises before clearing
           const cleanupError = new Error("Worker terminated during cleanup");
-          for (const [id, request] of pendingRequests.current.entries()) {
+          for (const [, request] of currentPendingRequests.entries()) {
             request.reject(cleanupError);
           }
-          pendingRequests.current.clear();
+          currentPendingRequests.clear();
         };
       } catch (error) {
         console.warn("Failed to initialize rotation worker:", error);
-        setIsWorkerReady(false);
+        flushSync(() => setIsWorkerReady(false));
       }
     }
   }, []);
@@ -114,14 +122,14 @@ export function useRotationWorker() {
   const calculateRotationMultiplierAsync = useCallback(
     (
       planetRotationPeriod: number,
-      rotationSpeedMinutes: number
+      rotationSpeedMinutes: number,
     ): Promise<number> => {
       return new Promise((resolve, reject) => {
         if (!workerRef.current || !isWorkerReady) {
           // Synchronous fallback when worker is not ready
           const result = calculateRotationMultiplier(
             planetRotationPeriod,
-            rotationSpeedMinutes
+            rotationSpeedMinutes,
           );
           resolve(result);
           return;
@@ -149,14 +157,14 @@ export function useRotationWorker() {
             // Fallback to synchronous calculation on timeout
             const result = calculateRotationMultiplier(
               planetRotationPeriod,
-              rotationSpeedMinutes
+              rotationSpeedMinutes,
             );
             resolve(result);
           }
         }, 1000);
       });
     },
-    [isWorkerReady]
+    [isWorkerReady],
   );
 
   return {

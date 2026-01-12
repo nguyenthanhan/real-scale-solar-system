@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import {
   MeshStandardMaterial,
   MeshBasicMaterial,
@@ -43,8 +44,10 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         roughness: 0.6,
       });
       materialRef.current = fallbackMaterial;
-      setMaterial(fallbackMaterial);
-      setIsLoading(false);
+      flushSync(() => {
+        setMaterial(fallbackMaterial);
+        setIsLoading(false);
+      });
       return;
     }
 
@@ -62,11 +65,13 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       const mat = createMaterialWithTexture(
         cachedTexture,
         config.materialType,
-        planet.color
+        planet.color,
       );
       materialRef.current = mat;
-      setMaterial(mat);
-      setIsLoading(false);
+      flushSync(() => {
+        setMaterial(mat);
+        setIsLoading(false);
+      });
       return;
     }
 
@@ -87,11 +92,13 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         const mat = createMaterialWithTexture(
           texture,
           config.materialType,
-          planet.color
+          planet.color,
         );
         materialRef.current = mat;
-        setMaterial(mat);
-        setIsLoading(false);
+        flushSync(() => {
+          setMaterial(mat);
+          setIsLoading(false);
+        });
       },
       // onProgress callback (optional)
       undefined,
@@ -101,7 +108,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 
         console.error(
           `Failed to load texture for ${planet.name} from ${config.texturePath}:`,
-          error
+          error,
         );
 
         // Fallback to color-based material on error
@@ -111,9 +118,11 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           roughness: 0.6,
         });
         materialRef.current = fallbackMaterial;
-        setMaterial(fallbackMaterial);
-        setIsLoading(false);
-      }
+        flushSync(() => {
+          setMaterial(fallbackMaterial);
+          setIsLoading(false);
+        });
+      },
     );
 
     // Cleanup function
@@ -161,7 +170,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
 function createMaterialWithTexture(
   texture: Texture,
   materialType: "standard" | "basic",
-  baseColor: string
+  baseColor: string,
 ): Material {
   if (materialType === "basic") {
     // Sun uses MeshBasicMaterial for emissive, self-illuminated effect

@@ -10,7 +10,6 @@ import {
   formatTemperature,
   formatOrbitalPeriod,
   formatRotationPeriod,
-  formatMoonCount,
   formatGravity,
   formatDensity,
   DATA_UNAVAILABLE,
@@ -102,9 +101,9 @@ describe("Formatting Consistency", () => {
             expect(merged1.apiDensity).toBe(merged2.apiDensity);
 
             return true;
-          }
+          },
         ),
-        { numRuns: 50 }
+        { numRuns: 50 },
       );
     });
 
@@ -142,9 +141,9 @@ describe("Formatting Consistency", () => {
             }
 
             return true;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -179,9 +178,9 @@ describe("Formatting Consistency", () => {
             }
 
             return true;
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 

@@ -6,7 +6,7 @@ import { PlanetData } from "@/data/planet-types";
 export interface ValidationError {
   planetName: string;
   field: string;
-  value: any;
+  value: unknown;
   expected: string;
 }
 
@@ -111,11 +111,11 @@ export function validateAllPlanets(planets: PlanetData[]): void {
     allErrors.forEach((error) => {
       console.error(
         `  ${error.planetName}.${error.field}: ` +
-          `got ${JSON.stringify(error.value)}, expected ${error.expected}`
+          `got ${JSON.stringify(error.value)}, expected ${error.expected}`,
       );
     });
     throw new Error(
-      `Planet data validation failed with ${allErrors.length} errors`
+      `Planet data validation failed with ${allErrors.length} errors`,
     );
   }
 

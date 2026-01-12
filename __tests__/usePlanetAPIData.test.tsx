@@ -63,7 +63,7 @@ describe("usePlanetAPIData", () => {
     mockFetchWithCache.mockResolvedValue(mockMergedData);
 
     const { result } = renderHook(() =>
-      usePlanetAPIData("Earth", mockLocalData)
+      usePlanetAPIData("Earth", mockLocalData),
     );
 
     // Initially loading
@@ -84,7 +84,7 @@ describe("usePlanetAPIData", () => {
       ({ planetName, localData }) => usePlanetAPIData(planetName, localData),
       {
         initialProps: { planetName: "Earth", localData: mockLocalData },
-      }
+      },
     );
 
     await waitFor(() => {
@@ -113,14 +113,14 @@ describe("usePlanetAPIData", () => {
   });
 
   it("should set loading state during fetch", async () => {
-    let resolvePromise: (value: any) => void;
-    const promise = new Promise((resolve) => {
+    let resolvePromise: (value: PlanetData) => void;
+    const promise = new Promise<PlanetData>((resolve) => {
       resolvePromise = resolve;
     });
-    mockFetchWithCache.mockReturnValue(promise as any);
+    mockFetchWithCache.mockReturnValue(promise);
 
     const { result } = renderHook(() =>
-      usePlanetAPIData("Earth", mockLocalData)
+      usePlanetAPIData("Earth", mockLocalData),
     );
 
     // Should be loading
@@ -137,15 +137,10 @@ describe("usePlanetAPIData", () => {
   });
 
   it("should handle errors gracefully", async () => {
-    const errorMergedData = {
-      ...mockLocalData,
-      isLoadingAPIData: false,
-      apiError: true,
-    };
     mockFetchWithCache.mockRejectedValue(new Error("Network error"));
 
     const { result } = renderHook(() =>
-      usePlanetAPIData("Earth", mockLocalData)
+      usePlanetAPIData("Earth", mockLocalData),
     );
 
     await waitFor(() => {
@@ -161,7 +156,7 @@ describe("usePlanetAPIData", () => {
     mockFetchWithCache.mockResolvedValue(mockMergedData);
 
     const { result } = renderHook(() =>
-      usePlanetAPIData("Earth", mockLocalData)
+      usePlanetAPIData("Earth", mockLocalData),
     );
 
     await waitFor(() => {

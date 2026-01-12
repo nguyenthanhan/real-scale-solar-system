@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { easeInOutCubic, type EasingFunction } from "@/utils/easing-functions";
 import {
   interpolateDate,
@@ -46,7 +46,10 @@ export function useDateTransition(
   onDateChange: (date: Date) => void,
   config: Partial<DateTransitionConfig> = {},
 ): UseDateTransitionReturn {
-  const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+  const mergedConfig = useMemo(
+    () => ({ ...DEFAULT_CONFIG, ...config }),
+    [config],
+  );
 
   const [state, setState] = useState<DateTransitionState>({
     isAnimating: false,
@@ -71,6 +74,25 @@ export function useDateTransition(
       }
     };
   }, []);
+
+  const cancelTransitionInternal = useCallback(
+    (targetDate: Date) => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+
+      setState((prev) => ({
+        ...prev,
+        isAnimating: false,
+        currentDate: targetDate,
+        progress: 1,
+        canCancel: false,
+      }));
+      onDateChange(targetDate);
+    },
+    [onDateChange],
+  );
 
   const startTransition = useCallback(
     (targetDate: Date) => {
@@ -179,26 +201,13 @@ export function useDateTransition(
 
       animationRef.current = requestAnimationFrame(animate);
     },
-    [currentDate, onDateChange, animationSpeed, mergedConfig],
-  );
-
-  const cancelTransitionInternal = useCallback(
-    (targetDate: Date) => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
-      }
-
-      setState((prev) => ({
-        ...prev,
-        isAnimating: false,
-        currentDate: targetDate,
-        progress: 1,
-        canCancel: false,
-      }));
-      onDateChange(targetDate);
-    },
-    [onDateChange],
+    [
+      currentDate,
+      onDateChange,
+      animationSpeed,
+      mergedConfig,
+      cancelTransitionInternal,
+    ],
   );
 
   const cancelTransition = useCallback(() => {

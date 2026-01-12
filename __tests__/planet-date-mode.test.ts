@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import {
   getPlanetPosition,
-  calculateEclipticLongitude,
   getSupportedPlanets,
 } from "@/utils/astronomy-calculations";
 import { planetData } from "@/data/planet-data";
@@ -47,9 +46,9 @@ describe("Planet Date Mode", () => {
 
             // Positions should be different for different dates
             return pos1.longitudeDegrees !== pos2.longitudeDegrees;
-          }
+          },
         ),
-        { numRuns: 50 }
+        { numRuns: 50 },
       );
     });
   });
@@ -67,7 +66,7 @@ describe("Planet Date Mode", () => {
       // Calculate positions for all planets
       const planets = getSupportedPlanets();
       const positions = planets.map((name) =>
-        getPlanetPosition(name, testDate)
+        getPlanetPosition(name, testDate),
       );
 
       const endTime = performance.now();
@@ -86,21 +85,21 @@ describe("Planet Date Mode", () => {
 
             // Calculate twice
             const positions1 = planets.map((name) =>
-              getPlanetPosition(name, date)
+              getPlanetPosition(name, date),
             );
             const positions2 = planets.map((name) =>
-              getPlanetPosition(name, date)
+              getPlanetPosition(name, date),
             );
 
             // Should be identical
             return positions1.every(
               (pos, i) =>
                 pos.longitudeDegrees === positions2[i].longitudeDegrees &&
-                pos.rotationRadians === positions2[i].rotationRadians
+                pos.rotationRadians === positions2[i].rotationRadians,
             );
-          }
+          },
         ),
-        { numRuns: 50 }
+        { numRuns: 50 },
       );
     });
   });
@@ -160,9 +159,9 @@ describe("Planet Date Mode", () => {
                 planet.distanceInKm === originalDistances[i].distanceInKm
               );
             });
-          }
+          },
         ),
-        { numRuns: 50 }
+        { numRuns: 50 },
       );
     });
   });

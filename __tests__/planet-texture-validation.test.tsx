@@ -7,25 +7,20 @@
  * - Check Mars shows red surface
  * - Check gas giants show atmospheric bands
  * - Check Sun appears emissive
- * Requirements: 1.3, 1.4, 1.5, 6.2, 6.3
  *
  * Task 9.4: Performance testing
  * - Measure texture loading times
  * - Check memory usage with all textures loaded
  * - Verify no memory leaks after multiple renders
- * Requirements: 2.1, 2.5
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { render, waitFor } from "@testing-library/react";
 import { Canvas } from "@react-three/fiber";
 import { Planet } from "@/components/planet";
 import { sunData, planetData } from "@/data/planet-data";
 import { textureCache } from "@/utils/texture-cache";
 import { PLANET_TEXTURES } from "@/lib/planet-textures/texture-config";
-import { usePlanetMaterial } from "@/hooks/usePlanetMaterial";
-import { renderHook } from "@testing-library/react";
-import { MeshBasicMaterial, MeshStandardMaterial } from "three";
 
 describe("Task 9.1: Visual Validation Tests", () => {
   beforeEach(() => {
@@ -35,7 +30,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify each planet displays correct texture
    * Validates that each planet has the correct texture path configured
-   * Requirement: 1.3
    */
   it("should have correct texture paths for all planets", () => {
     const expectedTextures = {
@@ -60,7 +54,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify Earth texture configuration
    * Earth should display continents and oceans (verified by correct texture path)
-   * Requirement: 1.3
    */
   it("should configure Earth with correct texture for continents and oceans", () => {
     const earthConfig = PLANET_TEXTURES["Earth"];
@@ -78,7 +71,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify Mars texture configuration
    * Mars should display red surface (verified by correct texture path and color)
-   * Requirement: 1.4
    */
   it("should configure Mars with correct texture for red surface", () => {
     const marsConfig = PLANET_TEXTURES["Mars"];
@@ -96,7 +88,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify gas giants texture configuration
    * Jupiter and Saturn should display atmospheric bands
-   * Requirement: 1.5
    */
   it("should configure gas giants with correct textures for atmospheric bands", () => {
     const gasGiants = ["Jupiter", "Saturn"];
@@ -106,7 +97,7 @@ describe("Task 9.1: Visual Validation Tests", () => {
       expect(config).toBeDefined();
       expect(config.name).toBe(planetName);
       expect(config.texturePath).toBe(
-        `/textures/${planetName.toLowerCase()}.jpg`
+        `/textures/${planetName.toLowerCase()}.jpg`,
       );
       expect(config.materialType).toBe("standard");
 
@@ -119,7 +110,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify Sun appears emissive
    * Sun should use MeshBasicMaterial for emissive effect
-   * Requirement: 6.2, 6.3
    */
   it("should configure Sun with basic material type for emissive appearance", () => {
     const sunConfig = PLANET_TEXTURES["Sun"];
@@ -137,7 +127,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify all planets render without errors
    * Each planet should render successfully with its texture
-   * Requirement: 1.3, 1.4, 1.5
    */
   it("should render all planets without errors", async () => {
     const mockOnClick = () => {};
@@ -153,7 +142,7 @@ describe("Task 9.1: Visual Validation Tests", () => {
             showLabels={false}
             showOrbitPath={false}
           />
-        </Canvas>
+        </Canvas>,
       );
 
       // Should render without crashing
@@ -164,7 +153,7 @@ describe("Task 9.1: Visual Validation Tests", () => {
         () => {
           expect(container.querySelector("canvas")).toBeTruthy();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       unmount();
@@ -174,7 +163,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify ice giants texture configuration
    * Uranus and Neptune should have correct textures
-   * Requirement: 1.5
    */
   it("should configure ice giants with correct textures", () => {
     const iceGiants = ["Uranus", "Neptune"];
@@ -184,7 +172,7 @@ describe("Task 9.1: Visual Validation Tests", () => {
       expect(config).toBeDefined();
       expect(config.name).toBe(planetName);
       expect(config.texturePath).toBe(
-        `/textures/${planetName.toLowerCase()}.jpg`
+        `/textures/${planetName.toLowerCase()}.jpg`,
       );
       expect(config.materialType).toBe("standard");
 
@@ -202,7 +190,6 @@ describe("Task 9.1: Visual Validation Tests", () => {
   /**
    * Test: Verify rocky planets texture configuration
    * Mercury and Venus should have correct textures
-   * Requirement: 1.3
    */
   it("should configure rocky planets with correct textures", () => {
     const rockyPlanets = ["Mercury", "Venus"];
@@ -212,7 +199,7 @@ describe("Task 9.1: Visual Validation Tests", () => {
       expect(config).toBeDefined();
       expect(config.name).toBe(planetName);
       expect(config.texturePath).toBe(
-        `/textures/${planetName.toLowerCase()}.jpg`
+        `/textures/${planetName.toLowerCase()}.jpg`,
       );
       expect(config.materialType).toBe("standard");
 
@@ -231,7 +218,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Measure texture loading times
    * Textures should load within reasonable time
-   * Requirement: 2.1
    */
   it("should load textures within reasonable time", async () => {
     const mockOnClick = () => {};
@@ -248,14 +234,14 @@ describe("Task 9.4: Performance Testing", () => {
           showLabels={false}
           showOrbitPath={false}
         />
-      </Canvas>
+      </Canvas>,
     );
 
     await waitFor(
       () => {
         expect(container.querySelector("canvas")).toBeTruthy();
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     const endTime = performance.now();
@@ -268,7 +254,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Check memory usage with all textures loaded
    * All textures should be cached after loading
-   * Requirement: 2.1, 2.5
    */
   it("should cache all textures after loading", async () => {
     const mockOnClick = () => {};
@@ -285,7 +270,7 @@ describe("Task 9.4: Performance Testing", () => {
             showLabels={false}
             showOrbitPath={false}
           />
-        </Canvas>
+        </Canvas>,
       );
 
       await waitFor(() => {}, { timeout: 1000 });
@@ -309,7 +294,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Verify no memory leaks after multiple renders
    * Rendering and unmounting should not accumulate materials
-   * Requirement: 2.5
    */
   it("should not leak memory after multiple renders", async () => {
     const mockOnClick = () => {};
@@ -326,7 +310,7 @@ describe("Task 9.4: Performance Testing", () => {
             showLabels={false}
             showOrbitPath={false}
           />
-        </Canvas>
+        </Canvas>,
       );
 
       await waitFor(() => {}, { timeout: 100 });
@@ -341,7 +325,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Verify texture cache reuse improves performance
    * Second load of same texture should be faster (from cache)
-   * Requirement: 2.1
    */
   it("should reuse cached textures for better performance", async () => {
     const mockOnClick = () => {};
@@ -357,7 +340,7 @@ describe("Task 9.4: Performance Testing", () => {
           showLabels={false}
           showOrbitPath={false}
         />
-      </Canvas>
+      </Canvas>,
     );
 
     await waitFor(() => {}, { timeout: 1000 });
@@ -375,7 +358,7 @@ describe("Task 9.4: Performance Testing", () => {
           showLabels={false}
           showOrbitPath={false}
         />
-      </Canvas>
+      </Canvas>,
     );
 
     await waitFor(() => {}, { timeout: 1000 });
@@ -392,7 +375,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Verify multiple simultaneous renders don't duplicate texture loads
    * Multiple planets rendered at once should share cached textures
-   * Requirement: 2.1, 2.5
    */
   it("should handle multiple simultaneous renders efficiently", async () => {
     const mockOnClick = () => {};
@@ -409,8 +391,8 @@ describe("Task 9.4: Performance Testing", () => {
             showLabels={false}
             showOrbitPath={false}
           />
-        </Canvas>
-      )
+        </Canvas>,
+      ),
     );
 
     // Wait for all to render
@@ -428,7 +410,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Verify texture cache cleanup works correctly
    * Cache should be clearable without errors
-   * Requirement: 2.5
    */
   it("should clear texture cache without errors", () => {
     // Clear cache should not throw
@@ -445,7 +426,6 @@ describe("Task 9.4: Performance Testing", () => {
   /**
    * Test: Verify performance with all 9 celestial bodies
    * Loading all bodies should complete within reasonable time
-   * Requirement: 2.1
    */
   it("should load all 9 celestial bodies within reasonable time", async () => {
     const mockOnClick = () => {};
@@ -464,8 +444,8 @@ describe("Task 9.4: Performance Testing", () => {
             showLabels={false}
             showOrbitPath={false}
           />
-        </Canvas>
-      )
+        </Canvas>,
+      ),
     );
 
     // Wait for all to render
