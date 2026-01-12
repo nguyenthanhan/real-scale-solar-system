@@ -14,6 +14,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./"),
+      // Force single instance of Three.js
+      three: path.resolve(__dirname, "node_modules/three"),
     },
+    dedupe: ["three", "@react-three/fiber", "@react-three/drei"],
+  },
+  optimizeDeps: {
+    include: ["three", "@react-three/fiber", "@react-three/drei"],
+    force: true,
   },
 });

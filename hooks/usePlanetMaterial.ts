@@ -231,7 +231,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     // Always return the persisted loading material from state
     // loadingMaterial is initialized with a value, so it should never be null
     if (!loadingMaterial) {
-      // Fallback: use cached fallback material (shouldn't happen, but satisfies TypeScript)
+      // Fallback: use cached fallback material (can happen on initial render before useEffect's setTimeout runs)
       // Access cache directly during render (cache is module-level, not a ref)
       return getOrCreateFallbackMaterial(planet.color);
     }

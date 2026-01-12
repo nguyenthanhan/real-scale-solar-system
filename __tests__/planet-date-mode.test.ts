@@ -35,6 +35,14 @@ describe("Planet Date Mode", () => {
           fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
           fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
           (planetName, date1, date2) => {
+            // Filter out invalid dates (NaN dates)
+            fc.pre(
+              date1 instanceof Date &&
+                !isNaN(date1.getTime()) &&
+                date2 instanceof Date &&
+                !isNaN(date2.getTime()),
+            );
+
             // Skip if dates are too close (within 1 day)
             const daysDiff =
               Math.abs(date1.getTime() - date2.getTime()) /
@@ -81,6 +89,9 @@ describe("Planet Date Mode", () => {
         fc.property(
           fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
           (date) => {
+            // Filter out invalid dates (NaN dates)
+            fc.pre(date instanceof Date && !isNaN(date.getTime()));
+
             const planets = getSupportedPlanets();
 
             // Calculate twice
@@ -140,6 +151,9 @@ describe("Planet Date Mode", () => {
         fc.property(
           fc.date({ min: new Date("1700-01-01"), max: new Date("2300-12-31") }),
           (date) => {
+            // Filter out invalid dates (NaN dates)
+            fc.pre(date instanceof Date && !isNaN(date.getTime()));
+
             // Get original distances
             const originalDistances = planetData.map((p) => ({
               name: p.name,
