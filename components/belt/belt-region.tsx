@@ -86,12 +86,12 @@ export function BeltRegion({ belt, showLabel = true }: BeltRegionProps) {
     const baseColor = new THREE.Color(belt.color);
 
     // Generate random values inside useMemo
-    const randomValues = Array.from({ length: belt.particleCount * 5 }, () =>
+    const randomValues = Array.from({ length: belt.particleCount * 4 }, () =>
       Math.random(),
     );
 
     for (let i = 0; i < belt.particleCount; i++) {
-      const randomIndex = i * 5;
+      const randomIndex = i * 4;
       const angle = randomValues[randomIndex] * Math.PI * 2;
       const radiusRange = scaledOuterRadius - scaledInnerRadius;
       const radius =

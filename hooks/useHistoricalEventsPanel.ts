@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 
 interface UseHistoricalEventsPanelOptions {
@@ -9,7 +9,7 @@ export function useHistoricalEventsPanel({
   isDateMode,
 }: UseHistoricalEventsPanelOptions) {
   const [isOpen, setIsOpen] = useState(false);
-  const [wasOpenBeforeModeSwitch, setWasOpenBeforeModeSwitch] = useState(false);
+  const wasOpenBeforeModeSwitchRef = useRef(false);
 
   const openPanel = useCallback(() => {
     if (isDateMode) {
@@ -34,20 +34,20 @@ export function useHistoricalEventsPanel({
       // Switching to Speed Mode - save state and close
       if (isOpen) {
         flushSync(() => {
-          setWasOpenBeforeModeSwitch(true);
+          wasOpenBeforeModeSwitchRef.current = true;
           setIsOpen(false);
         });
       }
     } else {
       // Returning to Date Mode - restore previous state
-      if (wasOpenBeforeModeSwitch) {
+      if (wasOpenBeforeModeSwitchRef.current) {
         flushSync(() => {
           setIsOpen(true);
-          setWasOpenBeforeModeSwitch(false);
+          wasOpenBeforeModeSwitchRef.current = false;
         });
       }
     }
-  }, [isDateMode, isOpen, wasOpenBeforeModeSwitch]);
+  }, [isDateMode, isOpen]);
 
   return {
     isOpen,

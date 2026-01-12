@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, type ChangeEvent } from "react";
-import { flushSync } from "react-dom";
 import { motion } from "framer-motion";
 import { Settings, X } from "lucide-react";
 
@@ -25,6 +24,11 @@ interface SpeedControlProps {
   /** Whether planet modal is currently open */
   isPlanetModalOpen?: boolean;
 }
+
+// Format number with commas - stable helper function
+const formatNumber = (num: number): string => {
+  return num.toLocaleString();
+};
 
 export function ControlModal({
   simulationSpeed,
@@ -52,11 +56,6 @@ export function ControlModal({
     onToggleVisibility !== undefined && isVisible !== undefined;
   const isPanelVisible = isControlled ? isVisible : internalPanelVisible;
 
-  // Format number with commas
-  const formatNumber = (num: number): string => {
-    return num.toLocaleString();
-  };
-
   // Parse number from string (remove commas)
   const parseNumber = (str: string): number => {
     return Number.parseInt(str.replace(/,/g, "")) || 0;
@@ -64,7 +63,7 @@ export function ControlModal({
 
   // Update input value when simulationSpeed changes externally
   useEffect(() => {
-    flushSync(() => setInputValue(formatNumber(simulationSpeed)));
+    setInputValue(formatNumber(simulationSpeed));
   }, [simulationSpeed]);
 
   const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {

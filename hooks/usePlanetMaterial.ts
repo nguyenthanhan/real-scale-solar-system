@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { flushSync } from "react-dom";
 import {
   MeshStandardMaterial,
   MeshBasicMaterial,
@@ -10,6 +9,9 @@ import {
 import { PlanetData } from "@/data/planet-types";
 import { PLANET_TEXTURES } from "@/lib/planet-textures/texture-config";
 import { textureCache, TextureCacheKey } from "@/utils/texture-cache";
+
+// Module-level cache for fallback materials to prevent GPU memory leaks
+const fallbackMaterialCache = new Map<string, MeshStandardMaterial>();
 
 /**
  * Custom hook for loading and managing planet materials with realistic texture images.
@@ -28,6 +30,9 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const materialRef = useRef<Material | null>(null);
   const loaderRef = useRef<TextureLoader | null>(null);
   const isMountedRef = useRef(true);
+  const loadingMaterialRef = useRef<MeshStandardMaterial | null>(null);
+  const [loadingMaterial, setLoadingMaterial] =
+    useState<MeshStandardMaterial | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -38,16 +43,24 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     if (!config) {
       // No texture configuration found - fallback to color-based material
       console.warn(`No texture configuration found for planet: ${planet.name}`);
-      const fallbackMaterial = new MeshStandardMaterial({
-        color: planet.color,
-        metalness: 0.1,
-        roughness: 0.6,
-      });
+      // Create or reuse fallback material
+      let fallbackMaterial = fallbackMaterialCache.get(planet.color);
+      if (!fallbackMaterial) {
+        fallbackMaterial = new MeshStandardMaterial({
+          color: planet.color,
+          metalness: 0.1,
+          roughness: 0.6,
+        });
+        fallbackMaterialCache.set(planet.color, fallbackMaterial);
+      }
       materialRef.current = fallbackMaterial;
-      flushSync(() => {
-        setMaterial(fallbackMaterial);
-        setIsLoading(false);
-      });
+      // Use setTimeout to defer state updates and avoid cascading renders
+      setTimeout(() => {
+        if (isMountedRef.current) {
+          setMaterial(fallbackMaterial);
+          setIsLoading(false);
+        }
+      }, 0);
       return;
     }
 
@@ -68,10 +81,13 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         planet.color,
       );
       materialRef.current = mat;
-      flushSync(() => {
-        setMaterial(mat);
-        setIsLoading(false);
-      });
+      // Use setTimeout to defer state updates and avoid cascading renders
+      setTimeout(() => {
+        if (isMountedRef.current) {
+          setMaterial(mat);
+          setIsLoading(false);
+        }
+      }, 0);
       return;
     }
 
@@ -95,10 +111,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           planet.color,
         );
         materialRef.current = mat;
-        flushSync(() => {
-          setMaterial(mat);
-          setIsLoading(false);
-        });
+        setMaterial(mat);
+        setIsLoading(false);
       },
       // onProgress callback (optional)
       undefined,
@@ -111,17 +125,19 @@ export function usePlanetMaterial(planet: PlanetData): Material {
           error,
         );
 
-        // Fallback to color-based material on error
-        const fallbackMaterial = new MeshStandardMaterial({
-          color: planet.color,
-          metalness: 0.1,
-          roughness: 0.6,
-        });
+        // Create or reuse fallback material
+        let fallbackMaterial = fallbackMaterialCache.get(planet.color);
+        if (!fallbackMaterial) {
+          fallbackMaterial = new MeshStandardMaterial({
+            color: planet.color,
+            metalness: 0.1,
+            roughness: 0.6,
+          });
+          fallbackMaterialCache.set(planet.color, fallbackMaterial);
+        }
         materialRef.current = fallbackMaterial;
-        flushSync(() => {
-          setMaterial(fallbackMaterial);
-          setIsLoading(false);
-        });
+        setMaterial(fallbackMaterial);
+        setIsLoading(false);
       },
     );
 
@@ -147,13 +163,28 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     };
   }, [planet.name, planet.color]);
 
-  // Return temporary color-based material while loading
+  // Initialize loading material
+  useEffect(() => {
+    if (!loadingMaterialRef.current) {
+      loadingMaterialRef.current = new MeshStandardMaterial({
+        color: planet.color,
+        metalness: 0.1,
+        roughness: 0.6,
+      });
+      setLoadingMaterial(loadingMaterialRef.current);
+    }
+  }, [planet.color]);
+
+  // Return loading material while the actual material is being prepared
   if (isLoading || !material) {
-    return new MeshStandardMaterial({
-      color: planet.color,
-      metalness: 0.1,
-      roughness: 0.6,
-    });
+    return (
+      loadingMaterial ||
+      new MeshStandardMaterial({
+        color: planet.color,
+        metalness: 0.1,
+        roughness: 0.6,
+      })
+    );
   }
 
   return material;
@@ -182,6 +213,7 @@ function createMaterialWithTexture(
     // Planets use MeshStandardMaterial for realistic lighting
     return new MeshStandardMaterial({
       map: texture,
+      color: baseColor,
       metalness: 0.1,
       roughness: 0.6,
     });

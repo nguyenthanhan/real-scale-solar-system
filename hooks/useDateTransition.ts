@@ -46,6 +46,9 @@ export function useDateTransition(
   onDateChange: (date: Date) => void,
   config: Partial<DateTransitionConfig> = {},
 ): UseDateTransitionReturn {
+  // NOTE: Config objects should be memoized by callers to avoid unnecessary recalculation.
+  // If passing inline config objects (e.g., { minDuration: 500 }), wrap them in useMemo
+  // to prevent the mergedConfig from recalculating on every render due to new object references.
   const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
     [config],

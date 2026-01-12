@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { flushSync } from "react-dom";
 import { X, Loader2, Info, Star, Rocket, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import { PlanetData } from "@/data/planet-types";
@@ -19,20 +17,12 @@ interface PlanetInfoProps {
 
 export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
   const { simulationSpeed, modalAutoRotate } = useSimulationSpeed();
-  const [show3DModel, setShow3DModel] = useState(false);
 
   // Fetch API data using the hook
   const { mergedData, isLoading } = usePlanetAPIData(planet?.name, planet);
 
-  useEffect(() => {
-    if (!planet) return;
-    // Delay 3D model render for smooth animation
-    flushSync(() => setShow3DModel(false));
-    const timer = setTimeout(() => {
-      setShow3DModel(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [planet]);
+  // Use a key to force re-render of the 3D model when planet changes
+  const modelKey = planet?.name || "unknown";
 
   if (!planet) return null;
 
@@ -55,18 +45,13 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
       {/* 3D Planet Model - Left Side (full bleed on top, left, bottom) */}
       <div className="w-full lg:w-1/2 flex-shrink-0 min-h-[300px] sm:min-h-[350px] lg:h-full">
         <div className="w-full h-full">
-          {show3DModel ? (
-            <Planet3DModel
-              planet={planet}
-              size={60}
-              simulationSpeed={simulationSpeed}
-              autoRotate={modalAutoRotate}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-white/50 text-sm">Loading model...</div>
-            </div>
-          )}
+          <Planet3DModel
+            key={modelKey}
+            planet={planet}
+            size={60}
+            simulationSpeed={simulationSpeed}
+            autoRotate={modalAutoRotate}
+          />
         </div>
       </div>
 
