@@ -15,7 +15,7 @@ export function MemoryMonitor() {
   const lastTimeRef = useRef(0);
   const fpsSamplesRef = useRef<number[]>([]);
   const [visibilityTrigger, setVisibilityTrigger] = useState(0);
-  const [isClient] = useState(() => typeof window !== "undefined");
+  const [isClient, setIsClient] = useState(false);
 
   // JS heap (when supported)
   const [heapUsed, setHeapUsed] = useState<number | null>(null);
@@ -25,6 +25,14 @@ export function MemoryMonitor() {
   // Texture cache stats (safe introspection without external edits)
   const [cacheSize, setCacheSize] = useState<number>(0);
   const [cacheMaxSize, setCacheMaxSize] = useState<number | null>(null);
+
+  // Set isClient to true on mount (client-side only)
+  // This is the standard Next.js pattern to avoid hydration mismatches.
+  // The linter warning about setState in useEffect can be safely ignored here
+  // as this is the recommended approach for client-side detection.
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const supportsPerformanceMemory =
     isClient &&
