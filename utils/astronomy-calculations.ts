@@ -112,12 +112,22 @@ export function convertLongitudeToRotation(longitudeDegrees: number): number {
 }
 
 /**
+ * Planet position data structure
+ */
+export interface PlanetPosition {
+  planetName: string;
+  longitudeDegrees: number;
+  rotationRadians: number;
+  date: string;
+}
+
+/**
  * Get complete planet position data for a specific date
  * @param planetName - Name of the planet
  * @param date - Target date
  * @returns Object with longitude and rotation values
  */
-export function getPlanetPosition(planetName: string, date: Date) {
+export function getPlanetPosition(planetName: string, date: Date): PlanetPosition {
   // Validate date before using it
   if (!(date instanceof Date) || isNaN(date.getTime())) {
     console.error(`Invalid date provided to getPlanetPosition for ${planetName}`);
@@ -146,7 +156,7 @@ export function getPlanetPosition(planetName: string, date: Date) {
  * @param date - Target date
  * @returns Array of planet position data
  */
-export function getAllPlanetPositions(date: Date) {
+export function getAllPlanetPositions(date: Date): PlanetPosition[] {
   const planetNames = Object.keys(PLANET_BODY_MAP);
   return planetNames.map((name) => getPlanetPosition(name, date));
 }
@@ -275,7 +285,18 @@ export function getCacheSize(): number {
  * @param date - Target date
  * @returns Object with longitude and rotation values
  */
-export function getCachedPlanetPosition(planetName: string, date: Date) {
+export function getCachedPlanetPosition(planetName: string, date: Date): PlanetPosition {
+  // Validate date before using it
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    console.error(`Invalid date provided to getCachedPlanetPosition for ${planetName}`);
+    return {
+      planetName,
+      longitudeDegrees: 0,
+      rotationRadians: 0,
+      date: new Date().toISOString(),
+    };
+  }
+
   const longitude = getCachedEclipticLongitude(planetName, date);
   const rotation = convertLongitudeToRotation(longitude);
 
