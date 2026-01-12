@@ -182,7 +182,6 @@ export function MemoryMonitor() {
   ]);
 
   // Initial stats update when visibility changes
-  /* eslint-disable */
   useEffect(() => {
     if (
       isClient &&
@@ -190,8 +189,11 @@ export function MemoryMonitor() {
       typeof document !== "undefined" &&
       document.visibilityState === "visible"
     ) {
-      updateHeapStats();
-      updateCacheStats();
+      // Defer state updates to avoid synchronous setState in effect
+      setTimeout(() => {
+        updateHeapStats();
+        updateCacheStats();
+      }, 0);
     }
   }, [
     isClient,
@@ -200,7 +202,6 @@ export function MemoryMonitor() {
     updateHeapStats,
     updateCacheStats,
   ]);
-  /* eslint-enable */
 
   const formatBytes = (bytes: number | null): string => {
     if (bytes == null || isNaN(bytes)) return "n/a";

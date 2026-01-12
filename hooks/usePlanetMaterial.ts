@@ -32,7 +32,14 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   const isMountedRef = useRef(true);
   const loadingMaterialRef = useRef<MeshStandardMaterial | null>(null);
   const [loadingMaterial, setLoadingMaterial] =
-    useState<MeshStandardMaterial | null>(null);
+    useState<MeshStandardMaterial | null>(() => {
+      // Initialize loading material synchronously on first mount
+      return new MeshStandardMaterial({
+        color: planet.color,
+        metalness: 0.1,
+        roughness: 0.6,
+      });
+    });
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -163,28 +170,51 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     };
   }, [planet.name, planet.color]);
 
-  // Initialize loading material
+  // Initialize and update loading material when planet color changes
   useEffect(() => {
-    if (!loadingMaterialRef.current) {
-      loadingMaterialRef.current = new MeshStandardMaterial({
+    // Dispose previous material if it exists
+    const previousMaterial = loadingMaterialRef.current;
+    if (previousMaterial) {
+      previousMaterial.dispose();
+    }
+
+    // Create new loading material for current planet color
+    const newMaterial = new MeshStandardMaterial({
+      color: planet.color,
+      metalness: 0.1,
+      roughness: 0.6,
+    });
+    loadingMaterialRef.current = newMaterial;
+    // Use setTimeout to defer state updates and avoid cascading renders
+    setTimeout(() => {
+      if (isMountedRef.current) {
+        setLoadingMaterial(newMaterial);
+      }
+    }, 0);
+
+    // Cleanup: dispose material on unmount or when planet.color changes
+    return () => {
+      if (loadingMaterialRef.current) {
+        loadingMaterialRef.current.dispose();
+        loadingMaterialRef.current = null;
+      }
+    };
+  }, [planet.color]);
+
+  // Return loading material while the actual material is being prepared
+  // Use state value (not ref) to avoid accessing refs during render
+  if (isLoading || !material) {
+    // Always return the persisted loading material from state
+    // loadingMaterial is initialized with a value, so it should never be null
+    if (!loadingMaterial) {
+      // Fallback (shouldn't happen, but satisfies TypeScript)
+      return new MeshStandardMaterial({
         color: planet.color,
         metalness: 0.1,
         roughness: 0.6,
       });
-      setLoadingMaterial(loadingMaterialRef.current);
     }
-  }, [planet.color]);
-
-  // Return loading material while the actual material is being prepared
-  if (isLoading || !material) {
-    return (
-      loadingMaterial ||
-      new MeshStandardMaterial({
-        color: planet.color,
-        metalness: 0.1,
-        roughness: 0.6,
-      })
-    );
+    return loadingMaterial;
   }
 
   return material;
