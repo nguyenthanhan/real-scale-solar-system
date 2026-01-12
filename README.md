@@ -14,7 +14,11 @@ An immersive, true-to-scale 3D visualization of our solar system with accurate p
 
 - **True-to-scale 3D model** with realistic sizes, distances, and orbital mechanics
 - **Real-time planetary data**: Integration with Solar System OpenData API for accurate scientific information
+- **Accurate calculations**: Uses astronomy-engine library for precise planetary position calculations
+- **Historical events**: Browse and explore significant astronomical events throughout history
+- **Date-based simulation**: Jump to any date to see planetary positions at that time
 - **Orbital path visualization**: Toggleable 3D orbit traces with accurate inclinations
+- **Asteroid belt visualization**: Toggleable asteroid belt regions (Main Belt, Kuiper Belt)
 - **Interactive controls**: orbit/zoom/pan, click-to-explore, rotation controls
 - **Performance**: Web Workers, texture caching, real memory monitor, optimized renders
 - **Visual fidelity**: 10k+ star field, atmospheric glow, ring systems, detailed sun
@@ -44,20 +48,26 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 
 ### Core Technologies
 
-- **Next.js 15.2.4**: React framework with App Router
-- **React 19**: Latest React version with improved performance and hooks optimization
-- **TypeScript 5**: Type-safe code ensuring reliability and explicit typing
+- **Next.js 16.1.1**: React framework with App Router
+- **React 19.2.3**: Latest React version with improved performance and hooks optimization
+- **TypeScript 5.9.3**: Type-safe code ensuring reliability and explicit typing
 
 ### 3D Graphics & Visualization
 
-- **React Three Fiber 9.1.2**: React renderer for Three.js
+- **React Three Fiber 9.4.2**: React renderer for Three.js
 - **Three.js 0.176.0**: JavaScript 3D library
+- **@react-three/drei 10.7.7**: Useful helpers and abstractions for React Three Fiber
 - **TextureLoader**: High-quality planet texture images for photorealistic rendering
+
+### Astronomy & Calculations
+
+- **astronomy-engine 2.1.19**: Accurate planetary position calculations based on JPL ephemeris data
 
 ### Styling & Animation
 
-- **Tailwind CSS 3.4.17**: Utility-first CSS framework
-- **Framer Motion 12.9.2**: Smooth animations and transitions
+- **Tailwind CSS 4.1.18**: Utility-first CSS framework
+- **Framer Motion 12.23.26**: Smooth animations and transitions
+- **lucide-react 0.454.0**: Beautiful icon library
 
 ### Performance & State Management
 
@@ -82,16 +92,23 @@ The project checklist is complete. Here’s a concise overview of what’s shipp
 ### Features
 
 - **Real-Time Conversion**: See how much real time corresponds to simulation time
+- **Date Picker**: Select any date to view planetary positions at that specific time
+- **Simulation Modes**: Toggle between speed-based and date-based simulation modes
+- **Historical Events**: Browse significant astronomical events and jump to their dates
 - **Orbit Visualization**: Toggle orbital paths on/off to see planetary trajectories with accurate 3D inclinations
+- **Asteroid Belts**: Toggle visualization of Main Belt and Kuiper Belt regions
 - **3D Planet Models**: Interactive rotating models in modal with accurate axial tilts
 - **Smart UI**: Planet labels automatically hide when viewing detailed information
 - **Responsive Design**: Optimized for all screen sizes and devices
 
 ## 🔧 Recent Highlights
 
-- Performance: Memory Monitor pauses FPS/polling when hidden or tab inactive
-- Hydration: Client-only guards to prevent SSR mismatches
-- Accuracy: Fixed cache usage percentage edge cases
+- **Performance**: Memory Monitor pauses FPS/polling when hidden or tab inactive
+- **Hydration**: Client-only guards to prevent SSR mismatches
+- **Accuracy**: Fixed cache usage percentage edge cases
+- **Worker Architecture**: Enhanced texture generation and rotation calculation workers with LRU caching
+- **Type Safety**: Improved TypeScript typing with discriminated unions
+- **Error Handling**: Comprehensive error boundaries and validation throughout the application
 - See full details in [CHANGELOG.md](CHANGELOG.md)
 
 ## 🛸 Orbit Visualization
@@ -105,6 +122,15 @@ The application features accurate 3D orbital path visualization:
 - **Color Differentiation**: Inner planets (Mercury, Venus, Earth, Mars) use lighter gray orbits, outer planets (Jupiter, Saturn, Uranus, Neptune) use darker gray
 - **3D Rendering**: Orbits are visible from all camera angles with double-sided materials
 - **Performance Optimized**: Efficient torus geometry with proper memory management and render ordering
+
+## 🌌 Asteroid Belt Visualization
+
+The application includes visualization of asteroid belt regions:
+
+- **Main Asteroid Belt**: Located between Mars and Jupiter
+- **Kuiper Belt**: Located beyond Neptune's orbit
+- **Toggleable Display**: Show or hide belt regions independently
+- **Accurate Positioning**: Belts are positioned according to real astronomical data
 
 ### Orbital Inclinations
 
@@ -131,10 +157,22 @@ The solar system uses high-quality, photorealistic texture images for all celest
 ### Texture Features
 
 - **Realistic Surface Details**: Earth shows continents and oceans, Mars displays red geological features, gas giants show atmospheric bands
-- **Efficient Loading**: Asynchronous texture loading with LRU caching prevents duplicate loads
+- **Efficient Loading**: Asynchronous texture loading with LRU (Least Recently Used) caching prevents duplicate loads
 - **Error Handling**: Graceful fallback to base colors if textures fail to load
 - **Memory Management**: Automatic cache cleanup with configurable limits (max 20 textures)
 - **Special Materials**: Sun uses emissive material for self-illumination effect
+- **Worker-Based Generation**: Texture generation handled in Web Workers for better performance
+
+## 📅 Historical Events
+
+The application includes a comprehensive historical events feature:
+
+- **Event Browser**: Search and filter significant astronomical events throughout history
+- **Categories**: Events organized by type (discoveries, missions, observations, etc.)
+- **Date Navigation**: Click on events to jump to their dates in the simulation
+- **Time Filtering**: Filter events by past, future, or all dates
+- **Search Functionality**: Full-text search across event descriptions
+- **Sort Options**: Sort events chronologically (ascending or descending)
 
 ## 🚀 Getting Started
 
@@ -166,8 +204,9 @@ pnpm dev
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm release` - Create a new release
-- `pnpm changelog` - Generate changelog from conventional commits
+- `pnpm test` - Run tests once
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm test:ui` - Run tests with UI interface
 
 ## 🤝 Contributing
 
@@ -203,28 +242,21 @@ This application is optimized for modern browsers and requires WebGL support:
 - **Mobile**: Full support for touch devices with optimized controls
 - **Minimum requirements**: 4GB RAM and modern CPU
 
-## 🔄 Release Process
+## 🧪 Testing
 
-The project uses semantic versioning for releases:
+The project includes comprehensive test coverage:
 
-```bash
-# Create a new release
-pnpm release
+- **Test Framework**: Vitest with React Testing Library
+- **Test Coverage**: Unit tests for utilities, hooks, components, and services
+- **Property-Based Testing**: Uses fast-check for comprehensive input validation
+- **Run Tests**: Use `pnpm test` for single run, `pnpm test:watch` for development, or `pnpm test:ui` for visual interface
 
-# Release specific versions
-pnpm release:patch  # Bug fixes, small improvements
-pnpm release:minor  # New features, backward compatible
-pnpm release:major  # Breaking changes
-```
-
-### Automated GitHub Releases
-
-When you create a release, the system will:
-
-1. Create a git tag with the new version
-2. Trigger GitHub Actions to automatically create a GitHub release
-3. Extract changelog content from CHANGELOG.md
-4. Create a formatted release with automatic deployment to Vercel
+Key test areas:
+- Astronomy calculations and orbital mechanics
+- Data validation and formatting
+- Component rendering and interactions
+- API integration and error handling
+- Date interpolation and transitions
 
 ## Support
 
