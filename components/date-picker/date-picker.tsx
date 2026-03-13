@@ -17,8 +17,8 @@ const ANIMATION_SPEED_KEY = "date-picker-animation-speed";
 
 // Date picker configuration
 const DATE_PICKER_CONFIG = {
-  MIN_DATE: new Date("1700-01-01"),
-  MAX_DATE: new Date("2300-12-31"),
+  MIN_DATE: new Date(1700, 0, 1, 12, 0, 0, 0),
+  MAX_DATE: new Date(2300, 11, 31, 12, 0, 0, 0),
   PRESETS: [
     {
       id: "year-ago",
@@ -41,9 +41,21 @@ const DATE_PICKER_CONFIG = {
     },
   ],
   HISTORICAL_PRESETS: [
-    { id: "moon-landing", label: "Moon Landing", date: new Date("1969-07-20") },
-    { id: "mars-rover", label: "Mars Rover", date: new Date("2021-02-18") },
-    { id: "voyager", label: "Voyager 1", date: new Date("1977-09-05") },
+    {
+      id: "moon-landing",
+      label: "Moon Landing",
+      date: new Date(1969, 6, 20, 12, 0, 0, 0),
+    },
+    {
+      id: "mars-rover",
+      label: "Mars Rover",
+      date: new Date(2021, 1, 18, 12, 0, 0, 0),
+    },
+    {
+      id: "voyager",
+      label: "Voyager 1",
+      date: new Date(1977, 8, 5, 12, 0, 0, 0),
+    },
   ],
 };
 
@@ -71,7 +83,48 @@ function formatDate(date: Date): string {
  * Format date to ISO string for input value
  */
 function toInputValue(date: Date): string {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Parse YYYY-MM-DD from date input as local time to avoid UTC day shifts.
+ */
+function parseInputDate(value: string): Date | null {
+  const [yearStr, monthStr, dayStr] = value.split("-");
+  const year = Number.parseInt(yearStr, 10);
+  const month = Number.parseInt(monthStr, 10);
+  const day = Number.parseInt(dayStr, 10);
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day)
+  ) {
+    return null;
+  }
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+
+  // Midday local time avoids DST/UTC edge cases around midnight.
+  const parsedDate = new Date(year, month - 1, day, 12, 0, 0, 0);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  if (
+    parsedDate.getFullYear() !== year ||
+    parsedDate.getMonth() !== month - 1 ||
+    parsedDate.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return parsedDate;
 }
 
 /**
@@ -139,8 +192,8 @@ export function DatePicker({
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newDate = new Date(e.target.value);
-      if (!isNaN(newDate.getTime())) {
+      const newDate = parseInputDate(e.target.value);
+      if (newDate) {
         handleDateChange(newDate);
       }
     },

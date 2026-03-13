@@ -235,7 +235,7 @@ export function getSupportedPlanets(): string[] {
 
 /**
  * Cache for ecliptic longitude calculations
- * Key format: "planetName-YYYY-MM-DD"
+ * Key format: "planetName-hourBucket"
  */
 const longitudeCache = new Map<string, number>();
 
@@ -243,12 +243,15 @@ const longitudeCache = new Map<string, number>();
  * Maximum cache size to prevent memory issues
  */
 const MAX_CACHE_SIZE = 1000;
+const CACHE_TIME_SLICE_MS = 60 * 60 * 1000; // 1 hour
 
 /**
  * Generate cache key for a planet and date
  */
 function getCacheKey(planetName: string, date: Date): string {
-  return `${planetName}-${date.toISOString().split("T")[0]}`;
+  // Bucket timestamps by hour to preserve intra-day accuracy while limiting key cardinality
+  const timeBucket = Math.floor(date.getTime() / CACHE_TIME_SLICE_MS);
+  return `${planetName}-${timeBucket}`;
 }
 
 /**

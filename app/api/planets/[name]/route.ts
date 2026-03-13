@@ -9,13 +9,30 @@ export const runtime = 'edge';
 
 const API_BASE_URL = "https://api.le-systeme-solaire.net/rest/bodies";
 const API_TIMEOUT = 10000; // 10 seconds
+const SUPPORTED_PLANETS = new Set([
+  "mercury",
+  "venus",
+  "earth",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+]);
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ name: string }> },
 ) {
   const { name } = await params;
-  const planetName = name.toLowerCase();
+  const planetName = name.trim().toLowerCase();
+
+  if (!SUPPORTED_PLANETS.has(planetName)) {
+    return NextResponse.json(
+      { error: "Unsupported planet name" },
+      { status: 400 },
+    );
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
