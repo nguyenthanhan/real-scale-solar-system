@@ -203,6 +203,7 @@ pnpm dev
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
+- `pnpm deploy` - Build and deploy to Cloudflare Workers (vinext)
 - `pnpm lint` - Run ESLint
 - `pnpm test` - Run tests once
 - `pnpm test:watch` - Run tests in watch mode
@@ -252,6 +253,7 @@ The project includes comprehensive test coverage:
 - **Run Tests**: Use `pnpm test` for single run, `pnpm test:watch` for development, or `pnpm test:ui` for visual interface
 
 Key test areas:
+
 - Astronomy calculations and orbital mechanics
 - Data validation and formatting
 - Component rendering and interactions

@@ -21,7 +21,7 @@ export async function GET(
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
   try {
-    const apiKey = process.env.NEXT_PUBLIC_SOLAR_SYSTEM_API_KEY;
+    const apiKey = process.env.SOLAR_SYSTEM_API_KEY;
 
     const headers: HeadersInit = {
       Accept: "application/json",
