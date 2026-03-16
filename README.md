@@ -94,7 +94,7 @@ Internal route: `GET /api/planets/[name]`
 
 - Date input is parsed in local time to avoid UTC off-by-one day issues.
 - Astronomy cache is bucketed by hour for better accuracy/performance balance in Date Mode.
-- Next config currently uses `typescript.ignoreBuildErrors = true`. Consider turning this off in stricter CI environments.
+- TypeScript build errors are not ignored during build, so type regressions fail fast in CI/deploy.
 
 ## Testing and Quality
 
