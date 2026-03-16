@@ -4,7 +4,7 @@ import { MathUtils } from "three";
 import {
   applyInclinationToPosition,
   getInclinationRotation,
-} from "@/utils/orbital-inclination";
+} from "@/features/planet-rendering/domain/orbital-inclination";
 import { planetData } from "@/data/planet-data";
 
 describe("Orbital Inclination Utilities", () => {

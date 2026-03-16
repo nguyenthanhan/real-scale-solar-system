@@ -3,8 +3,8 @@
 import { useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
-import { Sun } from "@/components/planet/sun";
-import { Planet } from "@/components/planet";
+import { Sun } from "@/features/planet-rendering/ui/planet/sun";
+import { Planet } from "@/features/planet-rendering/ui/planet/index";
 import { BeltRegions } from "@/components/belt";
 import { ControlModal } from "@/components/modal/control";
 import { planetData, sunData } from "@/data/planet-data";

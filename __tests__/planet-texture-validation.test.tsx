@@ -17,7 +17,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, waitFor } from "@testing-library/react";
 import { Canvas } from "@react-three/fiber";
-import { Planet } from "@/components/planet";
+import { Planet } from "@/features/planet-rendering/ui/planet/index";
 import { sunData, planetData } from "@/data/planet-data";
 import { textureCache } from "@/utils/texture-cache";
 import { PLANET_TEXTURES } from "@/lib/planet-textures/texture-config";
