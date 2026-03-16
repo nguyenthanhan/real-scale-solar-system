@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/cn";
 import { X } from "lucide-react";
 import type { TimeDirection } from "@/features/date-mode/domain/date-interpolation";
 

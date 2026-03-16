@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, History } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/cn";
 import { HistoricalEvent, EventCategory } from "@/features/historical-events/data/historical-events-types";
 import { HISTORICAL_EVENTS } from "@/features/historical-events/data/historical-events";
 import { filterAndSortEvents } from "@/features/historical-events/domain/historical-events-utils";

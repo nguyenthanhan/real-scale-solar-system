@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/cn";
 
 interface AnimationSpeedControlProps {
   speed: number; // 0-1
