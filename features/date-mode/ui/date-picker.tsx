@@ -8,8 +8,8 @@ import {
 import { useDateTransition } from "@/features/date-mode/application/useDateTransition";
 import { AnimationSpeedControl } from "@/features/simulation-control/ui/animation-speed-control";
 import { TransitionProgress } from "@/components/date-picker/transition-progress";
-import { HistoricalEventsPanel } from "@/components/historical-events";
-import { HistoricalEvent } from "@/data/historical-events-types";
+import { HistoricalEventsPanel } from "@/features/historical-events/ui/historical-events-panel";
+import { HistoricalEvent } from "@/features/historical-events/data/historical-events-types";
 import {
   ANIMATION_SPEED_STORAGE_KEY,
   DEFAULT_ANIMATION_SPEED,
