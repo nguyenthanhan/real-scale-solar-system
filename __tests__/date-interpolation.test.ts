@@ -5,7 +5,7 @@ import {
   determineTimeDirection,
   isSameDate,
   isValidAnimationDate,
-} from "../features/date-mode/domain/date-interpolation";
+} from "@/features/date-mode/domain/date-interpolation";
 
 /**
  * Property-based tests for date interpolation utilities

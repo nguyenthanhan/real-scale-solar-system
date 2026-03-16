@@ -5,12 +5,12 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { usePlanetAPIData } from "../features/planet-data/application/usePlanetAPIData";
-import * as fetchModule from "../features/planet-data/infrastructure/fetch-with-fallback";
-import { PlanetData } from "../data/planet-types";
+import { usePlanetAPIData } from "@/features/planet-catalog/application/usePlanetAPIData";
+import * as fetchModule from "@/features/planet-catalog/infrastructure/fetch-with-fallback";
+import { PlanetData } from "@/data/planet-types";
 
 // Mock the fetch module
-vi.mock("../features/planet-data/infrastructure/fetch-with-fallback", () => ({
+vi.mock("@/features/planet-catalog/infrastructure/fetch-with-fallback", () => ({
   fetchWithCache: vi.fn(),
   clearAPICache: vi.fn(),
 }));

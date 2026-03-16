@@ -4,7 +4,7 @@ import {
   easeOutQuart,
   linear,
   easeInOutQuad,
-} from "../utils/easing-functions";
+} from "@/utils/easing-functions";
 
 /**
  * Property-based tests for easing functions

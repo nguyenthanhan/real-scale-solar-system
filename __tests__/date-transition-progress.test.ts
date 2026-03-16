@@ -2,8 +2,8 @@ import fc from "fast-check";
 import {
   interpolateDate,
   calculateAnimationDuration,
-} from "../features/date-mode/domain/date-interpolation";
-import { easeInOutCubic } from "../utils/easing-functions";
+} from "@/features/date-mode/domain/date-interpolation";
+import { easeInOutCubic } from "@/utils/easing-functions";
 
 /**
  * Property-based tests for progress tracking

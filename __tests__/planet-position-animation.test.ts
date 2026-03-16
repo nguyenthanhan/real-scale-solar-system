@@ -3,8 +3,8 @@ import {
   getCachedPlanetPosition,
   getCacheSize,
   clearLongitudeCache,
-} from "../utils/astronomy-calculations";
-import { interpolateDate } from "../features/date-mode/domain/date-interpolation";
+} from "@/utils/astronomy-calculations";
+import { interpolateDate } from "@/features/date-mode/domain/date-interpolation";
 
 /**
  * Property-based tests for planet position calculation during animation

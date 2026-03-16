@@ -5,20 +5,20 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PlanetInfo } from "../features/planet-modal/ui/planet-info";
-import { PlanetData } from "../data/planet-types";
-import * as usePlanetAPIDataModule from "../features/planet-data/application/usePlanetAPIData";
+import { PlanetInfo } from "@/features/planet-modal/ui/planet-info";
+import { PlanetData } from "@/data/planet-types";
+import * as usePlanetAPIDataModule from "@/features/planet-catalog/application/usePlanetAPIData";
 
 // Mock the hooks and components
-vi.mock("../features/planet-data/application/usePlanetAPIData", () => ({
+vi.mock("@/features/planet-catalog/application/usePlanetAPIData", () => ({
   usePlanetAPIData: vi.fn(),
 }));
 
-vi.mock("../features/simulation-control/state/rotation-speed-context", () => ({
+vi.mock("@/features/simulation-control/state/rotation-speed-context", () => ({
   useSimulationSpeed: () => ({ simulationSpeed: 1000000 }),
 }));
 
-vi.mock("../features/planet-modal/ui/planet-3d-model", () => ({
+vi.mock("@/features/planet-modal/ui/planet-3d-model", () => ({
   Planet3DModel: () => <div data-testid="planet-3d-model">3D Model</div>,
 }));
 

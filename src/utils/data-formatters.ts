@@ -3,7 +3,7 @@
  * Provides consistent formatting for all planetary data
  */
 
-import { APIMoon } from "@/features/planet-data/domain/planet-api-types";
+import { APIMoon } from "@/features/planet-catalog/domain/planet-api-types";
 
 export const DATA_UNAVAILABLE = "Data unavailable";
 

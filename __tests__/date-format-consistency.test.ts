@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { formatTransitionDate } from "../components/date-picker/transition-progress";
+import { formatTransitionDate } from "@/components/date-picker/transition-progress";
 
 /**
  * Property-based tests for date format consistency

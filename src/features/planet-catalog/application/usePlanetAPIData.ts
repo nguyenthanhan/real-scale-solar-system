@@ -5,8 +5,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { PlanetData } from "@/data/planet-types";
-import { MergedPlanetData } from "@/features/planet-data/domain/planet-api-types";
-import { fetchWithCache } from "@/features/planet-data/infrastructure/fetch-with-fallback";
+import { MergedPlanetData } from "@/features/planet-catalog/domain/planet-api-types";
+import { fetchWithCache } from "@/features/planet-catalog/infrastructure/fetch-with-fallback";
 import { mergePlanetData, createLoadingState } from "@/utils/data-merger";
 
 interface UsePlanetAPIDataReturn {

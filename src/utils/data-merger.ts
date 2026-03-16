@@ -8,7 +8,7 @@ import {
   APIResponse,
   MergedPlanetData,
   isValidMass,
-} from "@/features/planet-data/domain/planet-api-types";
+} from "@/features/planet-catalog/domain/planet-api-types";
 import {
   formatMass,
   formatTemperature,
