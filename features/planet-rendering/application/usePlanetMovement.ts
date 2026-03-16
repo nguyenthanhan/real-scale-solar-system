@@ -9,7 +9,7 @@ import {
   EARTH_ORBITAL_PERIOD_DAYS,
 } from "@/utils/physics-constants";
 import { getCachedPlanetPosition } from "@/utils/astronomy-calculations";
-import type { SimulationMode } from "@/contexts/simulation-mode-context";
+import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
 
 /**
  * Props for the usePlanetMovement hook.

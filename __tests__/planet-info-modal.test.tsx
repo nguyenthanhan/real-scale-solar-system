@@ -14,7 +14,7 @@ vi.mock("../features/planet-data/application/usePlanetAPIData", () => ({
   usePlanetAPIData: vi.fn(),
 }));
 
-vi.mock("../contexts/rotation-speed-context", () => ({
+vi.mock("../features/simulation-control/state/rotation-speed-context", () => ({
   useSimulationSpeed: () => ({ simulationSpeed: 1000000 }),
 }));
 

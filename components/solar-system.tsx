@@ -14,16 +14,16 @@ import { GitHubButton } from "@/components/button/github-button";
 import {
   SimulationSpeedProvider,
   useSimulationSpeed,
-} from "@/contexts/rotation-speed-context";
+} from "@/features/simulation-control/state/rotation-speed-context";
 import {
   SimulationModeProvider,
   useSimulationMode,
-} from "@/contexts/simulation-mode-context";
-import { ModeToggleButton } from "@/components/button/mode-toggle-button";
+} from "@/features/simulation-control/state/simulation-mode-context";
+import { ModeToggleButton } from "@/features/simulation-control/ui/mode-toggle-button";
 import { DatePicker } from "@/features/date-mode/ui/date-picker";
 import { MemoryMonitor } from "@/components/debug/memory-monitor";
 
-import type { SimulationMode } from "@/contexts/simulation-mode-context";
+import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
 
 // Component that runs inside the Canvas (has access to Three.js context)
 function SceneContent({

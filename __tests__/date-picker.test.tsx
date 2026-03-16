@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DatePicker } from "@/features/date-mode/ui/date-picker";
-import { ModeToggleButton } from "@/components/button/mode-toggle-button";
+import { ModeToggleButton } from "@/features/simulation-control/ui/mode-toggle-button";
 
 // Mock localStorage to avoid issues in test environment
 let storedAnimationSpeed: string | null = "1";

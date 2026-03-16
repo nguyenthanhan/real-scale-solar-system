@@ -6,7 +6,7 @@ import {
   isDateInAccurateRange,
 } from "@/utils/astronomy-calculations";
 import { useDateTransition } from "@/features/date-mode/application/useDateTransition";
-import { AnimationSpeedControl } from "@/components/date-picker/animation-speed-control";
+import { AnimationSpeedControl } from "@/features/simulation-control/ui/animation-speed-control";
 import { TransitionProgress } from "@/components/date-picker/transition-progress";
 import { HistoricalEventsPanel } from "@/components/historical-events";
 import { HistoricalEvent } from "@/data/historical-events-types";

@@ -6,7 +6,7 @@ import { Sphere } from "@react-three/drei";
 import type { Mesh } from "three";
 import { sunData } from "@/data/planet-data";
 import { usePlanetMaterial } from "@/features/planet-rendering/application/usePlanetMaterial";
-import type { SimulationMode } from "@/contexts/simulation-mode-context";
+import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
 
 interface SunProps {
   onClick?: () => void;

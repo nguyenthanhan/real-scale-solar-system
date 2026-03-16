@@ -5,7 +5,7 @@ import {
   SimulationModeProvider,
   useSimulationMode,
   type SimulationMode,
-} from "@/contexts/simulation-mode-context";
+} from "@/features/simulation-control/state/simulation-mode-context";
 
 // Wrapper component for testing hooks
 const wrapper = ({ children }: { children: React.ReactNode }) => (

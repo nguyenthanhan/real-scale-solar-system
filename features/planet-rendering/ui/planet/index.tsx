@@ -12,7 +12,7 @@ import { PlanetRings } from "./planet-rings";
 import { OrbitPath } from "./orbit-path";
 import { PlanetAtmosphericGlow } from "./planet-atmospheric-glow";
 
-import type { SimulationMode } from "@/contexts/simulation-mode-context";
+import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
 
 // Define the planet props
 interface PlanetProps {
