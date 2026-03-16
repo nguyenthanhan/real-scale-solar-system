@@ -1,4 +1,4 @@
-import SolarSystem from "@/components/solar-system"
+import { SolarSystem } from "@/features/solar-system"
 
 export default function Home() {
   return (
