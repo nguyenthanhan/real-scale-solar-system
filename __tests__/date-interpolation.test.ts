@@ -264,5 +264,23 @@ describe("Date Interpolation - Property Tests", () => {
       expect(isValidAnimationDate(new Date("2024-01-01"))).toBe(true);
       expect(isValidAnimationDate(new Date("invalid"))).toBe(false);
     });
+
+    test("calculateAnimationDuration handles invalid speed values safely", () => {
+      const start = new Date("2024-01-01");
+      const target = new Date("2024-12-31");
+
+      const nanDuration = calculateAnimationDuration(start, target, Number.NaN);
+      const infiniteDuration = calculateAnimationDuration(
+        start,
+        target,
+        Number.POSITIVE_INFINITY,
+      );
+      const negativeDuration = calculateAnimationDuration(start, target, -5);
+
+      expect(Number.isFinite(nanDuration)).toBe(true);
+      expect(nanDuration).toBeGreaterThan(0);
+      expect(infiniteDuration).toBe(0);
+      expect(negativeDuration).toBe(calculateAnimationDuration(start, target, 0));
+    });
   });
 });

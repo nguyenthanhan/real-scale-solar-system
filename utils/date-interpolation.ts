@@ -56,13 +56,22 @@ export function calculateAnimationDuration(
   speed: number,
   config: AnimationDurationConfig = DEFAULT_CONFIG,
 ): number {
+  let normalizedSpeed: number;
+  if (Number.isNaN(speed) || speed === Number.NEGATIVE_INFINITY) {
+    normalizedSpeed = 0;
+  } else if (speed === Number.POSITIVE_INFINITY) {
+    normalizedSpeed = 1;
+  } else {
+    normalizedSpeed = Math.min(1, Math.max(0, speed));
+  }
+
   // Same date = no animation needed
   if (start.getTime() === target.getTime()) {
     return 0;
   }
 
   // Instant mode
-  if (speed >= 1) {
+  if (normalizedSpeed >= 1) {
     return 0;
   }
 
@@ -78,7 +87,7 @@ export function calculateAnimationDuration(
 
   // Apply speed: higher speed = shorter duration
   // speed 0 = full duration, speed 0.9 = 10% duration
-  const speedMultiplier = 1 - speed * 0.9;
+  const speedMultiplier = 1 - normalizedSpeed * 0.9;
 
   return Math.max(config.minDuration * 0.1, baseDuration * speedMultiplier);
 }

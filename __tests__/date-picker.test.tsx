@@ -4,9 +4,10 @@ import { DatePicker } from "@/components/date-picker/date-picker";
 import { ModeToggleButton } from "@/components/button/mode-toggle-button";
 
 // Mock localStorage to avoid issues in test environment
+let storedAnimationSpeed: string | null = "1";
 const localStorageMock = {
   getItem: vi.fn((key) => {
-    if (key === "date-picker-animation-speed") return "1"; // Instant mode
+    if (key === "date-picker-animation-speed") return storedAnimationSpeed;
     return null;
   }),
   setItem: vi.fn(() => {}),
@@ -23,6 +24,9 @@ describe("DatePicker", () => {
 
   beforeEach(() => {
     mockOnDateChange.mockClear();
+    localStorageMock.getItem.mockClear();
+    localStorageMock.setItem.mockClear();
+    storedAnimationSpeed = "1";
   });
 
   describe("Basic functionality", () => {
@@ -214,6 +218,38 @@ describe("DatePicker", () => {
         expect.stringContaining("Date picker"),
       );
       expect(container).toHaveAttribute("tabIndex", "0");
+    });
+  });
+
+  describe("Animation speed validation", () => {
+    it("should clamp stored speed above 1 to instant mode", async () => {
+      storedAnimationSpeed = "2.75";
+
+      render(
+        <DatePicker selectedDate={baseDate} onDateChange={mockOnDateChange} />,
+      );
+
+      await waitFor(() => {
+        expect(localStorageMock.setItem).toHaveBeenCalledWith(
+          "date-picker-animation-speed",
+          "1",
+        );
+      });
+    });
+
+    it("should fallback to default speed when stored speed is invalid", async () => {
+      storedAnimationSpeed = "not-a-number";
+
+      render(
+        <DatePicker selectedDate={baseDate} onDateChange={mockOnDateChange} />,
+      );
+
+      await waitFor(() => {
+        expect(localStorageMock.setItem).toHaveBeenCalledWith(
+          "date-picker-animation-speed",
+          "0.5",
+        );
+      });
     });
   });
 });

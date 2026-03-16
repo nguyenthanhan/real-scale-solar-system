@@ -14,6 +14,7 @@ import { History } from "lucide-react";
 
 // Local storage key for animation speed preference
 const ANIMATION_SPEED_KEY = "date-picker-animation-speed";
+const DEFAULT_ANIMATION_SPEED = 0.5;
 
 // Date picker configuration
 const DATE_PICKER_CONFIG = {
@@ -66,6 +67,22 @@ interface DatePickerProps {
   onDateChange: (date: Date) => void;
   /** Optional className for additional styling */
   className?: string;
+}
+
+function parseStoredAnimationSpeed(
+  value: string | null,
+  fallback = DEFAULT_ANIMATION_SPEED,
+): number {
+  if (value === null) {
+    return fallback;
+  }
+
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(1, Math.max(0, parsed));
 }
 
 /**
@@ -144,9 +161,9 @@ export function DatePicker({
   const [initialSpeed] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(ANIMATION_SPEED_KEY);
-      return saved ? parseFloat(saved) : 0.5;
+      return parseStoredAnimationSpeed(saved);
     }
-    return 0.5;
+    return DEFAULT_ANIMATION_SPEED;
   });
 
   // Use date transition hook for animated date changes
