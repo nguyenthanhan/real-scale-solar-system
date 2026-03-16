@@ -60,7 +60,7 @@ describe("Planet Data Validation", () => {
       };
       delete (invalidPlanet as Partial<PlanetData>).orbitalPeriodDays;
 
-      const errors = validatePlanetData(invalidPlanet);
+      const errors = validatePlanetData(invalidPlanet as PlanetData);
 
       expect(errors.length).toBeGreaterThan(0);
       expect(errors[0].field).toBe("orbitalPeriodDays");

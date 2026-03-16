@@ -17,10 +17,11 @@ describe("Data Merger", () => {
   const mockLocalData: PlanetData = {
     name: "Earth",
     color: "#4A90E2",
-    size: 1,
-    distance: 1,
-    orbitalPeriod: 365.25,
-    rotationSpeed: 1,
+    diameterRelativeEarth: 1,
+    distanceInAU: 1,
+    orbitalPeriodDays: 365.256,
+    orbitalPeriod: "365.25 days",
+    rotationSpeedByDays: 1,
     description: "Our home planet",
     funFact: "The only planet known to support life",
     temperature: "15°C average",
@@ -29,9 +30,19 @@ describe("Data Merger", () => {
     dayLength: "24 hours",
     moons: "1 (Moon)",
     diameterInKm: 12742,
-    distanceFromSunInKm: 149600000,
+    distanceInKm: 149600000,
     axialTilt: 23.44,
-    rotationSpeedByDay: 1,
+    eccentricity: 0.0167,
+    orbitalInclination: 0,
+    texture: "/textures/earth.jpg",
+    orbitSpeedByEarth: 1,
+    orbitSpeedByKmH: 107226,
+    rotationSpeedByKmH: 1674.4,
+    hasRings: false,
+    ringColor: "",
+    ringTilt: 0,
+    yearDiscovered: "Prehistoric",
+    notableFeatures: ["Only known planet with life"],
   };
 
   // **Feature: planet-catalog-api, Property 9: API data prioritized over local data**
@@ -74,7 +85,7 @@ describe("Data Merger", () => {
             expect(merged.apiOrbitalPeriod).toBeDefined();
             expect(merged.apiRotationPeriod).toBeDefined();
             expect(merged.apiGravity).toBeDefined();
-            expect(merged.hasApiData).not.toBe(true); // apiError should be false
+            expect(merged.apiError).toBe(false);
 
             return true;
           }
@@ -88,20 +99,21 @@ describe("Data Merger", () => {
         fc.property(
           fc.record({
             name: fc.string({ minLength: 1 }),
-            orbitalPeriod: fc.double({ min: 1, max: 100000, noNaN: true }),
+            orbitalPeriodDays: fc.double({ min: 1, max: 100000, noNaN: true }),
           }),
           (localFields) => {
             const localData: PlanetData = {
               ...mockLocalData,
               name: localFields.name,
-              orbitalPeriod: localFields.orbitalPeriod,
+              orbitalPeriodDays: localFields.orbitalPeriodDays,
+              orbitalPeriod: `${localFields.orbitalPeriodDays.toFixed(2)} days`,
             };
 
             const merged = mergePlanetData(null, localData);
 
             // Should use local data when API data is null
             expect(merged.name).toBe(localFields.name);
-            expect(merged.orbitalPeriod).toBe(localFields.orbitalPeriod);
+            expect(merged.orbitalPeriodDays).toBe(localFields.orbitalPeriodDays);
             expect(merged.apiError).toBe(true);
             expect(merged.apiMass).toBeUndefined();
             expect(merged.apiTemperature).toBeUndefined();
@@ -175,7 +187,7 @@ describe("Data Merger", () => {
       expect(merged.isLoadingAPIData).toBe(false);
       expect(merged.apiMass).toBeUndefined();
       expect(merged.apiTemperature).toBeUndefined();
-      expect(merged.orbitalPeriod).toBe(365.25); // Local data preserved
+      expect(merged.orbitalPeriodDays).toBe(365.256); // Local data preserved
     });
 
     it("should handle API data with invalid mass", () => {
@@ -255,8 +267,10 @@ describe("Data Merger", () => {
 
       // All local fields should be preserved
       expect(merged.color).toBe(mockLocalData.color);
-      expect(merged.size).toBe(mockLocalData.size);
-      expect(merged.distance).toBe(mockLocalData.distance);
+      expect(merged.diameterRelativeEarth).toBe(
+        mockLocalData.diameterRelativeEarth
+      );
+      expect(merged.distanceInAU).toBe(mockLocalData.distanceInAU);
       expect(merged.description).toBe(mockLocalData.description);
       expect(merged.funFact).toBe(mockLocalData.funFact);
       expect(merged.temperature).toBe(mockLocalData.temperature);

@@ -12,6 +12,7 @@ import {
 } from "@/features/planet-catalog/infrastructure/fetch-with-fallback";
 import { planetDataService } from "@/features/planet-catalog/infrastructure/planet-data-service";
 import { PlanetData } from "@/data/planet-types";
+import { APIResponse } from "@/features/planet-catalog/domain/planet-api-types";
 
 // Mock the planet data service
 vi.mock("@/features/planet-catalog/infrastructure/planet-data-service", () => ({
@@ -26,10 +27,11 @@ describe("Fetch with Fallback", () => {
   const mockLocalData: PlanetData = {
     name: "Earth",
     color: "#4A90E2",
-    size: 1,
-    distance: 1,
-    orbitalPeriod: 365.25,
-    rotationSpeed: 1,
+    diameterRelativeEarth: 1,
+    distanceInAU: 1,
+    orbitalPeriodDays: 365.256,
+    orbitalPeriod: "365.25 days",
+    rotationSpeedByDays: 1,
     description: "Our home planet",
     funFact: "The only planet known to support life",
     temperature: "15°C average",
@@ -38,9 +40,19 @@ describe("Fetch with Fallback", () => {
     dayLength: "24 hours",
     moons: "1 (Moon)",
     diameterInKm: 12742,
-    distanceFromSunInKm: 149600000,
+    distanceInKm: 149600000,
     axialTilt: 23.44,
-    rotationSpeedByDay: 1,
+    eccentricity: 0.0167,
+    orbitalInclination: 0,
+    texture: "/textures/earth.jpg",
+    orbitSpeedByEarth: 1,
+    orbitSpeedByKmH: 107226,
+    rotationSpeedByKmH: 1674.4,
+    hasRings: false,
+    ringColor: "",
+    ringTilt: 0,
+    yearDiscovered: "Prehistoric",
+    notableFeatures: ["Only known planet with life"],
   };
 
   beforeEach(() => {
@@ -135,7 +147,7 @@ describe("Fetch with Fallback", () => {
               sideralOrbit: 365.25,
               sideralRotation: 23.93,
               moons: [{ moon: "Moon", rel: "moon" }],
-            });
+            } as APIResponse);
 
             const result = await fetchWithFallback(planetName, mockLocalData);
 
@@ -166,7 +178,7 @@ describe("Fetch with Fallback", () => {
         sideralOrbit: 365.25,
         sideralRotation: 23.93,
         moons: [{ moon: "Moon", rel: "moon" }],
-      });
+      } as APIResponse);
 
       const result = await fetchWithFallback("Earth", mockLocalData);
 
@@ -217,7 +229,7 @@ describe("Fetch with Fallback", () => {
         isPlanet: true,
         mass: { massValue: 5.972, massExponent: 24 },
         avgTemp: 288,
-      });
+      } as APIResponse);
 
       // First call
       await fetchWithCache("Earth", mockLocalData);
@@ -248,7 +260,7 @@ describe("Fetch with Fallback", () => {
         name: "earth",
         englishName: "Earth",
         isPlanet: true,
-      });
+      } as APIResponse);
 
       // First call
       await fetchWithCache("Earth", mockLocalData);

@@ -50,6 +50,7 @@ describe("Formatting Consistency", () => {
       atmosphere: "Test",
       moons: "1",
       yearDiscovered: "2024",
+      notableFeatures: ["Test feature"],
     };
 
     it("should format equivalent fields identically for any two planets", () => {
