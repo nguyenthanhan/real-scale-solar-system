@@ -91,7 +91,7 @@ describe("Retrograde Rotation", () => {
     it("should identify Uranus as retrograde", () => {
       const uranus = planetData.find((p) => p.name === "Uranus")!;
       expect(uranus.rotationSpeedByDays).toBeLessThan(0);
-      expect(uranus.rotationSpeedByDays).toBe(-0.72);
+      expect(uranus.rotationSpeedByDays).toBeCloseTo(-0.7183, 4);
     });
 
     it("should have prograde rotation for other planets", () => {
