@@ -15,10 +15,10 @@ import {
   formatGravity,
   formatDensity,
   DATA_UNAVAILABLE,
-} from "../utils/data-formatters";
+} from "@/utils/data-formatters";
 
 describe("Data Formatters", () => {
-  // **Feature: real-planet-data-api, Property 3: Mass formatting includes scientific notation**
+  // **Feature: planet-catalog-api, Property 3: Mass formatting includes scientific notation**
   // **Validates: Requirements 2.2, 2.5**
   describe("Property 3: Mass formatting includes scientific notation", () => {
     it("should format any valid mass with scientific notation pattern", () => {
@@ -48,7 +48,7 @@ describe("Data Formatters", () => {
     });
   });
 
-  // **Feature: real-planet-data-api, Property 4: Temperature conversion from Kelvin to Celsius**
+  // **Feature: planet-catalog-api, Property 4: Temperature conversion from Kelvin to Celsius**
   // **Validates: Requirements 3.2**
   describe("Property 4: Temperature conversion from Kelvin to Celsius", () => {
     it("should convert any Kelvin temperature to Celsius correctly", () => {
@@ -74,7 +74,7 @@ describe("Data Formatters", () => {
     });
   });
 
-  // **Feature: real-planet-data-api, Property 5: Temperature formatting to one decimal place**
+  // **Feature: planet-catalog-api, Property 5: Temperature formatting to one decimal place**
   // **Validates: Requirements 3.3, 3.4**
   describe("Property 5: Temperature formatting to one decimal place", () => {
     it("should format any temperature to exactly one decimal place", () => {
@@ -102,7 +102,7 @@ describe("Data Formatters", () => {
     });
   });
 
-  // **Feature: real-planet-data-api, Property 6: Rotation period units based on duration**
+  // **Feature: planet-catalog-api, Property 6: Rotation period units based on duration**
   // **Validates: Requirements 4.4, 4.5**
   describe("Property 6: Rotation period units based on duration", () => {
     it("should use hours for periods <= 24h and days for periods > 24h", () => {
@@ -132,7 +132,7 @@ describe("Data Formatters", () => {
     });
   });
 
-  // **Feature: real-planet-data-api, Property 7: Moon count from array length**
+  // **Feature: planet-catalog-api, Property 7: Moon count from array length**
   // **Validates: Requirements 5.2**
   describe("Property 7: Moon count from array length", () => {
     it("should return count equal to array length", () => {

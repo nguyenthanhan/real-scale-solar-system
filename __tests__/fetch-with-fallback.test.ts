@@ -9,12 +9,12 @@ import {
   fetchWithFallback,
   fetchWithCache,
   clearAPICache,
-} from "../features/planet-data/infrastructure/fetch-with-fallback";
-import { planetDataService } from "../features/planet-data/infrastructure/planet-data-service";
-import { PlanetData } from "../data/planet-types";
+} from "@/features/planet-catalog/infrastructure/fetch-with-fallback";
+import { planetDataService } from "@/features/planet-catalog/infrastructure/planet-data-service";
+import { PlanetData } from "@/data/planet-types";
 
 // Mock the planet data service
-vi.mock("../features/planet-data/infrastructure/planet-data-service", () => ({
+vi.mock("@/features/planet-catalog/infrastructure/planet-data-service", () => ({
   planetDataService: {
     fetchPlanetData: vi.fn(),
   },
@@ -54,7 +54,7 @@ describe("Fetch with Fallback", () => {
     vi.restoreAllMocks();
   });
 
-  // **Feature: real-planet-data-api, Property 8: API failures trigger fallback**
+  // **Feature: planet-catalog-api, Property 8: API failures trigger fallback**
   // **Validates: Requirements 6.1, 6.4**
   describe("Property 8: API failures trigger fallback", () => {
     it("should always return merged data even when API fails", async () => {

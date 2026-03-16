@@ -13,13 +13,13 @@ import {
   formatGravity,
   formatDensity,
   DATA_UNAVAILABLE,
-} from "../utils/data-formatters";
-import { mergePlanetData } from "../utils/data-merger";
-import { APIResponse } from "../features/planet-data/domain/planet-api-types";
-import { PlanetData } from "../data/planet-types";
+} from "@/utils/data-formatters";
+import { mergePlanetData } from "@/utils/data-merger";
+import { APIResponse } from "@/features/planet-catalog/domain/planet-api-types";
+import { PlanetData } from "@/data/planet-types";
 
 describe("Formatting Consistency", () => {
-  // **Feature: real-planet-data-api, Property 10: Consistent formatting across planets**
+  // **Feature: planet-catalog-api, Property 10: Consistent formatting across planets**
   // **Validates: Requirements 10.1, 10.5**
   describe("Property 10: Consistent formatting across planets", () => {
     const basePlanetData: PlanetData = {

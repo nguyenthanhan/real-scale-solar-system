@@ -32,22 +32,24 @@ Interactive 3D solar system simulation with true-to-scale visualization, two sim
 
 ## Project Structure
 
-- `app/` App entry + API route
-- `components/` UI and 3D scene components
-- `hooks/` simulation, transition, and worker hooks
-- `utils/` astronomy/math/formatting/validation helpers
-- `services/` API proxy client, merge/cache logic
-- `features/` feature-first modules:
+- `src/app/` App entry + API route
+- `src/components/` shared UI and scene primitives
+- `src/features/` feature-first modules:
+  - `solar-system`
+    - `application/` orchestration + state composition
+    - `ui/` scene content + overlays
   - `date-mode`
-  - `planet-data`
+  - `planet-catalog`
   - `simulation-control`
   - `planet-rendering`
   - `historical-events`
   - `planet-modal`
   - `rotation-worker`
   - `belt-regions`
-- `workers/` Web Worker implementations
-- `data/` local planet data + historical events
+- `src/lib/` library modules (planet texture config/loaders)
+- `src/shared/ui/` shared UI helpers (for example `cn`)
+- `src/utils/` shared domain/math/formatting/validation helpers
+- `src/data/` remaining static data modules
 - `__tests__/` unit and integration tests
 
 ## Run Locally

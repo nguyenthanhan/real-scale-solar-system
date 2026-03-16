@@ -9,9 +9,9 @@ import {
   mergePlanetData,
   createLoadingState,
   safeExtractField,
-} from "../utils/data-merger";
-import { APIResponse } from "../features/planet-data/domain/planet-api-types";
-import { PlanetData } from "../data/planet-types";
+} from "@/utils/data-merger";
+import { APIResponse } from "@/features/planet-catalog/domain/planet-api-types";
+import { PlanetData } from "@/data/planet-types";
 
 describe("Data Merger", () => {
   const mockLocalData: PlanetData = {
@@ -34,7 +34,7 @@ describe("Data Merger", () => {
     rotationSpeedByDay: 1,
   };
 
-  // **Feature: real-planet-data-api, Property 9: API data prioritized over local data**
+  // **Feature: planet-catalog-api, Property 9: API data prioritized over local data**
   // **Validates: Requirements 9.3, 9.5**
   describe("Property 9: API data prioritized over local data", () => {
     it("should include API data when available", () => {

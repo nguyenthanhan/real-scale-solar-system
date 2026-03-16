@@ -1,17 +1,17 @@
 /**
- * Planet Data Service Tests
+ * Planet Catalog Service Tests
  * Tests for API request handling and data fetching
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fc from "fast-check";
-import { PlanetDataService } from "../features/planet-data/infrastructure/planet-data-service";
+import { PlanetDataService } from "@/features/planet-catalog/infrastructure/planet-data-service";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-describe("PlanetDataService", () => {
+describe("PlanetCatalogService", () => {
   let service: PlanetDataService;
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe("PlanetDataService", () => {
     vi.restoreAllMocks();
   });
 
-  // **Feature: real-planet-data-api, Property 1: API requests use planet name**
+  // **Feature: planet-catalog-api, Property 1: API requests use planet name**
   // **Validates: Requirements 1.2**
   describe("Property 1: API requests use planet name", () => {
     it("should use correct API endpoint containing planet name", async () => {
@@ -83,7 +83,7 @@ describe("PlanetDataService", () => {
     });
   });
 
-  // **Feature: real-planet-data-api, Property 2: JSON responses are parsed correctly**
+  // **Feature: planet-catalog-api, Property 2: JSON responses are parsed correctly**
   // **Validates: Requirements 1.3**
   describe("Property 2: JSON responses are parsed correctly", () => {
     it("should parse any valid JSON response correctly", async () => {
