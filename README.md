@@ -37,6 +37,15 @@ Interactive 3D solar system simulation with true-to-scale visualization, two sim
 - `hooks/` simulation, transition, and worker hooks
 - `utils/` astronomy/math/formatting/validation helpers
 - `services/` API proxy client, merge/cache logic
+- `features/` feature-first modules:
+  - `date-mode`
+  - `planet-data`
+  - `simulation-control`
+  - `planet-rendering`
+  - `historical-events`
+  - `planet-modal`
+  - `rotation-worker`
+  - `belt-regions`
 - `workers/` Web Worker implementations
 - `data/` local planet data + historical events
 - `__tests__/` unit and integration tests
