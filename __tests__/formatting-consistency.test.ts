@@ -15,7 +15,7 @@ import {
   DATA_UNAVAILABLE,
 } from "../utils/data-formatters";
 import { mergePlanetData } from "../utils/data-merger";
-import { APIResponse } from "../services/planet-api-types";
+import { APIResponse } from "../features/planet-data/domain/planet-api-types";
 import { PlanetData } from "../data/planet-types";
 
 describe("Formatting Consistency", () => {

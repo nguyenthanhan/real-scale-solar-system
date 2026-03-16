@@ -8,7 +8,7 @@ import { InfoSection } from "@/features/planet-modal/ui/info-section";
 import { NotableFeatures } from "@/features/planet-modal/ui/notable-features";
 import { ExplorationHistory } from "@/features/planet-modal/ui/exploration-history";
 import { useSimulationSpeed } from "@/contexts/rotation-speed-context";
-import { usePlanetAPIData } from "@/hooks/usePlanetAPIData";
+import { usePlanetAPIData } from "@/features/planet-data/application/usePlanetAPIData";
 
 interface PlanetInfoProps {
   planet: PlanetData;

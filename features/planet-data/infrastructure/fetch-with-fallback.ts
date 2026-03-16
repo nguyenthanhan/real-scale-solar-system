@@ -4,8 +4,8 @@
  */
 
 import { PlanetData } from "@/data/planet-types";
-import { MergedPlanetData } from "@/services/planet-api-types";
-import { planetDataService } from "@/services/planet-data-service";
+import { MergedPlanetData } from "@/features/planet-data/domain/planet-api-types";
+import { planetDataService } from "@/features/planet-data/infrastructure/planet-data-service";
 import { mergePlanetData } from "@/utils/data-merger";
 
 /**

@@ -8,7 +8,7 @@ import {
   isValidAPIResponse,
   isValidMass,
   APIResponse,
-} from "../services/planet-api-types";
+} from "../features/planet-data/domain/planet-api-types";
 
 describe("API Validation", () => {
   describe("isValidAPIResponse", () => {

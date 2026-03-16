@@ -7,10 +7,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PlanetInfo } from "../components/modal/planet-info";
 import { PlanetData } from "../data/planet-types";
-import * as usePlanetAPIDataModule from "../hooks/usePlanetAPIData";
+import * as usePlanetAPIDataModule from "../features/planet-data/application/usePlanetAPIData";
 
 // Mock the hooks and components
-vi.mock("../hooks/usePlanetAPIData", () => ({
+vi.mock("../features/planet-data/application/usePlanetAPIData", () => ({
   usePlanetAPIData: vi.fn(),
 }));
 

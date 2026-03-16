@@ -9,12 +9,12 @@ import {
   fetchWithFallback,
   fetchWithCache,
   clearAPICache,
-} from "../services/fetch-with-fallback";
-import { planetDataService } from "../services/planet-data-service";
+} from "../features/planet-data/infrastructure/fetch-with-fallback";
+import { planetDataService } from "../features/planet-data/infrastructure/planet-data-service";
 import { PlanetData } from "../data/planet-types";
 
 // Mock the planet data service
-vi.mock("../services/planet-data-service", () => ({
+vi.mock("../features/planet-data/infrastructure/planet-data-service", () => ({
   planetDataService: {
     fetchPlanetData: vi.fn(),
   },

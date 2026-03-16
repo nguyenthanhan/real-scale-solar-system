@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fc from "fast-check";
-import { PlanetDataService } from "../services/planet-data-service";
+import { PlanetDataService } from "../features/planet-data/infrastructure/planet-data-service";
 
 // Mock fetch globally
 const mockFetch = vi.fn();

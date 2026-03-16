@@ -6,7 +6,7 @@
 import {
   APIResponse,
   isValidAPIResponse,
-} from "@/services/planet-api-types";
+} from "@/features/planet-data/domain/planet-api-types";
 
 // Use internal API route to avoid CORS issues
 const API_BASE_URL = "/api/planets";

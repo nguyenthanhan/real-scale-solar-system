@@ -10,7 +10,7 @@ import {
   createLoadingState,
   safeExtractField,
 } from "../utils/data-merger";
-import { APIResponse } from "../services/planet-api-types";
+import { APIResponse } from "../features/planet-data/domain/planet-api-types";
 import { PlanetData } from "../data/planet-types";
 
 describe("Data Merger", () => {
