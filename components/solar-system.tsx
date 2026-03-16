@@ -6,10 +6,10 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import { Sun } from "@/features/planet-rendering/ui/planet/sun";
 import { Planet } from "@/features/planet-rendering/ui/planet/index";
 import { BeltRegions } from "@/components/belt";
-import { ControlModal } from "@/components/modal/control";
+import { ControlModal } from "@/features/planet-modal/ui/control";
 import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";
-import { ModalOverlay } from "@/components/modal/modal-overlay";
+import { ModalOverlay } from "@/features/planet-modal/ui/modal-overlay";
 import { GitHubButton } from "@/components/button/github-button";
 import {
   SimulationSpeedProvider,

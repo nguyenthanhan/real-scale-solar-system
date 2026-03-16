@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as fc from "fast-check";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { ControlModal } from "../components/modal/control";
+import { ControlModal } from "../features/planet-modal/ui/control";
 
 describe("Belt Toggle Independence", () => {
   beforeEach(() => {
