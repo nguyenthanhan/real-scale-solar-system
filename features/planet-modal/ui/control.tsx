@@ -1,0 +1,349 @@
+"use client";
+
+import { useState, useEffect, type ChangeEvent } from "react";
+import { motion } from "framer-motion";
+import { Settings, X } from "lucide-react";
+
+interface SpeedControlProps {
+  simulationSpeed: number;
+  onSpeedChange: (speed: number) => void;
+  isVisible?: boolean;
+  onToggleVisibility?: (visible: boolean) => void;
+  showPlanetLabels?: boolean;
+  onTogglePlanetLabels?: (show: boolean) => void;
+  showOrbitPath?: boolean;
+  onToggleOrbitPath?: (show: boolean) => void;
+  /** Whether belt regions are visible */
+  showBeltRegions?: boolean;
+  onToggleBeltRegions?: (show: boolean) => void;
+  /** Disable speed control (e.g., when in Date Mode) */
+  disabled?: boolean;
+  /** Whether auto-rotation is enabled for planet modal */
+  modalAutoRotate?: boolean;
+  onToggleModalAutoRotate?: (enabled: boolean) => void;
+  /** Whether planet modal is currently open */
+  isPlanetModalOpen?: boolean;
+}
+
+// Format number with commas - stable helper function
+const formatNumber = (num: number): string => {
+  return num.toLocaleString();
+};
+
+export function ControlModal({
+  simulationSpeed,
+  onSpeedChange,
+  isVisible,
+  onToggleVisibility,
+  showPlanetLabels = true,
+  onTogglePlanetLabels,
+  showOrbitPath = true,
+  onToggleOrbitPath,
+  showBeltRegions = true,
+  onToggleBeltRegions,
+  disabled = false,
+  modalAutoRotate = true,
+  onToggleModalAutoRotate,
+  isPlanetModalOpen = false,
+}: SpeedControlProps) {
+  const [internalPanelVisible, setInternalPanelVisible] = useState(
+    isVisible ?? true,
+  );
+  const [inputValue, setInputValue] = useState<string>(
+    simulationSpeed.toLocaleString(),
+  );
+  const isControlled =
+    onToggleVisibility !== undefined && isVisible !== undefined;
+  const isPanelVisible = isControlled ? isVisible : internalPanelVisible;
+
+  // Parse number from string (remove commas)
+  const parseNumber = (str: string): number => {
+    return Number.parseInt(str.replace(/,/g, "")) || 0;
+  };
+
+  // Update input value when simulationSpeed changes externally
+  useEffect(() => {
+    setInputValue(formatNumber(simulationSpeed));
+  }, [simulationSpeed]);
+
+  const handleSpeedChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    const parsedValue = Number.parseInt(rawValue);
+    onSpeedChange(parsedValue);
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow empty string for better UX while typing
+    if (value === "") {
+      setInputValue("");
+      return;
+    }
+    // Allow numbers and commas
+    if (/^[\d,]+$/.test(value)) {
+      setInputValue(value);
+    }
+  };
+
+  const handleInputBlur = () => {
+    const numValue = parseNumber(inputValue);
+    if (Number.isNaN(numValue) || numValue < 1) {
+      setInputValue(formatNumber(1));
+      onSpeedChange(1);
+    } else if (numValue > 10000000) {
+      setInputValue(formatNumber(10000000));
+      onSpeedChange(10000000);
+    } else {
+      setInputValue(formatNumber(numValue));
+      onSpeedChange(numValue);
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
+
+  // Calculate time conversion
+  const getTimeConversion = (speed: number): string => {
+    if (speed === 1) return "1s <-> 1s (real-time)";
+    if (speed < 60) return `1s <-> ${speed} seconds`;
+    if (speed < 3600) return `1s <-> ${(speed / 60).toFixed(1)} minutes`;
+    if (speed < 86400) return `1s <-> ${(speed / 3600).toFixed(1)} hours`;
+    if (speed < 31_536_000) return `1s <-> ${(speed / 86400).toFixed(1)} days`;
+    return `1s <-> ${(speed / 31_536_000).toFixed(1)} years`;
+  };
+
+  // Calculate Earth orbit time display
+  const getEarthOrbitTime = (speed: number): string => {
+    // Guard against division by zero or NaN
+    if (speed <= 0 || Number.isNaN(speed)) {
+      return "N/A";
+    }
+
+    const earthOrbitDays = 365.25 / speed;
+
+    if (earthOrbitDays >= 1) {
+      return `${earthOrbitDays.toFixed(1)} days`;
+    } else if (earthOrbitDays >= 1 / 24) {
+      return `${(earthOrbitDays * 24).toFixed(1)} hours`;
+    } else if (earthOrbitDays >= 1 / 1440) {
+      return `${(earthOrbitDays * 1440).toFixed(1)} minutes`;
+    } else {
+      return `${(earthOrbitDays * 86400).toFixed(1)} seconds`;
+    }
+  };
+
+  // Toggle the entire panel visibility
+  const togglePanel = () => {
+    const newVisibility = !isPanelVisible;
+    if (isControlled) {
+      onToggleVisibility(newVisibility);
+    } else {
+      setInternalPanelVisible(newVisibility);
+    }
+  };
+
+  return (
+    <>
+      {isPanelVisible ? (
+        <motion.div
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 z-controls w-[380px]"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium">
+              Speed ×{simulationSpeed.toLocaleString()}
+              {disabled && (
+                <span className="ml-2 text-yellow-400">(Date Mode)</span>
+              )}
+            </h3>
+            <button
+              onClick={togglePanel}
+              className="p-1 rounded-full hover:bg-gray-700 transition-colors"
+              aria-label="Hide controls"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {/* Slider and Input */}
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="1"
+                max="10000000"
+                step="1"
+                value={simulationSpeed}
+                onChange={handleSpeedChange}
+                disabled={disabled}
+                className={`flex-1 h-2 bg-gray-700 rounded-lg appearance-none ${
+                  disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
+              />
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                onKeyDown={handleInputKeyDown}
+                disabled={disabled}
+                min="1"
+                max="10000000"
+                className={`w-20 px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-white text-right ${
+                  disabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "focus:outline-none focus:border-blue-500"
+                }`}
+                placeholder="Speed"
+                aria-label="Speed input"
+              />
+            </div>
+
+            {/* Time conversion info - compact */}
+            <div className="text-[10px] text-gray-400 flex justify-between">
+              <span>{getTimeConversion(simulationSpeed)}</span>
+              <span>Earth: {getEarthOrbitTime(simulationSpeed)}</span>
+            </div>
+
+            {/* Toggles in one row */}
+            {(onTogglePlanetLabels ||
+              onToggleOrbitPath ||
+              onToggleBeltRegions ||
+              onToggleModalAutoRotate) && (
+              <div className="flex items-center gap-4 pt-2 border-t border-white/10 flex-wrap">
+                {onTogglePlanetLabels && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Labels</span>
+                    <button
+                      onClick={() => onTogglePlanetLabels(!showPlanetLabels)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onTogglePlanetLabels(!showPlanetLabels);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showPlanetLabels ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle planet labels"
+                      aria-pressed={showPlanetLabels}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showPlanetLabels ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {onToggleOrbitPath && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Orbits</span>
+                    <button
+                      onClick={() => onToggleOrbitPath(!showOrbitPath)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleOrbitPath(!showOrbitPath);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showOrbitPath ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle orbit path"
+                      aria-pressed={showOrbitPath}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showOrbitPath ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {onToggleBeltRegions && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs">Belts</span>
+                    <button
+                      onClick={() => onToggleBeltRegions(!showBeltRegions)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleBeltRegions(!showBeltRegions);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        showBeltRegions ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle belt regions"
+                      aria-pressed={showBeltRegions}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          showBeltRegions ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {onToggleModalAutoRotate && isPlanetModalOpen && (
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="text-xs"
+                      title="Auto-rotate planet in modal"
+                    >
+                      Modal Spin
+                    </span>
+                    <button
+                      onClick={() => onToggleModalAutoRotate(!modalAutoRotate)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleModalAutoRotate(!modalAutoRotate);
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        modalAutoRotate ? "bg-blue-600" : "bg-gray-600"
+                      }`}
+                      aria-label="Toggle auto-rotation in planet modal"
+                      aria-pressed={modalAutoRotate}
+                      role="switch"
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                          modalAutoRotate ? "translate-x-5" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      ) : (
+        <motion.button
+          className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded-full backdrop-blur-sm border border-white/20 shadow-lg shadow-blue-500/10 hover:bg-gray-800 z-controls"
+          onClick={togglePanel}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          title="Show speed controls"
+        >
+          <Settings size={20} />
+        </motion.button>
+      )}
+    </>
+  );
+}
