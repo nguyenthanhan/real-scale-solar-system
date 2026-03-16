@@ -52,7 +52,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 47.87,
     orbitSpeedByKmH: 172_332,
     orbitalPeriodDays: 87.969, // NASA JPL
-    rotationSpeedByDays: 58.646,
+    rotationSpeedByDays: 58.6462,
     rotationSpeedByKmH: 10.892,
     hasRings: false,
     ringColor: "",
@@ -92,7 +92,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 35.02,
     orbitSpeedByKmH: 126_074,
     orbitalPeriodDays: 224.701, // NASA JPL
-    rotationSpeedByDays: -243.025, // Negative = retrograde
+    rotationSpeedByDays: -243.0250, // Negative = retrograde
     rotationSpeedByKmH: 6.52,
     hasRings: false,
     ringColor: "",
@@ -139,7 +139,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 29.78,
     orbitSpeedByKmH: 107_226,
     orbitalPeriodDays: 365.256, // NASA JPL (sidereal year)
-    rotationSpeedByDays: 1,
+    rotationSpeedByDays: 0.9973,
     rotationSpeedByKmH: 1_674,
     hasRings: false,
     ringColor: "",
@@ -179,7 +179,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 24.077,
     orbitSpeedByKmH: 86_868,
     orbitalPeriodDays: 686.98, // NASA JPL
-    rotationSpeedByDays: 1.03,
+    rotationSpeedByDays: 1.0259,
     rotationSpeedByKmH: 868,
     hasRings: false,
     ringColor: "",
@@ -228,7 +228,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 13.07,
     orbitSpeedByKmH: 47_052,
     orbitalPeriodDays: 4332.59, // NASA JPL (11.86 years)
-    rotationSpeedByDays: 0.41,
+    rotationSpeedByDays: 0.4135,
     rotationSpeedByKmH: 45_000,
     hasRings: true,
     ringColor: "#a67c52",
@@ -275,7 +275,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 9.69,
     orbitSpeedByKmH: 34_884,
     orbitalPeriodDays: 10759.22, // NASA JPL (29.46 years)
-    rotationSpeedByDays: 0.44,
+    rotationSpeedByDays: 0.4440,
     rotationSpeedByKmH: 36_000,
     hasRings: true,
     ringColor: "#F5DEB3",
@@ -316,7 +316,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 6.81,
     orbitSpeedByKmH: 24_516,
     orbitalPeriodDays: 30688.5, // NASA JPL (84.01 years)
-    rotationSpeedByDays: -0.72, // Negative = retrograde
+    rotationSpeedByDays: -0.7183, // Negative = retrograde
     rotationSpeedByKmH: 9_000,
     hasRings: true,
     ringColor: "#2F2F2F",
@@ -356,7 +356,7 @@ export const planetData: PlanetData[] = [
     orbitSpeedByEarth: 5.43,
     orbitSpeedByKmH: 19_548,
     orbitalPeriodDays: 60182, // NASA JPL (164.79 years)
-    rotationSpeedByDays: 0.67,
+    rotationSpeedByDays: 0.6713,
     rotationSpeedByKmH: 9_000,
     hasRings: true,
     ringColor: "#1A1A1A",
