@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { BELT_DATA, BeltData } from "../data/belt-data";
+import { BELT_DATA, BeltData } from "../features/belt-regions/data/belt-data";
 
 describe("Belt Data Structure", () => {
   /**

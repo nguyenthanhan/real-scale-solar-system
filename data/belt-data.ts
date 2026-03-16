@@ -1,1 +1,0 @@
-export * from "@/features/belt-regions/data/belt-data";

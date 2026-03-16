@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { Sun } from "@/features/planet-rendering/ui/planet/sun";
 import { Planet } from "@/features/planet-rendering/ui/planet/index";
-import { BeltRegions } from "@/components/belt";
+import { BeltRegions } from "@/features/belt-regions/ui/index";
 import { ControlModal } from "@/features/planet-modal/ui/control";
 import { planetData, sunData } from "@/data/planet-data";
 import { PlanetData } from "@/data/planet-types";

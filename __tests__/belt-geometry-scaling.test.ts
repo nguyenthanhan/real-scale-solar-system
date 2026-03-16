@@ -6,8 +6,8 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { BELT_DATA, BeltData } from "../data/belt-data";
-import { AU_TO_UNITS } from "../components/belt/belt-region";
+import { BELT_DATA, BeltData } from "../features/belt-regions/data/belt-data";
+import { AU_TO_UNITS } from "../features/belt-regions/ui/belt-region";
 
 describe("Belt Geometry Scaling", () => {
   /**
