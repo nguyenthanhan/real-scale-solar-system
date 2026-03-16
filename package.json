@@ -41,9 +41,8 @@
     "@types/three": "^0.176.0",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
-    "@vitejs/plugin-react": "^5.1.2",
     "@vitejs/plugin-rsc": "^0.5.21",
-    "@vitest/ui": "^4.0.17",
+    "@vitest/ui": "^4.1.0",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "fast-check": "^4.5.3",
@@ -53,8 +52,8 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vinext": "^0.0.29",
-    "vite": "^8.0.0",
-    "vitest": "^4.0.17",
+    "vite": "^7.3.1",
+    "vitest": "^4.1.0",
     "wrangler": "^4.72.0"
   },
   "pnpm": {

@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Real Scale Solar System",
   description:
     "A true-to-scale 3D model of our solar system with accurate planetary sizes, distances, and scientific data",
