@@ -1,0 +1,114 @@
+"use client";
+
+import { useRef, useCallback } from "react";
+import { ThreeEvent } from "@react-three/fiber";
+import { Sphere } from "@react-three/drei";
+import { Mesh, Group } from "three";
+import { PlanetData } from "@/data/planet-types";
+import { PlanetLabel } from "./planet-label";
+import { usePlanetMovement } from "@/features/planet-rendering/application/usePlanetMovement";
+import { usePlanetMaterial } from "@/features/planet-rendering/application/usePlanetMaterial";
+import { PlanetRings } from "./planet-rings";
+import { OrbitPath } from "./orbit-path";
+import { PlanetAtmosphericGlow } from "./planet-atmospheric-glow";
+
+import type { SimulationMode } from "@/contexts/simulation-mode-context";
+
+// Define the planet props
+interface PlanetProps {
+  planet: PlanetData;
+  simulationSpeed: number;
+  onClick: (planet: PlanetData) => void;
+  showLabels: boolean;
+  showOrbitPath?: boolean;
+  /** Simulation mode: 'speed' for animation, 'date' for static positions */
+  simulationMode?: SimulationMode;
+  /** Selected date for Date Mode */
+  selectedDate?: Date;
+}
+
+export function Planet({
+  planet,
+  simulationSpeed,
+  onClick,
+  showLabels,
+  showOrbitPath = true,
+  simulationMode = "speed",
+  selectedDate,
+}: PlanetProps) {
+  const planetRef = useRef<Mesh | null>(null);
+  const orbitRef = useRef<Group | null>(null);
+
+  // In main simulation: keep Sun detailed, simplify others to reduce render cost
+  const planetMaterial = usePlanetMaterial(planet);
+
+  // TRUE TO SCALE - No artificial scaling for visibility
+  // Using real astronomical proportions
+
+  // Size: 1 AU = 149,597,870 km (Earth-Sun distance)
+  // For visualization: 1 AU = 1000 units (compressed but proportional)
+  const AU_TO_UNITS = 1000; // 1 AU = 1000 units
+
+  // Distance: Real orbital distance from Sun center
+  const scaledDistance = planet.distanceInAU * AU_TO_UNITS;
+
+  // Size: Real diameter proportions
+  // Earth diameter = 12,742 km, Sun diameter = 1,392,700 km
+  // For visualization: Earth = 1 unit, Sun = 109.2 units
+  const EARTH_DIAMETER_UNITS = 1; // Earth = 1 unit
+  const scaledSize = planet.diameterRelativeEarth * EARTH_DIAMETER_UNITS;
+
+  // Initialize and update planet movement
+  usePlanetMovement({
+    planet,
+    simulationSpeed,
+    scaledDistance,
+    orbitRef,
+    planetRef,
+    simulationMode,
+    selectedDate,
+  });
+
+  // Handle planet click with proper event propagation
+  const handlePlanetClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      onClick(planet);
+    },
+    [onClick, planet],
+  );
+
+  return (
+    <>
+      {showOrbitPath && (
+        <OrbitPath planet={planet} scaledDistance={scaledDistance} />
+      )}
+      <group ref={orbitRef}>
+        <Sphere
+          ref={planetRef}
+          args={[scaledSize, 32, 32]}
+          onClick={handlePlanetClick}
+        >
+          <primitive object={planetMaterial} attach="material" />
+        </Sphere>
+
+        {/* Atmospheric glow effect */}
+        <PlanetAtmosphericGlow
+          planetSize={scaledSize}
+          planetName={planet.name}
+        />
+
+        {planet.hasRings && (
+          <PlanetRings
+            scaledSize={scaledSize}
+            ringColor={planet.ringColor}
+            ringTilt={planet.ringTilt}
+            axialTilt={planet.axialTilt}
+          />
+        )}
+
+        {showLabels && <PlanetLabel planet={planet} onClick={onClick} />}
+      </group>
+    </>
+  );
+}
