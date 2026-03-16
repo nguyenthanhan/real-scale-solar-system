@@ -20,7 +20,7 @@ import {
   useSimulationMode,
 } from "@/contexts/simulation-mode-context";
 import { ModeToggleButton } from "@/components/button/mode-toggle-button";
-import { DatePicker } from "@/components/date-picker/date-picker";
+import { DatePicker } from "@/features/date-mode/ui/date-picker";
 import { MemoryMonitor } from "@/components/debug/memory-monitor";
 
 import type { SimulationMode } from "@/contexts/simulation-mode-context";

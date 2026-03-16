@@ -4,7 +4,7 @@ import {
   getCacheSize,
   clearLongitudeCache,
 } from "../utils/astronomy-calculations";
-import { interpolateDate } from "../utils/date-interpolation";
+import { interpolateDate } from "../features/date-mode/domain/date-interpolation";
 
 /**
  * Property-based tests for planet position calculation during animation

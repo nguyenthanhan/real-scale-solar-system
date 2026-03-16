@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import type { TimeDirection } from "@/utils/date-interpolation";
+import type { TimeDirection } from "@/features/date-mode/domain/date-interpolation";
 
 interface TransitionProgressProps {
   isAnimating: boolean;

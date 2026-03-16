@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { DatePicker } from "@/components/date-picker/date-picker";
+import { DatePicker } from "@/features/date-mode/ui/date-picker";
 import { ModeToggleButton } from "@/components/button/mode-toggle-button";
 
 // Mock localStorage to avoid issues in test environment
