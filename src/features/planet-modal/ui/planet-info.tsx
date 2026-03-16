@@ -16,7 +16,8 @@ interface PlanetInfoProps {
 }
 
 export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
-  const { simulationSpeed, modalAutoRotate } = useSimulationSpeed();
+  const { simulationSpeed, modalAutoRotate, setModalAutoRotate } =
+    useSimulationSpeed();
 
   // Fetch API data using the hook
   const { mergedData, isLoading } = usePlanetAPIData(planet?.name, planet);
@@ -51,6 +52,7 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
             size={60}
             simulationSpeed={simulationSpeed}
             autoRotate={modalAutoRotate}
+            onAutoRotateChange={setModalAutoRotate}
           />
         </div>
       </div>

@@ -1,6 +1,13 @@
 "use client";
 
-import { useRef, useMemo, useEffect } from "react";
+import {
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+  type ElementRef,
+} from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sphere, OrbitControls } from "@react-three/drei";
 import { Mesh } from "three";
@@ -15,6 +22,7 @@ interface Planet3DModelProps {
   size?: number;
   simulationSpeed?: number;
   autoRotate?: boolean;
+  onAutoRotateChange?: (enabled: boolean) => void;
 }
 
 // Component that goes inside the Canvas (can use useFrame)
@@ -94,13 +102,75 @@ function Planet3DModel({
   size = 80,
   simulationSpeed = 1_000_000,
   autoRotate = true,
+  onAutoRotateChange,
 }: Planet3DModelProps) {
+  const controlsRef = useRef<ElementRef<typeof OrbitControls> | null>(null);
+  const [isViewModified, setIsViewModified] = useState(false);
+
+  const defaultCameraPosition: [number, number, number] = planet.hasRings
+    ? [0, 0, 350]
+    : [0, 0, 300];
+  const defaultFov = planet.hasRings ? 25 : 30;
+
+  const handleResetView = useCallback(() => {
+    if (controlsRef.current) {
+      controlsRef.current.reset();
+      setIsViewModified(false);
+    }
+  }, []);
+
   return (
     <div className="w-full h-full relative">
+      <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
+        <div className="flex items-center gap-2 rounded-md bg-black/65 px-3 py-2 text-xs text-white backdrop-blur">
+          <span className="opacity-80">Auto rotate</span>
+          <button
+            type="button"
+            onClick={() => {
+              const nextAutoRotate = !autoRotate;
+              if (nextAutoRotate) {
+                setIsViewModified(false);
+              }
+              onAutoRotateChange?.(nextAutoRotate);
+            }}
+            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
+              autoRotate ? "bg-blue-600" : "bg-gray-600"
+            }`}
+            aria-label={`Turn auto rotate ${autoRotate ? "off" : "on"}`}
+            aria-pressed={autoRotate}
+          >
+            <span
+              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                autoRotate ? "translate-x-5" : "translate-x-1"
+              }`}
+            />
+          </button>
+          <span className="opacity-90">{autoRotate ? "On" : "Off"}</span>
+        </div>
+
+        {!autoRotate && isViewModified && (
+          <button
+            type="button"
+            onClick={handleResetView}
+            className="rounded-md border border-blue-400/50 bg-blue-900 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-black/40 transition hover:bg-blue-800"
+            style={{ animation: "pulse 1.8s ease-in-out infinite" }}
+            aria-label="Reset 3D model view"
+          >
+            Reset view
+          </button>
+        )}
+      </div>
+
+      {!autoRotate && (
+        <div className="absolute bottom-3 left-3 z-20 rounded-md bg-black/65 px-3 py-1.5 text-xs text-white/90 backdrop-blur">
+          Drag to rotate • Scroll/pinch to zoom
+        </div>
+      )}
+
       <Canvas
         camera={{
-          position: [0, 0, planet.hasRings ? 350 : 300],
-          fov: planet.hasRings ? 25 : 30,
+          position: defaultCameraPosition,
+          fov: defaultFov,
         }}
         style={{ background: "transparent" }}
       >
@@ -116,16 +186,19 @@ function Planet3DModel({
           autoRotate={autoRotate}
         />
 
-        {/* Enable OrbitControls when auto-rotate is disabled for manual rotation */}
-        {!autoRotate && (
-          <OrbitControls
-            enableZoom={true}
-            enablePan={false}
-            minDistance={150}
-            maxDistance={500}
-            rotateSpeed={0.5}
-          />
-        )}
+        <OrbitControls
+          ref={controlsRef}
+          enableRotate={!autoRotate}
+          enableZoom={!autoRotate}
+          enablePan={false}
+          minDistance={150}
+          maxDistance={500}
+          rotateSpeed={0.65}
+          zoomSpeed={0.8}
+          enableDamping
+          dampingFactor={0.08}
+          onStart={() => setIsViewModified(true)}
+        />
       </Canvas>
     </div>
   );

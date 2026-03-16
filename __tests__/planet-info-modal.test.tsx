@@ -15,7 +15,11 @@ vi.mock("@/features/planet-catalog/application/usePlanetAPIData", () => ({
 }));
 
 vi.mock("@/features/simulation-control/state/rotation-speed-context", () => ({
-  useSimulationSpeed: () => ({ simulationSpeed: 1000000 }),
+  useSimulationSpeed: () => ({
+    simulationSpeed: 1000000,
+    modalAutoRotate: true,
+    setModalAutoRotate: vi.fn(),
+  }),
 }));
 
 vi.mock("@/features/planet-modal/ui/planet-3d-model", () => ({
