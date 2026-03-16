@@ -195,6 +195,54 @@ describe("Data Merger", () => {
       expect(merged.apiTemperature).toBe("14.9°C"); // Valid temp still formatted
     });
 
+    it("should keep local temperature when API returns avgTemp as 0", () => {
+      const mercuryApiResponse: APIResponse = {
+        id: "mercure",
+        name: "Mercure",
+        englishName: "Mercury",
+        isPlanet: true,
+        moons: null,
+        semimajorAxis: 57909050,
+        perihelion: 46001200,
+        aphelion: 69816900,
+        eccentricity: 0.2056,
+        inclination: 7,
+        mass: { massValue: 3.30114, massExponent: 23 },
+        vol: { volValue: 6.083, volExponent: 10 },
+        density: 5.4291,
+        gravity: 3.7,
+        escape: 4250,
+        meanRadius: 2439.4,
+        equaRadius: 2440.53,
+        polarRadius: 2439.7,
+        flattening: 0,
+        dimension: "",
+        sideralOrbit: 87.969,
+        sideralRotation: 1407.6,
+        aroundPlanet: null,
+        discoveredBy: "",
+        discoveryDate: "",
+        alternativeName: "",
+        axialTilt: 0.0352,
+        avgTemp: 0,
+        mainAnomaly: 174.796,
+        argPeriapsis: 29.022,
+        longAscNode: 48.378,
+      };
+
+      const merged = mergePlanetData(mercuryApiResponse, mockLocalData);
+
+      expect(merged.apiError).toBe(false);
+      expect(merged.apiMass).toBe("3.30 × 10^23 kg");
+      expect(merged.apiOrbitalPeriod).toBe("88.0 days");
+      expect(merged.apiRotationPeriod).toBe("58.65 days");
+      expect(merged.apiMoonCount).toBe("0");
+      expect(merged.apiGravity).toBe("3.70 m/s²");
+      expect(merged.apiDensity).toBe("5.43 g/cm³");
+      // 0K is treated as unavailable, so local fallback remains in UI.
+      expect(merged.apiTemperature).toBeUndefined();
+    });
+
     it("should preserve all local data fields", () => {
       const apiData: APIResponse = {
         id: "earth",

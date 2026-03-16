@@ -38,7 +38,12 @@ export function formatMass(
  * @returns Formatted string like "15.0°C"
  */
 export function formatTemperature(kelvin: number | undefined | null): string {
-  if (kelvin === undefined || kelvin === null || !Number.isFinite(kelvin)) {
+  if (
+    kelvin === undefined ||
+    kelvin === null ||
+    !Number.isFinite(kelvin) ||
+    kelvin <= 0
+  ) {
     return DATA_UNAVAILABLE;
   }
 

@@ -86,6 +86,33 @@ describe("API Validation", () => {
           isPlanet: "true", // should be boolean
         })
       ).toBe(false);
+
+      expect(
+        isValidAPIResponse({
+          name: "earth",
+          englishName: "Earth",
+          isPlanet: true,
+          avgTemp: "288", // should be number
+        })
+      ).toBe(false);
+
+      expect(
+        isValidAPIResponse({
+          name: "earth",
+          englishName: "Earth",
+          isPlanet: true,
+          moons: [{ moon: "Moon", rel: 1 }], // rel should be string
+        })
+      ).toBe(false);
+
+      expect(
+        isValidAPIResponse({
+          name: "earth",
+          englishName: "Earth",
+          isPlanet: true,
+          mass: { massValue: "5.97", massExponent: 24 }, // massValue should be number
+        })
+      ).toBe(false);
     });
   });
 

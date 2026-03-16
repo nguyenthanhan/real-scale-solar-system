@@ -94,12 +94,32 @@ describe("PlanetCatalogService", () => {
             englishName: fc.string({ minLength: 1 }),
             isPlanet: fc.boolean(),
             mass: fc.record({
-              massValue: fc.double({ min: 0.1, max: 1000 }),
+              massValue: fc.double({
+                min: 0.1,
+                max: 1000,
+                noNaN: true,
+                noDefaultInfinity: true,
+              }),
               massExponent: fc.integer({ min: 20, max: 30 }),
             }),
-            avgTemp: fc.double({ min: 50, max: 1000 }),
-            sideralOrbit: fc.double({ min: 1, max: 100000 }),
-            sideralRotation: fc.double({ min: 1, max: 10000 }),
+            avgTemp: fc.double({
+              min: 50,
+              max: 1000,
+              noNaN: true,
+              noDefaultInfinity: true,
+            }),
+            sideralOrbit: fc.double({
+              min: 1,
+              max: 100000,
+              noNaN: true,
+              noDefaultInfinity: true,
+            }),
+            sideralRotation: fc.double({
+              min: 1,
+              max: 10000,
+              noNaN: true,
+              noDefaultInfinity: true,
+            }),
             moons: fc.oneof(
               fc.constant(null),
               fc.array(

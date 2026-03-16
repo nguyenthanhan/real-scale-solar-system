@@ -92,6 +92,8 @@ export function isValidAPIResponse(data: unknown): data is APIResponse {
   }
 
   const response = data as Record<string, unknown>;
+  const isFiniteNumber = (value: unknown): value is number =>
+    typeof value === "number" && Number.isFinite(value);
 
   // Check required string fields
   if (typeof response.name !== "string") {
@@ -105,6 +107,48 @@ export function isValidAPIResponse(data: unknown): data is APIResponse {
   // Check boolean field
   if (typeof response.isPlanet !== "boolean") {
     return false;
+  }
+
+  if ("id" in response && typeof response.id !== "string") {
+    return false;
+  }
+
+  // Validate optional numeric fields used by UI formatting.
+  const numericOptionalFields = [
+    "avgTemp",
+    "sideralOrbit",
+    "sideralRotation",
+    "gravity",
+    "density",
+  ] as const;
+  for (const field of numericOptionalFields) {
+    const value = response[field];
+    if (value !== undefined && value !== null && !isFiniteNumber(value)) {
+      return false;
+    }
+  }
+
+  // Validate optional moons structure.
+  if ("moons" in response && response.moons !== null && response.moons !== undefined) {
+    if (!Array.isArray(response.moons)) {
+      return false;
+    }
+    for (const moon of response.moons) {
+      if (!moon || typeof moon !== "object") {
+        return false;
+      }
+      const moonObj = moon as Record<string, unknown>;
+      if (typeof moonObj.moon !== "string" || typeof moonObj.rel !== "string") {
+        return false;
+      }
+    }
+  }
+
+  // Validate optional mass structure when present.
+  if ("mass" in response && response.mass !== null && response.mass !== undefined) {
+    if (!isValidMass(response.mass)) {
+      return false;
+    }
   }
 
   return true;

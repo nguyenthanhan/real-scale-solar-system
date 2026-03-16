@@ -17,6 +17,7 @@ import {
   formatMoonCount,
   formatGravity,
   formatDensity,
+  DATA_UNAVAILABLE,
 } from "./data-formatters";
 
 /**
@@ -71,20 +72,29 @@ export function mergePlanetData(
 
   // Merge mass data
   if (apiData.mass && isValidMass(apiData.mass)) {
-    merged.apiMass = formatMass(
+    const formatted = formatMass(
       apiData.mass.massValue,
       apiData.mass.massExponent
     );
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiMass = formatted;
+    }
   }
 
   // Merge temperature data
   if (apiData.avgTemp !== undefined && apiData.avgTemp !== null) {
-    merged.apiTemperature = formatTemperature(apiData.avgTemp);
+    const formatted = formatTemperature(apiData.avgTemp);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiTemperature = formatted;
+    }
   }
 
   // Merge orbital period
   if (apiData.sideralOrbit !== undefined && apiData.sideralOrbit !== null) {
-    merged.apiOrbitalPeriod = formatOrbitalPeriod(apiData.sideralOrbit);
+    const formatted = formatOrbitalPeriod(apiData.sideralOrbit);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiOrbitalPeriod = formatted;
+    }
   }
 
   // Merge rotation period
@@ -92,20 +102,34 @@ export function mergePlanetData(
     apiData.sideralRotation !== undefined &&
     apiData.sideralRotation !== null
   ) {
-    merged.apiRotationPeriod = formatRotationPeriod(apiData.sideralRotation);
+    const formatted = formatRotationPeriod(apiData.sideralRotation);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiRotationPeriod = formatted;
+    }
   }
 
   // Merge moon count
-  merged.apiMoonCount = formatMoonCount(apiData.moons);
+  {
+    const formatted = formatMoonCount(apiData.moons);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiMoonCount = formatted;
+    }
+  }
 
   // Merge gravity
   if (apiData.gravity !== undefined && apiData.gravity !== null) {
-    merged.apiGravity = formatGravity(apiData.gravity);
+    const formatted = formatGravity(apiData.gravity);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiGravity = formatted;
+    }
   }
 
   // Merge density
   if (apiData.density !== undefined && apiData.density !== null) {
-    merged.apiDensity = formatDensity(apiData.density);
+    const formatted = formatDensity(apiData.density);
+    if (formatted !== DATA_UNAVAILABLE) {
+      merged.apiDensity = formatted;
+    }
   }
 
   return merged;

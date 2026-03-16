@@ -54,7 +54,7 @@ describe("Data Formatters", () => {
     it("should convert any Kelvin temperature to Celsius correctly", () => {
       fc.assert(
         fc.property(
-          fc.double({ min: 0, max: 10000, noNaN: true }),
+          fc.double({ min: 0.1, max: 10000, noNaN: true }),
           (kelvin) => {
             const result = formatTemperature(kelvin);
             const expectedCelsius = kelvin - 273.15;
@@ -80,7 +80,7 @@ describe("Data Formatters", () => {
     it("should format any temperature to exactly one decimal place", () => {
       fc.assert(
         fc.property(
-          fc.double({ min: 0, max: 10000, noNaN: true }),
+          fc.double({ min: 0.1, max: 10000, noNaN: true }),
           (kelvin) => {
             const result = formatTemperature(kelvin);
 
@@ -177,14 +177,13 @@ describe("Data Formatters", () => {
         expect(formatTemperature(288)).toBe("14.9°C");
         expect(formatTemperature(273.15)).toBe("0.0°C");
         expect(formatTemperature(373.15)).toBe("100.0°C");
-        // Absolute zero: 0 - 273.15 = -273.15, rounded to 1 decimal = -273.1 or -273.2
-        const absoluteZero = formatTemperature(0);
-        expect(absoluteZero).toMatch(/^-273\.[12]°C$/);
       });
 
       it('should return "Data unavailable" for invalid values', () => {
         expect(formatTemperature(undefined)).toBe(DATA_UNAVAILABLE);
         expect(formatTemperature(null)).toBe(DATA_UNAVAILABLE);
+        expect(formatTemperature(0)).toBe(DATA_UNAVAILABLE);
+        expect(formatTemperature(-10)).toBe(DATA_UNAVAILABLE);
         expect(formatTemperature(NaN)).toBe(DATA_UNAVAILABLE);
         expect(formatTemperature(Infinity)).toBe(DATA_UNAVAILABLE);
       });
