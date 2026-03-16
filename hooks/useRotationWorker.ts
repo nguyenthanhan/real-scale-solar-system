@@ -22,7 +22,11 @@ export function useRotationWorker() {
   const pendingRequests = useRef<
     Map<
       string,
-      { resolve: (result: number) => void; reject: (error: Error) => void }
+      {
+        resolve: (result: number) => void;
+        reject: (error: Error) => void;
+        timeoutId: ReturnType<typeof setTimeout>;
+      }
     >
   >(new Map());
 
@@ -59,6 +63,7 @@ export function useRotationWorker() {
             const request = pendingRequests.current.get(id);
 
             if (request) {
+              clearTimeout(request.timeoutId);
               request.resolve(result);
               pendingRequests.current.delete(id);
             }
@@ -69,6 +74,7 @@ export function useRotationWorker() {
 
             if (request) {
               console.error("Rotation calculation error:", error);
+              clearTimeout(request.timeoutId);
               request.reject(new Error(error));
               pendingRequests.current.delete(id);
             }
@@ -85,6 +91,7 @@ export function useRotationWorker() {
             `Worker error: ${error.message || "Unknown worker error"}`,
           );
           for (const [, request] of pendingRequests.current.entries()) {
+            clearTimeout(request.timeoutId);
             request.reject(workerError);
           }
           pendingRequests.current.clear();
@@ -107,6 +114,7 @@ export function useRotationWorker() {
           // Reject all pending promises before clearing
           const cleanupError = new Error("Worker terminated during cleanup");
           for (const [, request] of currentPendingRequests.entries()) {
+            clearTimeout(request.timeoutId);
             request.reject(cleanupError);
           }
           currentPendingRequests.clear();
@@ -137,9 +145,6 @@ export function useRotationWorker() {
 
         const requestId = `${Date.now()}_${Math.random()}`;
 
-        // Store resolve and reject callbacks for when worker responds
-        pendingRequests.current.set(requestId, { resolve, reject });
-
         // Send calculation request to worker
         const request: RotationCalculationRequest = {
           type: "CALCULATE_ROTATION_MULTIPLIER",
@@ -148,10 +153,8 @@ export function useRotationWorker() {
           id: requestId,
         };
 
-        workerRef.current.postMessage(request);
-
         // Timeout after 1 second - fallback to synchronous calculation
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
             pendingRequests.current.delete(requestId);
             // Fallback to synchronous calculation on timeout
@@ -162,6 +165,11 @@ export function useRotationWorker() {
             resolve(result);
           }
         }, 1000);
+
+        // Store resolve/reject and timeout for cleanup when worker responds
+        pendingRequests.current.set(requestId, { resolve, reject, timeoutId });
+
+        workerRef.current.postMessage(request);
       });
     },
     [isWorkerReady],
