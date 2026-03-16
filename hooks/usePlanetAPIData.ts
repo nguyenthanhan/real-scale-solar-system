@@ -3,7 +3,7 @@
  * Fetches and manages planet API data with loading states
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { PlanetData } from "@/data/planet-types";
 import { MergedPlanetData } from "@/services/planet-api-types";
 import { fetchWithCache } from "@/services/fetch-with-fallback";
@@ -26,6 +26,9 @@ export function usePlanetAPIData(
   planetName: string | null,
   localData: PlanetData | null
 ): UsePlanetAPIDataReturn {
+  const requestIdRef = useRef(0);
+  const isMountedRef = useRef(true);
+
   const [mergedData, setMergedData] = useState<MergedPlanetData>(() => {
     if (!localData) {
       return {} as MergedPlanetData;
@@ -35,25 +38,42 @@ export function usePlanetAPIData(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      // Invalidate in-flight requests to prevent stale updates after unmount.
+      requestIdRef.current += 1;
+    };
+  }, []);
+
   const fetchData = useCallback(async () => {
     if (!planetName || !localData) {
       return;
     }
 
+    const requestId = ++requestIdRef.current;
     setIsLoading(true);
     setError(false);
     setMergedData(createLoadingState(localData));
 
     try {
       const data = await fetchWithCache(planetName, localData);
+      if (!isMountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setMergedData(data);
       setError(data.apiError || false);
     } catch (err) {
+      if (!isMountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       console.error("Failed to fetch planet data:", err);
       setMergedData(mergePlanetData(null, localData));
       setError(true);
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current && requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [planetName, localData]);
 

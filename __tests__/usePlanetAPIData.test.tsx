@@ -18,6 +18,16 @@ vi.mock("../services/fetch-with-fallback", () => ({
 const mockFetchWithCache = vi.mocked(fetchModule.fetchWithCache);
 
 describe("usePlanetAPIData", () => {
+  function createDeferred<T>() {
+    let resolve!: (value: T) => void;
+    let reject!: (reason?: unknown) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  }
+
   const mockLocalData: PlanetData = {
     name: "Earth",
     color: "#4A90E2",
@@ -204,5 +214,52 @@ describe("usePlanetAPIData", () => {
     // Should not fetch when localData is null
     expect(mockFetchWithCache).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+  });
+
+  it("should ignore stale response when planet changes quickly", async () => {
+    const earthRequest = createDeferred<typeof mockMergedData>();
+    const marsLocalData = { ...mockLocalData, name: "Mars" };
+    const marsMergedData = {
+      ...marsLocalData,
+      apiMass: "6.39 × 10^23 kg",
+      isLoadingAPIData: false,
+      apiError: false,
+    };
+    const marsRequest = createDeferred<typeof marsMergedData>();
+
+    mockFetchWithCache.mockImplementation((planetName) => {
+      if (planetName === "Earth") {
+        return earthRequest.promise;
+      }
+      return marsRequest.promise;
+    });
+
+    const { result, rerender } = renderHook(
+      ({ planetName, localData }) => usePlanetAPIData(planetName, localData),
+      {
+        initialProps: { planetName: "Earth", localData: mockLocalData },
+      },
+    );
+
+    rerender({ planetName: "Mars", localData: marsLocalData });
+
+    await act(async () => {
+      marsRequest.resolve(marsMergedData);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.mergedData.name).toBe("Mars");
+      expect(result.current.mergedData.apiMass).toBe("6.39 × 10^23 kg");
+    });
+
+    await act(async () => {
+      earthRequest.resolve(mockMergedData);
+    });
+
+    await waitFor(() => {
+      expect(result.current.mergedData.name).toBe("Mars");
+      expect(result.current.mergedData.apiMass).toBe("6.39 × 10^23 kg");
+    });
   });
 });
