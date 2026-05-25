@@ -2,31 +2,26 @@
 
 import { PlanetData } from "@/data/planet-types";
 import { useThree, useFrame } from "@react-three/fiber";
-import { useState, useRef } from "react";
-import { Vector3 } from "three";
+import { useMemo, useRef } from "react";
+import { Group, Vector3 } from "three";
+
+const SCREEN_DISTANCE = 0.02;
 
 export function useGetLabelDistance({ planet }: { planet: PlanetData }) {
   const { camera } = useThree();
   const scaledSize = planet.diameterRelativeEarth;
-  const [labelDistance, setLabelDistance] = useState(scaledSize);
-  const labelRef = useRef<HTMLDivElement>(null);
-  const planetPosition = useRef(new Vector3(0, 0, 0));
+  const anchorRef = useRef<Group>(null);
+  const labelOffsetRef = useRef<Group>(null);
+  const worldPos = useMemo(() => new Vector3(), []);
 
-  // Set a fixed screen-space distance for the label
-  const SCREEN_DISTANCE = 0.02; // This controls how far the label appears from the planet in screen space
-
-  // Update the label position on each frame based on camera distance
   useFrame(() => {
-    if (!labelRef.current) return;
+    if (!anchorRef.current || !labelOffsetRef.current) return;
 
-    // Calculate camera distance to planet
-    const distanceToCamera = camera.position.distanceTo(planetPosition.current);
-
-    // Scale the label distance based on camera distance
-    // This keeps the label at a visually consistent distance regardless of zoom
-    const newLabelDistance = scaledSize + SCREEN_DISTANCE * distanceToCamera;
-    setLabelDistance(newLabelDistance);
+    anchorRef.current.getWorldPosition(worldPos);
+    const distanceToCamera = camera.position.distanceTo(worldPos);
+    labelOffsetRef.current.position.y =
+      scaledSize + SCREEN_DISTANCE * distanceToCamera;
   });
 
-  return { labelDistance, labelRef };
+  return { anchorRef, labelOffsetRef };
 }

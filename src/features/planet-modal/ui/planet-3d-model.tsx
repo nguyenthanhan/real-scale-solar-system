@@ -16,6 +16,7 @@ import { usePlanetMaterial } from "@/features/planet-rendering/application/usePl
 import { PlanetRings } from "@/features/planet-rendering/ui/planet/planet-rings";
 import { AtmosphericGlow } from "@/features/planet-modal/ui/atmospheric-glow";
 import { calculateAdjustedPlanetSize } from "@/features/planet-rendering/domain/rotation-calculations";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Planet3DModelProps {
   planet: PlanetData;
@@ -34,6 +35,8 @@ function PlanetMesh({
 }: Planet3DModelProps) {
   const planetRef = useRef<Mesh | null>(null);
   const planetMaterial = usePlanetMaterial(planet);
+  const isMobile = useIsMobile();
+  const sphereSegments = isMobile ? 32 : 64;
 
   // Calculate rotation based on simulation speed
   // Convert simulation speed to rotation multiplier
@@ -79,7 +82,11 @@ function PlanetMesh({
       <AtmosphericGlow planetSize={planetSize} planetName={planet.name} />
 
       {/* Main planet sphere */}
-      <Sphere ref={planetRef} args={[planetSize, 64, 64]} position={[0, 0, 0]}>
+      <Sphere
+        ref={planetRef}
+        args={[planetSize, sphereSegments, sphereSegments]}
+        position={[0, 0, 0]}
+      >
         <primitive object={planetMaterial} attach="material" />
       </Sphere>
 

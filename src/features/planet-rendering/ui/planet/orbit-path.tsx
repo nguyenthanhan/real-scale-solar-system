@@ -1,7 +1,7 @@
 "use client";
 
 import * as THREE from "three";
-import { useMemo, useRef, useEffect } from "react";
+import { memo, useMemo, useRef, useEffect } from "react";
 import { PlanetData } from "@/data/planet-types";
 import { getOrbitColor } from "@/features/planet-rendering/domain/orbit-geometry";
 import { getInclinationRotation } from "@/features/planet-rendering/domain/orbital-inclination";
@@ -21,7 +21,10 @@ interface OrbitPathProps {
  * - Semi-transparent with double-sided rendering for visibility from all angles
  * - Optimized with useMemo and proper cleanup on unmount
  */
-export function OrbitPath({ planet, scaledDistance }: OrbitPathProps) {
+export const OrbitPath = memo(function OrbitPath({
+  planet,
+  scaledDistance,
+}: OrbitPathProps) {
   const lineRef = useRef<THREE.Line>(null);
 
   // Create elliptical orbit curve matching planet's eccentricity
@@ -34,17 +37,18 @@ export function OrbitPath({ planet, scaledDistance }: OrbitPathProps) {
       0, // start angle
       2 * Math.PI, // end angle
       false, // clockwise
-      0 // rotation
+      0, // rotation
     );
   }, [scaledDistance, planet.eccentricity]);
 
   // Create orbit geometry from ellipse points
   const geometry = useMemo(() => {
     const points = orbitCurve.getPoints(128);
-    const geometry = new THREE.BufferGeometry().setFromPoints(
-      points.map((p) => new THREE.Vector3(p.x, 0, p.y))
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
+      points.map((p) => new THREE.Vector3(p.x, 0, p.y)),
     );
-    return geometry;
+    orbitGeometry.computeBoundingSphere();
+    return orbitGeometry;
   }, [orbitCurve]);
 
   // Create orbit material with planet-specific color
@@ -67,7 +71,7 @@ export function OrbitPath({ planet, scaledDistance }: OrbitPathProps) {
       // This ensures orbit path uses same inclination as planet movement
       if (planet.orbitalInclination !== undefined) {
         lineRef.current.rotation.x = getInclinationRotation(
-          planet.orbitalInclination
+          planet.orbitalInclination,
         );
       }
     }
@@ -81,5 +85,12 @@ export function OrbitPath({ planet, scaledDistance }: OrbitPathProps) {
     };
   }, [geometry, material]);
 
-  return <lineLoop ref={lineRef} geometry={geometry} material={material} />;
-}
+  return (
+    <lineLoop
+      ref={lineRef}
+      geometry={geometry}
+      material={material}
+      frustumCulled
+    />
+  );
+});

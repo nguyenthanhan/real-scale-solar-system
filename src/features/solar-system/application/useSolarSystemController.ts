@@ -11,7 +11,9 @@ export function useSolarSystemController() {
   const [controlModalVisible, setControlModalVisible] = useState(true);
   const [showPlanetLabels, setShowPlanetLabels] = useState(true);
   const [showOrbitPath, setShowOrbitPath] = useState(true);
-  const [showBeltRegions, setShowBeltRegions] = useState(true);
+  // Off by default: belt regions add ~3.5k particles + ring geometry at startup.
+  // Users can enable via the control panel when needed.
+  const [showBeltRegions, setShowBeltRegions] = useState(false);
 
   const {
     simulationSpeed,
@@ -19,7 +21,8 @@ export function useSolarSystemController() {
     modalAutoRotate,
     setModalAutoRotate,
   } = useSimulationSpeed();
-  const { mode, toggleMode, selectedDate, setSelectedDate } = useSimulationMode();
+  const { mode, toggleMode, selectedDate, setSelectedDate } =
+    useSimulationMode();
 
   const isDateMode = mode === "date";
   const isPlanetModalOpen = selectedPlanet !== null;
@@ -84,6 +87,6 @@ export function useSolarSystemController() {
       handleSunClick,
       handleCloseInfo,
       handleModeToggle,
-    ]
+    ],
   );
 }

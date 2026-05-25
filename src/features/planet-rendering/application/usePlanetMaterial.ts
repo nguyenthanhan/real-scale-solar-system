@@ -12,14 +12,13 @@ import { textureCache, TextureCacheKey } from "@/utils/texture-cache";
 
 // Module-level cache for fallback materials to prevent GPU memory leaks
 const fallbackMaterialCache = new Map<string, MeshStandardMaterial>();
+const texturedMaterialCache = new Map<string, Material>();
 
 /**
  * Gets or creates a cached fallback material for the given color.
  * Reuses cached materials to prevent memory leaks.
  */
-function getOrCreateFallbackMaterial(
-  color: string,
-): MeshStandardMaterial {
+function getOrCreateFallbackMaterial(color: string): MeshStandardMaterial {
   let cachedFallback = fallbackMaterialCache.get(color);
   if (!cachedFallback) {
     cachedFallback = new MeshStandardMaterial({
@@ -30,6 +29,39 @@ function getOrCreateFallbackMaterial(
     fallbackMaterialCache.set(color, cachedFallback);
   }
   return cachedFallback;
+}
+
+function getTexturedMaterialCacheKey(
+  planetName: string,
+  materialType: "standard" | "basic",
+): string {
+  return `${planetName}-${materialType}`;
+}
+
+function getOrCreateTexturedMaterial(
+  planetName: string,
+  texture: Texture,
+  materialType: "standard" | "basic",
+): Material {
+  const cacheKey = getTexturedMaterialCacheKey(planetName, materialType);
+  const cached = texturedMaterialCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const material = createMaterialWithTexture(texture, materialType);
+  texturedMaterialCache.set(cacheKey, material);
+  return material;
+}
+
+function isSharedMaterial(material: Material): boolean {
+  for (const cached of fallbackMaterialCache.values()) {
+    if (cached === material) return true;
+  }
+  for (const cached of texturedMaterialCache.values()) {
+    if (cached === material) return true;
+  }
+  return false;
 }
 
 /**
@@ -60,7 +92,7 @@ export function usePlanetMaterial(planet: PlanetData): Material {
   // This memoizes the fallback material and recomputes only when planet.color changes
   const fallbackMaterial = useMemo(
     () => getOrCreateFallbackMaterial(planet.color),
-    [planet.color]
+    [planet.color],
   );
 
   useEffect(() => {
@@ -98,8 +130,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
     const cachedTexture = textureCache.get(cacheKey);
 
     if (cachedTexture) {
-      // Use cached texture to create material
-      const mat = createMaterialWithTexture(
+      const mat = getOrCreateTexturedMaterial(
+        planet.name,
         cachedTexture,
         config.materialType,
       );
@@ -132,7 +164,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         textureCache.set(cacheKey, texture);
 
         // Create material with loaded texture
-        const mat = createMaterialWithTexture(
+        const mat = getOrCreateTexturedMaterial(
+          planet.name,
           texture,
           config.materialType,
         );
@@ -168,13 +201,8 @@ export function usePlanetMaterial(planet: PlanetData): Material {
         const mat = materialRef.current as
           | MeshStandardMaterial
           | MeshBasicMaterial;
-        
-        // Check if this is a cached fallback material - don't dispose shared cached materials
-        const cachedFallback = fallbackMaterialCache.get(planet.color);
-        const isCachedFallback = mat === cachedFallback;
-        
-        if (!isCachedFallback) {
-          // Only dispose the material's map if it's NOT in the cache
+
+        if (!isSharedMaterial(mat)) {
           if (mat.map && !textureCache.has(cacheKey)) {
             mat.map.dispose();
           }
@@ -187,8 +215,6 @@ export function usePlanetMaterial(planet: PlanetData): Material {
       loaderRef.current = null;
     };
   }, [planet.name, planet.color, fallbackMaterial]);
-
-
 
   // Return cached fallback material while the actual material is being prepared
   // Fallback material is initialized using useState lazy initializer to avoid render-time side effects

@@ -5,14 +5,19 @@ import { SolarSystemProviders } from "@/features/solar-system/application/solar-
 import { useSolarSystemController } from "@/features/solar-system/application/useSolarSystemController";
 import { SceneContent } from "@/features/solar-system/ui/scene-content";
 import { SolarSystemOverlays } from "@/features/solar-system/ui/overlays";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 function SolarSystemContent() {
   const controller = useSolarSystemController();
+  const isMobile = useIsMobile();
+  const isPlanetModalOpen = controller.selectedPlanet !== null;
 
   return (
     <div className="w-full h-screen relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       <Canvas
         camera={{ position: [0, 2000, 4000], fov: 60, near: 0.1, far: 120000 }}
+        dpr={isMobile ? [1, 1.5] : [1, 2]}
+        frameloop={isPlanetModalOpen ? "never" : "always"}
       >
         <SceneContent
           simulationSpeed={controller.simulationSpeed}

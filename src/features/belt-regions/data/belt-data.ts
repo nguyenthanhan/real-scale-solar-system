@@ -23,7 +23,7 @@ export const BELT_DATA: BeltData[] = [
     color: "#8B7355",
     opacity: 0.15,
     description: "Region between Mars and Jupiter containing rocky asteroids",
-    particleCount: 2000,
+    particleCount: 1500,
     particleSize: 3,
   },
   {
@@ -34,7 +34,7 @@ export const BELT_DATA: BeltData[] = [
     color: "#4A6B8A",
     opacity: 0.1,
     description: "Region beyond Neptune containing icy bodies",
-    particleCount: 3000,
+    particleCount: 2000,
     particleSize: 5,
   },
 ];

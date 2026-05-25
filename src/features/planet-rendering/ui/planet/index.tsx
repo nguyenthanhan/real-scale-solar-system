@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { memo, useRef, useCallback } from "react";
 import { ThreeEvent } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import { Mesh, Group } from "three";
@@ -27,7 +27,8 @@ interface PlanetProps {
   selectedDate?: Date;
 }
 
-export function Planet({
+// Memoized: parent passes stable onClick via useSolarSystemController (useCallback).
+export const Planet = memo(function Planet({
   planet,
   simulationSpeed,
   onClick,
@@ -111,4 +112,4 @@ export function Planet({
       </group>
     </>
   );
-}
+});

@@ -1,7 +1,7 @@
 "use client";
 
 import * as THREE from "three";
-import { useMemo, useRef, useEffect } from "react";
+import { memo, useMemo, useRef, useEffect } from "react";
 import { Text } from "@react-three/drei";
 import { BeltData } from "@/features/belt-regions/data/belt-data";
 
@@ -55,7 +55,10 @@ function BeltLabel({
  * 2. Particle field with randomly distributed points
  * 3. Curved label text showing belt name
  */
-export function BeltRegion({ belt, showLabel = true }: BeltRegionProps) {
+export const BeltRegion = memo(function BeltRegion({
+  belt,
+  showLabel = true,
+}: BeltRegionProps) {
   const ringRef = useRef<THREE.Mesh>(null);
   const particlesRef = useRef<THREE.Points>(null);
 
@@ -65,7 +68,7 @@ export function BeltRegion({ belt, showLabel = true }: BeltRegionProps) {
 
   // Create filled ring geometry
   const ringGeometry = useMemo(() => {
-    return new THREE.RingGeometry(scaledInnerRadius, scaledOuterRadius, 128);
+    return new THREE.RingGeometry(scaledInnerRadius, scaledOuterRadius, 64);
   }, [scaledInnerRadius, scaledOuterRadius]);
 
   // Create ring material
@@ -175,4 +178,4 @@ export function BeltRegion({ belt, showLabel = true }: BeltRegionProps) {
       )}
     </group>
   );
-}
+});

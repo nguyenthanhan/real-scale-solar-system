@@ -4,6 +4,7 @@ import { planetData } from "@/data/planet-data";
 import { BeltRegions } from "@/features/belt-regions/ui/index";
 import { Planet } from "@/features/planet-rendering/ui/planet/index";
 import { Sun } from "@/features/planet-rendering/ui/planet/sun";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
 
 type SceneContentProps = {
@@ -29,6 +30,9 @@ export function SceneContent({
   showOrbitPath,
   showBeltRegions,
 }: SceneContentProps) {
+  const isMobile = useIsMobile();
+  const starCount = isMobile ? 1500 : 3000;
+
   return (
     <>
       <ambientLight intensity={1.2} />
@@ -55,7 +59,7 @@ export function SceneContent({
       <Stars
         radius={60000}
         depth={2000}
-        count={3000}
+        count={starCount}
         factor={4}
         saturation={1}
         fade
