@@ -4,6 +4,7 @@
  */
 
 import { fetchPlanetFromUpstream } from "@/features/planet-catalog/server/upstream-client";
+import { checkRateLimit, PLANETS_API_RATE_LIMIT_BUCKET } from "@/features/planet-catalog/server/rate-limit";
 
 export const runtime = "edge";
 
@@ -34,7 +35,7 @@ function jsonResponse(
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ name: string }> },
 ) {
   const { name } = await params;
@@ -42,6 +43,14 @@ export async function GET(
 
   if (!SUPPORTED_PLANETS.has(planetName)) {
     return jsonResponse({ error: "Unsupported planet name" }, { status: 400 });
+  }
+
+  const rateLimitResponse = await checkRateLimit(
+    request,
+    PLANETS_API_RATE_LIMIT_BUCKET,
+  );
+  if (rateLimitResponse) {
+    return rateLimitResponse;
   }
 
   const controller = new AbortController();
@@ -93,7 +102,7 @@ export async function GET(
 
     return jsonResponse(data, {
       headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
       },
     });
   } catch (error) {
