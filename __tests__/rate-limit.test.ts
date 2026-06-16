@@ -21,6 +21,7 @@ function stubCacheApi() {
 describe("checkRateLimit", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it("limits requests with the in-memory fallback when Cache API is unavailable", async () => {
@@ -44,6 +45,34 @@ describe("checkRateLimit", () => {
       error: "Too many requests. Please try again later.",
     });
     expect(limited?.headers.get("Retry-After")).toBe("60");
+  });
+
+  it("bounds the in-memory fallback by evicting the oldest buckets", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2030-01-01T00:00:00.000Z"));
+
+    const bucket = "test/memory-cap";
+    const oldestRequest = new Request("https://example.com/api/planets/earth", {
+      headers: { "x-forwarded-for": "198.51.100.60" },
+    });
+
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      await expect(checkRateLimit(oldestRequest, bucket)).resolves.toBeNull();
+    }
+    await expect(checkRateLimit(oldestRequest, bucket)).resolves.toHaveProperty(
+      "status",
+      429,
+    );
+
+    for (let index = 0; index < 1024; index += 1) {
+      const request = new Request("https://example.com/api/planets/earth", {
+        headers: { "x-forwarded-for": `203.0.113.${index}` },
+      });
+
+      await expect(checkRateLimit(request, bucket)).resolves.toBeNull();
+    }
+
+    await expect(checkRateLimit(oldestRequest, bucket)).resolves.toBeNull();
   });
 
   it("limits requests after the shared bucket reaches the window cap", async () => {
