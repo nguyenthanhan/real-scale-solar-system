@@ -1,33 +1,37 @@
 const RATE_LIMIT_MAX_REQUESTS = 30;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
+const RATE_LIMIT_WINDOW_MS = RATE_LIMIT_WINDOW_SECONDS * 1000;
+
+const memoryBuckets = new Map<string, { count: number; expiresAt: number }>();
 
 /** Shared bucket for all /api/planets/* routes — limits total upstream calls per IP. */
 export const PLANETS_API_RATE_LIMIT_BUCKET = "api/planets";
 
 /**
- * Basic per-IP rate limit for edge API routes using the Cache API.
+ * Basic per-IP rate limit for API routes using the Cache API when available,
+ * with an in-memory fallback for Node/Vinext deployments.
  * Returns a 429 Response when limited, or null when the request may proceed.
- * No-ops outside environments that expose caches.default (e.g. local Node tests).
  *
  * Use a route-level bucket (e.g. "api/planets") rather than per-resource keys
  * when the goal is protecting shared upstream quota.
  *
  * Note: read/modify/write via Cache API is not atomic. Concurrent requests may
- * briefly exceed the limit during bursts — acceptable for casual abuse protection;
- * use Cloudflare WAF or Durable Objects for strict enforcement.
+ * briefly exceed the limit during bursts. The in-memory fallback is per-process
+ * and resets on restart. Use Cloudflare WAF, Durable Objects, Redis, or another
+ * shared store for strict multi-instance enforcement.
  */
 export async function checkRateLimit(
   request: Request,
   bucket: string,
 ): Promise<Response | null> {
-  if (typeof caches === "undefined") {
-    return null;
-  }
-
   const ip =
     request.headers.get("cf-connecting-ip") ??
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
+
+  if (typeof caches === "undefined") {
+    return checkMemoryRateLimit(bucket, ip);
+  }
 
   const cacheKey = new Request(
     `https://rate-limit.internal/${bucket}?ip=${encodeURIComponent(ip)}`,
@@ -64,5 +68,40 @@ export async function checkRateLimit(
     }),
   );
 
+  return null;
+}
+
+function rateLimitResponse(): Response {
+  return new Response(
+    JSON.stringify({ error: "Too many requests. Please try again later." }),
+    {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": String(RATE_LIMIT_WINDOW_SECONDS),
+        "Cache-Control": "no-store",
+      },
+    },
+  );
+}
+
+function checkMemoryRateLimit(bucket: string, ip: string): Response | null {
+  const now = Date.now();
+  const key = `${bucket}:${ip}`;
+  const current = memoryBuckets.get(key);
+
+  if (!current || current.expiresAt <= now) {
+    memoryBuckets.set(key, {
+      count: 1,
+      expiresAt: now + RATE_LIMIT_WINDOW_MS,
+    });
+    return null;
+  }
+
+  if (current.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return rateLimitResponse();
+  }
+
+  current.count += 1;
   return null;
 }

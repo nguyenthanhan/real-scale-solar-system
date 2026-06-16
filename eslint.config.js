@@ -4,7 +4,13 @@ import typescriptParser from "@typescript-eslint/parser";
 
 export default [
   {
-    ignores: [".vinext/**", "node_modules/**", "dist/**", "build/**"],
+    ignores: [
+      ".next/**",
+      ".vinext/**",
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+    ],
   },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
