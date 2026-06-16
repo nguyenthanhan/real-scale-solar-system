@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { checkRateLimit, PLANETS_API_RATE_LIMIT_BUCKET } from "@/features/planet-catalog/server/rate-limit";
+import {
+  checkRateLimit,
+  PLANETS_API_RATE_LIMIT_BUCKET,
+} from "@/features/planet-catalog/server/rate-limit";
 
 function stubCacheApi() {
   const entries = new Map<string, Response>();
@@ -20,10 +23,27 @@ describe("checkRateLimit", () => {
     vi.unstubAllGlobals();
   });
 
-  it("allows requests when Cache API is unavailable (local tests)", async () => {
-    const request = new Request("https://example.com/api/planets/earth");
-    const result = await checkRateLimit(request, PLANETS_API_RATE_LIMIT_BUCKET);
-    expect(result).toBeNull();
+  it("limits requests with the in-memory fallback when Cache API is unavailable", async () => {
+    const request = new Request("https://example.com/api/planets/earth", {
+      headers: { "x-forwarded-for": "198.51.100.50" },
+    });
+
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      await expect(
+        checkRateLimit(request, PLANETS_API_RATE_LIMIT_BUCKET),
+      ).resolves.toBeNull();
+    }
+
+    const limited = await checkRateLimit(
+      request,
+      PLANETS_API_RATE_LIMIT_BUCKET,
+    );
+
+    expect(limited?.status).toBe(429);
+    await expect(limited?.json()).resolves.toEqual({
+      error: "Too many requests. Please try again later.",
+    });
+    expect(limited?.headers.get("Retry-After")).toBe("60");
   });
 
   it("limits requests after the shared bucket reaches the window cap", async () => {
@@ -38,7 +58,10 @@ describe("checkRateLimit", () => {
       ).resolves.toBeNull();
     }
 
-    const limited = await checkRateLimit(request, PLANETS_API_RATE_LIMIT_BUCKET);
+    const limited = await checkRateLimit(
+      request,
+      PLANETS_API_RATE_LIMIT_BUCKET,
+    );
 
     expect(limited?.status).toBe(429);
     await expect(limited?.json()).resolves.toEqual({

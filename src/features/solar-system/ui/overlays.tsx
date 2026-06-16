@@ -1,11 +1,17 @@
+import { lazy, Suspense } from "react";
 import { PlanetData } from "@/data/planet-types";
 import { DatePicker } from "@/features/date-mode/ui/date-picker";
 import { ControlModal } from "@/features/planet-modal/ui/control";
-import { ModalOverlay } from "@/features/planet-modal/ui/modal-overlay";
 import { ModeToggleButton } from "@/features/simulation-control/ui/mode-toggle-button";
 import { GitHubButton } from "@/components/button/github-button";
 import { MemoryMonitor } from "@/components/debug/memory-monitor";
 import type { SimulationMode } from "@/features/simulation-control/state/simulation-mode-context";
+
+const ModalOverlay = lazy(() =>
+  import("@/features/planet-modal/ui/modal-overlay").then((module) => ({
+    default: module.ModalOverlay,
+  })),
+);
 
 type SolarSystemOverlaysProps = {
   selectedPlanet: PlanetData | null;
@@ -52,7 +58,11 @@ export function SolarSystemOverlays({
 }: SolarSystemOverlaysProps) {
   return (
     <>
-      <ModalOverlay planet={selectedPlanet} onClose={onCloseInfo} />
+      {selectedPlanet && (
+        <Suspense fallback={null}>
+          <ModalOverlay planet={selectedPlanet} onClose={onCloseInfo} />
+        </Suspense>
+      )}
 
       {!selectedPlanet && (
         <div className="absolute top-4 left-4 z-buttons">
